@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { View, PanResponder, Dimensions, StyleSheet, Text, TouchableOpacity } from 'react-native';
+import { View, PanResponder, Dimensions, StyleSheet, Text, TouchableWithoutFeedback } from 'react-native';
 import * as Haptics from 'expo-haptics';
 import { Audio } from 'expo-av';
 import * as Speech from 'expo-speech';
@@ -119,19 +119,32 @@ const BrailleReader = ({ category, brailleSymbols, brailleList }) => {
         })
     ).current;
 
-    // Braille 점자를 변경하는 함수
-    const incrementBraille = () => {
-        currentBrailleRef.current = (currentBrailleRef.current + 1) % brailleList.length;
+    // 화면 상단 터치 이벤트 처리
+    const handleTopTouch = (evt) => {
+        const { locationX } = evt.nativeEvent;
+        const width = Dimensions.get('window').width;
+        console.log(locationX);
+        console.log('width/2: ', width/2);
+
+        if (locationX > width / 2) {
+            currentBrailleRef.current = (currentBrailleRef.current + 1) % brailleList.length;
+        } else {
+            if (currentBrailleRef.current - 1 >= 0) {
+                currentBrailleRef.current = (currentBrailleRef.current - 1) % brailleList.length;
+            }
+        }
         setCurrentBraille(currentBrailleRef.current);
         setCurrentIndex(0);
-    };
+    }
 
     return (
         <View style={styles.container}>
             { /* Top 1/3 */}
-            <TouchableOpacity style={styles.topOneThirds} onPress={incrementBraille}>
-                <Text style={styles.textStyle}>{brailleSymbols[currentBrailleRef.current]}</Text>
-            </TouchableOpacity>
+            <TouchableWithoutFeedback onPress={handleTopTouch}>
+                <View style={styles.topOneThirds}>
+                    <Text style={styles.textStyle}>{brailleSymbols[currentBrailleRef.current]}</Text>
+                </View>
+            </TouchableWithoutFeedback>
 
             { /* Bottom 2/3 */}
             <View {...panResponder.panHandlers} style={styles.bottomTwoThirds}>
