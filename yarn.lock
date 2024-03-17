@@ -3152,6 +3152,11 @@ expo-asset@~9.0.2:
     invariant "^2.2.4"
     md5-file "^3.2.3"
 
+expo-av@~13.10.5:
+  version "13.10.5"
+  resolved "https://registry.yarnpkg.com/expo-av/-/expo-av-13.10.5.tgz#cdce4db8c0f896be88cc881994704a251a1e63ff"
+  integrity sha512-w45oCoe+8PunDeM0rh/Ut6UaGh7OjEJOCjAiQy3nCxpA8FaXB17KaqpsvkAXIMvceHYWndH8+D29esUTS6wEsA==
+
 expo-constants@~15.4.0:
   version "15.4.5"
   resolved "https://registry.yarnpkg.com/expo-constants/-/expo-constants-15.4.5.tgz#81756a4c4e1c020f840a419cd86a124a6d1fb35b"
@@ -3170,6 +3175,11 @@ expo-font@~11.10.3:
   integrity sha512-q1Td2zUvmLbCA9GV4OG4nLPw5gJuNY1VrPycsnemN1m8XWTzzs8nyECQQqrcBhgulCgcKZZJJ6U0kC2iuSoQHQ==
   dependencies:
     fontfaceobserver "^2.1.0"
+
+expo-haptics@~12.8.1:
+  version "12.8.1"
+  resolved "https://registry.yarnpkg.com/expo-haptics/-/expo-haptics-12.8.1.tgz#42b996763be33d661bd33bbc3b3958c3f2734b9d"
+  integrity sha512-ntLsHkfle8K8w9MW8pZEw92ZN3sguaGUSSIxv30fPKNeQFu7Cq/h47Qv3tONv2MO3wU48N9FbKnant6XlfptpA==
 
 expo-keep-awake@~12.8.2:
   version "12.8.2"
@@ -3194,6 +3204,11 @@ expo-modules-core@1.11.12:
   integrity sha512-/e8g4kis0pFLer7C0PLyx98AfmztIM6gU9jLkYnB1pU9JAfQf904XEi3bmszO7uoteBQwSL6FLp1m3TePKhDaA==
   dependencies:
     invariant "^2.2.4"
+
+expo-speech@~11.7.0:
+  version "11.7.0"
+  resolved "https://registry.yarnpkg.com/expo-speech/-/expo-speech-11.7.0.tgz#5c441f6aaec260403f5c5b3e52b5f9a34bbc8061"
+  integrity sha512-D+57EqYgmmbceGyfQiCJGWj/FHIzaFOdzvUrz3EiqKTj3VqVCZZf0VvjmjpSh2q+5Ooh1M92l0mvMUbcsMgvPw==
 
 expo-status-bar@~1.11.1:
   version "1.11.1"
