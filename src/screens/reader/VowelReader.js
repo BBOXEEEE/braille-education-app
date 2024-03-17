@@ -27,8 +27,8 @@ const brailleList = [
     [0, 1, 0, 1, 1, 1] // ㅢ
 ]
 
-const ConsonantReader = () => {
+const VowelReader = () => {
     return <BrailleReader category={category} brailleSymbols={brailleSimbols} brailleList={brailleList} />;
 };
 
-export default ConsonantReader;
+export default VowelReader;
