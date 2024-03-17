@@ -4,7 +4,7 @@ import * as Haptics from 'expo-haptics';
 import { Audio } from 'expo-av';
 import * as Speech from 'expo-speech';
 
-const BrailleReader = ({ brailleSymbols, brailleList }) => {
+const BrailleReader = ({ category, brailleSymbols, brailleList }) => {
     const [currentIndex, setCurrentIndex] = useState(0);
     const [currentBraille, setCurrentBraille] = useState(0);
     const [move, setMove] = useState(0);
@@ -21,7 +21,7 @@ const BrailleReader = ({ brailleSymbols, brailleList }) => {
     }, [currentIndex, currentBraille, move]);
 
     const tts_information = () => {
-        const text = `현재 읽고있는 점자는 자음 ${brailleSymbols[currentBrailleRef.current]} 입니다.`;
+        const text = `현재 읽고있는 점자는 ${category} ${brailleSymbols[currentBrailleRef.current]} 입니다.`;
         const options = {
             voice: "com.apple.voice.compact.ko-KR.Yuna",
             rate: 1.4

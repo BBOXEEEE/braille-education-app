@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import BrailleReader from '../../components/BrailleReader';
 
+const category = '자음';
 const brailleSimbols = ['ㄱ', 'ㄴ', 'ㄷ', 'ㄹ', 'ㅁ', 'ㅂ', 'ㅅ', 'ㅈ', 'ㅊ', 'ㅋ', 'ㅍ', 'ㅌ', 'ㅎ']
 const brailleList = [
     [0, 0, 0, 1, 0, 0], // ㄱ
@@ -19,7 +20,7 @@ const brailleList = [
 ]
 
 const ConsonantReader = () => {
-    return <BrailleReader brailleSymbols={brailleSimbols} brailleList={brailleList} />;
+    return <BrailleReader category={category} brailleSymbols={brailleSimbols} brailleList={brailleList} />;
 };
 
 export default ConsonantReader;
