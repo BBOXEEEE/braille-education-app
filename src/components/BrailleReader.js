@@ -4,23 +4,7 @@ import * as Haptics from 'expo-haptics';
 import { Audio } from 'expo-av';
 import * as Speech from 'expo-speech';
 
-const BrailleConsonantReader = () => {
-    const consonant_list = ['ㄱ', 'ㄴ', 'ㄷ', 'ㄹ', 'ㅁ', 'ㅂ', 'ㅅ', 'ㅈ', 'ㅊ', 'ㅋ', 'ㅍ', 'ㅌ', 'ㅎ']
-    const braille_list = [
-        [0, 0, 0, 1, 0, 0], // ㄱ
-        [1, 0, 0, 1, 0, 0], // ㄴ
-        [0, 1, 0, 1, 0, 0], // ㄷ
-        [0, 0, 0, 0, 1, 0], // ㄹ
-        [1, 0, 0, 0, 1, 0], // ㅁ
-        [0, 0, 0, 1, 1, 0], // ㅂ
-        [0, 0, 0, 0, 0, 1], // ㅅ
-        [0, 0, 0, 1, 0, 1], // ㅈ
-        [0, 0, 0, 0, 1, 1], // ㅊ
-        [1, 1, 0, 1, 0, 0], // ㅋ
-        [1, 1, 0, 0, 1, 0], // ㅍ
-        [1, 0, 0, 1, 1, 0], // ㅌ
-        [0, 1, 0, 1, 1, 0]  // ㅎ
-    ]
+const BrailleReader = ({ brailleSymbols, brailleList }) => {
     const [currentIndex, setCurrentIndex] = useState(0);
     const [currentBraille, setCurrentBraille] = useState(0);
     const [move, setMove] = useState(0);
@@ -37,7 +21,7 @@ const BrailleConsonantReader = () => {
     }, [currentIndex, currentBraille, move]);
 
     const tts_information = () => {
-        const text = `현재 읽고있는 점자는 자음 ${consonant_list[currentBrailleRef.current]} 입니다.`;
+        const text = `현재 읽고있는 점자는 자음 ${brailleSymbols[currentBrailleRef.current]} 입니다.`;
         const options = {
             voice: "com.apple.voice.compact.ko-KR.Yuna",
             rate: 1.4
@@ -68,11 +52,11 @@ const BrailleConsonantReader = () => {
                 const { pageX, pageY } = evt.nativeEvent;
                 lastTouch.current = { x: pageX, y: pageY }; // 터치 시작 시 이전 좌표를 초기화합니다.
                 setMove(0);
-                if (braille_list[currentBrailleRef.current][currentIndexRef.current] === 1) {
+                if (brailleList[currentBrailleRef.current][currentIndexRef.current] === 1) {
                     Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
                     tts_dot();
                 }
-                currentIndexRef.current = (currentIndexRef.current + 1) % braille_list[currentBraille].length;
+                currentIndexRef.current = (currentIndexRef.current + 1) % brailleList[currentBraille].length;
                 setCurrentIndex(currentIndexRef.current);
                 isFirst = true;
             },
@@ -87,7 +71,7 @@ const BrailleConsonantReader = () => {
                 async function playSound() {
                     const soundObject = new Audio.Sound();
                     try {
-                        await soundObject.loadAsync(require('../../assets/sounds/ping.mp3'));
+                        await soundObject.loadAsync(require('../assets/sounds/ping.mp3'));
                         await soundObject.playAsync();
                     } catch (error) {
                         console.error(error);
@@ -97,7 +81,7 @@ const BrailleConsonantReader = () => {
                 async function finishSound() {
                     const soundObject = new Audio.Sound();
                     try {
-                        await soundObject.loadAsync(require('../../assets/sounds/finish.mp3'));
+                        await soundObject.loadAsync(require('../assets/sounds/finish.mp3'));
                         await soundObject.playAsync();
                     } catch (error) {
                         console.error(error);
@@ -110,15 +94,15 @@ const BrailleConsonantReader = () => {
                     if(moveRef.current < 2) {
                         moveRef.current = moveRef.current + 1;
                         console.log(`Current Braile: ${currentBrailleRef.current}, Current index: ${currentIndexRef.current}`);
-                        if (braille_list[currentBrailleRef.current][currentIndexRef.current] === 1) {
+                        if (brailleList[currentBrailleRef.current][currentIndexRef.current] === 1) {
                             Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
                             tts_dot();
                         }
-                        const nextIndex = (currentIndexRef.current + 1) % braille_list[currentBraille].length;
+                        const nextIndex = (currentIndexRef.current + 1) % brailleList[currentBraille].length;
                         setCurrentIndex(nextIndex);
                         setMove(moveRef.current);
                         
-                        if (currentBrailleRef.current === braille_list.length - 1 && currentIndexRef.current === braille_list[currentBrailleRef.current].length - 1) {
+                        if (currentBrailleRef.current === brailleList.length - 1 && currentIndexRef.current === brailleList[currentBrailleRef.current].length - 1) {
                             finishSound();
                         }
                     } else {
@@ -136,7 +120,7 @@ const BrailleConsonantReader = () => {
 
     // Braille 점자를 변경하는 함수
     const incrementBraille = () => {
-        currentBrailleRef.current = (currentBrailleRef.current + 1) % braille_list.length;
+        currentBrailleRef.current = (currentBrailleRef.current + 1) % brailleList.length;
         setCurrentBraille(currentBrailleRef.current);
         setCurrentIndex(0);
     };
@@ -145,7 +129,7 @@ const BrailleConsonantReader = () => {
         <View style={styles.container}>
             { /* Top 1/3 */}
             <TouchableOpacity style={styles.topOneThirds} onPress={incrementBraille}>
-                <Text style={styles.textStyle}>{consonant_list[currentBrailleRef.current]}</Text>
+                <Text style={styles.textStyle}>{brailleSymbols[currentBrailleRef.current]}</Text>
             </TouchableOpacity>
 
             { /* Bottom 2/3 */}
@@ -196,4 +180,4 @@ const styles = StyleSheet.create({
     },
 });
 
-export default BrailleConsonantReader;
+export default BrailleReader;
