@@ -1,6 +1,6 @@
 import { StatusBar } from 'expo-status-bar';
 import { StyleSheet, View } from 'react-native';
-import ConsonantReader from './src/screens/reader/ConsonantReader';
+import ConsonantReader from './src/screens/reader/InitialConsonantReader';
 import VowelReader from './src/screens/reader/VowelReader';
 import FinalConsonantReader from './src/screens/reader/FinalConsonantReader';
 

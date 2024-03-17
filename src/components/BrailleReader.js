@@ -34,7 +34,7 @@ const BrailleReader = ({ category, brailleSymbols, brailleList }) => {
     }, [currentBraille]);
 
     function tts_dot() {
-        const text = `${currentIndexRef.current + 1}점`;
+        const text = `${(currentIndexRef.current % 6) + 1}점`;
         const options = {
             voice: "com.apple.voice.compact.ko-KR.Yuna",
             rate: 1.5
@@ -98,7 +98,8 @@ const BrailleReader = ({ category, brailleSymbols, brailleList }) => {
                             Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
                             tts_dot();
                         }
-                        const nextIndex = (currentIndexRef.current + 1) % brailleList[currentBraille].length;
+                        const nextIndex = (currentIndexRef.current + 1) % brailleList[currentBrailleRef.current].length;
+                        console.log(brailleList[currentBrailleRef.current].length);
                         setCurrentIndex(nextIndex);
                         setMove(moveRef.current);
                         
