@@ -1,4 +1,3 @@
-import React, { useState, useEffect, useRef } from 'react';
 import BrailleReader from '../../components/BrailleReader';
 
 const category = '자음';
