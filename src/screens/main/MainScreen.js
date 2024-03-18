@@ -63,11 +63,11 @@ const styles = StyleSheet.create({
   },
   button: {
     width: '100%',
-    padding:35,
+    height: '15%',
     justifyContent: 'center',
     alignItems: 'center',
     backgroundColor: '#fff', 
-    marginBottom: 20,
+    marginTop: 20,
     shadowColor: "#000",
     shadowOffset: {
       width: 0,

@@ -3,7 +3,7 @@ import { View, Text, TouchableOpacity, StyleSheet, SafeAreaView, ScrollView } fr
 import { useNavigation } from '@react-navigation/native';
 
 const steps = [
-  '학습하기' , '복습하기(랜덤)' , '시험보기'
+  '학습하기', '시험보기'
 ];
 
 const ReadingLearn = () => {
@@ -64,9 +64,9 @@ const styles = StyleSheet.create({
   },
   button: {
     backgroundColor: '#fff',
-    padding: 35,
-    //marginBottom: 10,
-    marginBottom: 20,
+    width: '100%',
+    height: '15%',
+    marginBottom: 30,
     alignItems: 'center',
     justifyContent: 'center',
     shadowColor: '#000',

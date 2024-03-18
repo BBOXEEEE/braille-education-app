@@ -55,7 +55,7 @@ const ReadingScreen = () => {
         <Text style={styles.headerTitle}>T&T</Text>
         <View style={styles.menuPlaceholder} />
       </View>
-      <ScrollView style={styles.content}>
+      <View style={styles.content}>
         {steps.map((step, index) => (
           <TouchableOpacity
             key={index}
@@ -64,7 +64,7 @@ const ReadingScreen = () => {
             <Text style={styles.buttonText}>{step}</Text>
           </TouchableOpacity>
         ))}
-      </ScrollView>
+      </View>
     </SafeAreaView>
   );
 };
@@ -97,12 +97,13 @@ const styles = StyleSheet.create({
   },
   content: {
     flex: 1,
+    justifyContent: 'center',
   },
   button: {
     backgroundColor: '#fff',
-    paddingVertical: 20,
-    //marginBottom: 10,
-    marginTop:15,
+    width: '100%',
+    height: '8%',
+    marginTop: 15,
     alignItems: 'center',
     justifyContent: 'center',
     shadowColor: '#000',
