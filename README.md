@@ -41,5 +41,3 @@ $ npx expo start
 ```
 
 You can run this application on iOS & Android simulator and your smartphone via Expo Go.
-
-## Service
