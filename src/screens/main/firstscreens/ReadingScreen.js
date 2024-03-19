@@ -38,7 +38,7 @@ const ReadingScreen = () => {
         screenName = 'PunctuationScreen';
         break;
       case '영어(알파벳)':
-        screenName = 'EnglishAlphabetScreen';
+        screenName = 'InitialConsonantWritter';
         break;
     }
     if (screenName) {

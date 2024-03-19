@@ -9,7 +9,9 @@ import ShootingScreen from '../screens/main/firstscreens/ShootingScreen';
 import VocabularyScreen from '../screens/main/firstscreens/VocabularyScreen';
 import TutorialScreen from '../screens/main/firstscreens/secondscreens/TutorialScreen';
 
-import InitialConsonantReader from '../screens/reader/InitialConsonantReader'
+import InitialConsonantReader from '../screens/reader/InitialConsonantReader';
+
+import InitialConsonantWritter from '../screens/writter/InitialConsonantWritter';
 
 //import ReadingWriting from '../screens/main/firstscreens/secondscreens/ReadingWritingScreen';
 
@@ -29,6 +31,7 @@ const AppNavigator = () => {
         <Stack.Screen name="Vocabulary" component={VocabularyScreen} />
         <Stack.Screen name="TutorialScreen" component={TutorialScreen} />
         <Stack.Screen name="InitialConsonantReader" component={InitialConsonantReader} />
+        <Stack.Screen name="InitialConsonantWritter" component={InitialConsonantWritter} />
         
       </Stack.Navigator>
     </NavigationContainer>

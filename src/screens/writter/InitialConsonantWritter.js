@@ -2,7 +2,7 @@ import React, { useRef, useState, useEffect } from "react";
 import { StyleSheet, View, PanResponder, Text } from "react-native";
 import * as Speech from "expo-speech";
 import { Dimensions } from "react-native";
-import BrailleList from "../constants/BrailleList"; // 경로 수정 필요
+import BrailleList from '../../constants/BrailleList';
 
 const initialConsonant = BrailleList.INITIAL_CONSONANT;
 const brailleSymbols = initialConsonant.symbols;
@@ -92,7 +92,7 @@ export default function App() {
     const select = whatDot(brailleList[brailleIndex]);
     inputBraille = new Array(brailleList[brailleIndex].length).fill(0);
     Speech.speak(
-      ` ${brailleSimbols[brailleIndex]} 입니다. ${select} 입니다. `,
+      ` ${brailleSymbols[brailleIndex]} 입니다. ${select} 입니다. `,
       {
         rate: 1.5,
       }
@@ -314,7 +314,7 @@ export default function App() {
           ]}
         />
       ))}
-      {/* 첫 번째 영역의 중간 지점에 Text 컴포넌트를 추가하여 brailleSimbols[0] 값을 표시 */}
+      {/* 첫 번째 영역의 중간 지점에 Text 컴포넌트를 추가하여 brailleSymbols[0] 값을 표시 */}
       <Text
         style={{
           position: "absolute",

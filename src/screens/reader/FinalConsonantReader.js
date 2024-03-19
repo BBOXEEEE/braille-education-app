@@ -1,42 +1,13 @@
 import BrailleReader from '../../components/BrailleReader';
+import BrailleList from '../../constants/BrailleList';
 
-const category = '받침';
-const brailleSimbols = [
-    'ㄱ', 'ㄴ', 'ㄷ', 'ㄹ', 'ㅁ', 'ㅂ', 'ㅅ', 'ㅇ', 'ㅈ', 'ㅊ', 'ㅋ', 'ㅍ', 'ㅌ', 'ㅎ',
-    'ㄲ', 'ㅆ', 'ㄱㅅ', 'ㄴㅈ', 'ㄴㅎ', 'ㄹㄱ', 'ㄹㅁ', 'ㄹㅂ', 'ㄹㅅ', 'ㄹㅌ', 'ㄹㅍ', 'ㄹㅎ', 'ㅂㅅ'
-]
-const brailleList = [
-    [1, 0, 0, 0, 0, 0], // ㄱ
-    [0, 1, 0, 0, 1, 0], // ㄴ
-    [0, 0, 1, 0, 1, 0], // ㄷ
-    [0, 1, 0, 0, 0, 0], // ㄹ
-    [0, 1, 0, 0, 0, 1], // ㅁ
-    [1, 1, 0, 0, 0, 0], // ㅂ
-    [0, 0, 1, 0, 0, 0], // ㅅ
-    [0, 1, 1, 0, 1, 1], // ㅇ
-    [1, 0, 1, 0, 0, 0], // ㅈ
-    [0, 1, 1, 0, 0, 0], // ㅊ
-    [0, 1, 1, 0, 1, 0], // ㅋ
-    [0, 1, 1, 0, 0, 1], // ㅍ
-    [0, 1, 0, 0, 1, 1], // ㅌ
-    [0, 0, 1, 0, 1, 1], // ㅎ
-    [1, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0], // ㄲ
-    [0, 0, 1, 1, 0, 0], // ㅆ
-    [1, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0], // ㄱㅅ
-    [0, 1, 0, 0, 1, 0, 1, 0, 1, 0, 0, 0], // ㄴㅈ
-    [0, 1, 0, 0, 1, 0, 0, 0, 1, 0, 1, 1], // ㄴㅎ
-    [0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0], // ㄹㄱ
-    [0, 1, 0, 0, 0, 0, 0, 1, 0, 0, 0, 1], // ㄹㅁ
-    [0, 1, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0], // ㄹㅂ
-    [0, 1, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0], // ㄹㅅ
-    [0, 1, 0, 0, 0, 0, 0, 1, 0, 0, 1, 1], // ㄹㅌ
-    [0, 1, 0, 0, 0, 0, 0, 1, 1, 0, 0, 1], // ㄹㅍ
-    [0, 1, 0, 0, 0, 0, 0, 0, 1, 0, 1, 1], // ㄹㅎ
-    [1, 1, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0] // ㅂㅅ
-]
+const initialConsonant = BrailleList.FINAL_CONSONANT;
+const category = initialConsonant.category;;
+const brailleSymbols = initialConsonant.symbols;
+const brailleList = initialConsonant.braille;
 
 const FinalConsonantReader = () => {
-    return <BrailleReader category={category} brailleSymbols={brailleSimbols} brailleList={brailleList} />;
+    return <BrailleReader category={category} brailleSymbols={brailleSymbols} brailleList={brailleList} />;
 };
 
 export default FinalConsonantReader;
