@@ -3,17 +3,11 @@ import { View, Text, TouchableOpacity, StyleSheet, SafeAreaView, ScrollView } fr
 import { useNavigation } from '@react-navigation/native';
 
 const steps = [
-  { name: '학습하기', screen: 'InitialConsonantReader' },
-  { name: '시험보기', screen: 'TestScreen' }
+  '학습하기', '시험보기'
 ];
 
-
-const RConsonantScreen = () => {
+const WriteTutorial = () => {
   const navigation = useNavigation();
-
-  const navigateToScreen = (screenName) => {
-    navigation.navigate(screenName);
-  };
 
   return (
     <SafeAreaView style={styles.container}>
@@ -29,8 +23,8 @@ const RConsonantScreen = () => {
           <TouchableOpacity
             key={index}
             style={styles.button}
-            onPress={() => navigateToScreen(step.screen)}>
-            <Text style={styles.buttonText}>{step.name}</Text>
+            onPress={() => {/* 여기에 각 단계별로 이동하는 로직을 구현하세요 */}}>
+            <Text style={styles.buttonText}>{step}</Text>
           </TouchableOpacity>
         ))}
       </View>
@@ -91,4 +85,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default RConsonantScreen;
+export default WriteTutorial;

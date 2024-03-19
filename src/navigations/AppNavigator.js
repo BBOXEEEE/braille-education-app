@@ -1,21 +1,37 @@
 import React from 'react';
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
-import SplashScreen from '../screens/main/SplashScreen';
-import MainScreen from '../screens/main/MainScreen';
-import ReadingScreen from '../screens/main/firstscreens/ReadingScreen';
-import WritingScreen from '../screens/main/firstscreens/WritingScreen';
-import ShootingScreen from '../screens/main/firstscreens/ShootingScreen';
-import VocabularyScreen from '../screens/main/firstscreens/VocabularyScreen';
-import RTutorialScreen from '../screens/main/firstscreens/secondscreens/RTutorialScreen';
-import RConsonantScreen from '../screens/main/firstscreens/secondscreens/RConsonantScreen';
 
-import WTutorialScreen from '../screens/main/firstscreens/secondscreens/WTutorialScreen';
-import WConsonantScreen from '../screens/main/firstscreens/secondscreens/WConsonantScreen';
+// Home
+import Home from '../screens/Home';
+import Splash from '../screens/Splash';
 
+// Menu
+import ReadMenu from '../screens/menu/read/ReadMenu';
+import WriteMenu from '../screens/menu/write/WriteMenu'
+import CameraMenu from '../screens/menu/camera/CameraMenu';
+import VocabularyMenu from '../screens/menu/vocabulary/VocabularyMenu';
+
+// Read
+import ReadTutorial from '../screens/menu/read/ReadTutorial';
+import ReadInitialConsonant from '../screens/menu/read/ReadInitialConsonant';
 import InitialConsonantReader from '../screens/reader/InitialConsonantReader'
+import VowelReader from '../screens/reader/VowelReader';
+import FinalConsonantReader from '../screens/reader/FinalConsonantReader';
+import Abbreviation1Reader from '../screens/reader/Abbreviation1Reader';
+import Abbreviation2Reader from '../screens/reader/Abbreviation2Reader';
+import Abbreviation3Reader from '../screens/reader/Abbreviation3Reader';
+import NumberReader from '../screens/reader/NumberReader';
+import AlphabetReader from '../screens/reader/AlphabetReader';
 
+// Write
+import WriteTutorial from '../screens/menu/write/WriteTutorial';
+import WriteInitialConsonant from '../screens/menu/write/WriteInitialConsonant';
 import InitialConsonantWritter from '../screens/writter/InitialConsonantWritter';
+
+// Camera
+
+// Voca
 
 
 const Stack = createNativeStackNavigator();
@@ -24,21 +40,21 @@ const AppNavigator = () => {
   return (
     <NavigationContainer>
       <Stack.Navigator screenOptions={{ headerShown: false }}>
-        <Stack.Screen name="Splash" component={SplashScreen} />
-        <Stack.Screen name="Main" component={MainScreen} />
-        <Stack.Screen name="Reading" component={ReadingScreen} />
-        <Stack.Screen name="Writing" component={WritingScreen} />
-        {/*<Stack.Screen name="ReadingWritingScreen" component={ReadingWritingScreen} />*/}
-        <Stack.Screen name="Shooting" component={ShootingScreen} />
-        <Stack.Screen name="Vocabulary" component={VocabularyScreen} />
-        <Stack.Screen name="RTutorialScreen" component={RTutorialScreen} />
-        <Stack.Screen name="RConsonantScreen" component={RConsonantScreen} />
-        <Stack.Screen name="WTutorialScreen" component={WTutorialScreen} />
-        <Stack.Screen name="WConsonantScreen" component={WConsonantScreen} />
+        <Stack.Screen name="Splash" component={Splash} />
+        <Stack.Screen name="Home" component={Home} />
+        {/* Menu */}
+        <Stack.Screen name="ReadMenu" component={ReadMenu} />
+        <Stack.Screen name="WriteMenu" component={WriteMenu} />
+        <Stack.Screen name="CameraMenu" component={CameraMenu} />
+        <Stack.Screen name="VocabularyMenu" component={VocabularyMenu} />
+        {/* Read */}
+        <Stack.Screen name="ReadTutorial" component={ReadTutorial} />
+        <Stack.Screen name="ReadInitialConsonant" component={ReadInitialConsonant} />
         <Stack.Screen name="InitialConsonantReader" component={InitialConsonantReader} />
+        {/* Write */}
+        <Stack.Screen name="WriteTutorial" component={WriteTutorial} />
+        <Stack.Screen name="WriteInitialConsonant" component={WriteInitialConsonant} />
         <Stack.Screen name="InitialConsonantWritter" component={InitialConsonantWritter} />
-
-        
       </Stack.Navigator>
     </NavigationContainer>
   );

@@ -1,11 +1,11 @@
 import React, { useEffect } from 'react';
 import { View, Text, StyleSheet } from 'react-native';
 
-const SplashScreen = ({ navigation }) => {
+const Splash = ({ navigation }) => {
   useEffect(() => {
     // 2초 후에 'Main' 스크린으로 이동
     setTimeout(() => {
-      navigation.replace('Main');
+      navigation.replace('Home');
     }, 2000);
   }, [navigation]);
 
@@ -30,4 +30,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default SplashScreen;
+export default Splash;

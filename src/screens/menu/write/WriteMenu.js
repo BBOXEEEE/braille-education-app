@@ -3,12 +3,18 @@ import { View, Text, TouchableOpacity, StyleSheet, SafeAreaView, ScrollView } fr
 import { useNavigation } from '@react-navigation/native';
 
 const steps = [
-  { name: '학습하기', screen: 'InitialConsonantWritter' },
-  { name: '시험보기', screen: 'TestScreen2' }
+  { name: '튜토리얼', screen: 'WriteTutorial' },
+  { name: '자음', screen: 'WriteInitialConsonant' },
+  { name: '모음', screen: '' },
+  { name: '받침', screen: '' },
+  { name: '약어 1단계', screen: '' },
+  { name: '약어 2단계', screen: '' },
+  { name: '약어 3단계', screen: '' },
+  { name: '숫자', screen: '' },
+  { name: '영어(알파벳)', screen: '' }
 ];
 
-
-const WConsonantScreen = () => {
+const WriteMenu = () => {
   const navigation = useNavigation();
 
   const navigateToScreen = (screenName) => {
@@ -19,7 +25,7 @@ const WConsonantScreen = () => {
     <SafeAreaView style={styles.container}>
       <View style={styles.header}>
         <TouchableOpacity onPress={() => navigation.goBack()}>
-        <Text style={styles.headerButton}>{'\u003C'} Back</Text>
+          <Text style={styles.headerButton}>{'\u003C'} Back</Text>
         </TouchableOpacity>
         <Text style={styles.headerTitle}>T&T</Text>
         <View style={styles.menuPlaceholder} />
@@ -37,6 +43,7 @@ const WConsonantScreen = () => {
     </SafeAreaView>
   );
 };
+
 
 const styles = StyleSheet.create({
   container: {
@@ -66,13 +73,12 @@ const styles = StyleSheet.create({
   content: {
     flex: 1,
     justifyContent: 'center',
-  
   },
   button: {
     backgroundColor: '#fff',
     width: '100%',
-    height: '15%',
-    marginBottom: 30,
+    height: '8%',
+    marginTop: 15,
     alignItems: 'center',
     justifyContent: 'center',
     shadowColor: '#000',
@@ -80,8 +86,8 @@ const styles = StyleSheet.create({
       width: 0,
       height: 1,
     },
-    shadowOpacity: 0.25,
-    shadowRadius: 3.84,
+    shadowOpacity: 0.22,
+    shadowRadius: 2.22,
     elevation: 3,
   },
   buttonText: {
@@ -91,4 +97,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default WConsonantScreen;
+export default WriteMenu;

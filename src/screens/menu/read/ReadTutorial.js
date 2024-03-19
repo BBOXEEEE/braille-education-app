@@ -3,50 +3,17 @@ import { View, Text, TouchableOpacity, StyleSheet, SafeAreaView, ScrollView } fr
 import { useNavigation } from '@react-navigation/native';
 
 const steps = [
-  '튜토리얼', '자음', '모음', '받침', '약자', '숫자', '약어', '영어(알파벳)'
+  '학습하기', '시험보기'
 ];
 
-const ReadingScreen = () => {
+const ReadTutorial = () => {
   const navigation = useNavigation();
-
-  const handlePress = (step) => {
-    let screenName = '';
-    switch(step) {
-      case '튜토리얼':
-        screenName = 'RTutorialScreen';
-        break;
-      case '자음':
-        screenName = 'RConsonantScreen';
-        break;
-      case '모음':
-        screenName = 'RVowelScreen';
-        break;
-      case '받침':
-        screenName = 'RFinalConsonantScreen';
-        break;
-      case '약자':
-        screenName = 'RAbbreviationScreen';
-        break;
-      case '숫자':
-        screenName = 'RNumberScreen';
-        break;
-      case '약어':
-        screenName = 'RAcronymScreen';
-        break;
-      case '영어(알파벳)':
-        screenName = 'InitialConsonantWritter';
-        break;
-    }
-    if (screenName) {
-      navigation.navigate(screenName);
-    }
-  };
 
   return (
     <SafeAreaView style={styles.container}>
       <View style={styles.header}>
         <TouchableOpacity onPress={() => navigation.goBack()}>
-          <Text style={styles.headerButton}>{'\u003C'} Back</Text>
+        <Text style={styles.headerButton}>{'\u003C'} Back</Text>
         </TouchableOpacity>
         <Text style={styles.headerTitle}>T&T</Text>
         <View style={styles.menuPlaceholder} />
@@ -56,7 +23,7 @@ const ReadingScreen = () => {
           <TouchableOpacity
             key={index}
             style={styles.button}
-            onPress={() => handlePress(step)}>
+            onPress={() => {/* 여기에 각 단계별로 이동하는 로직을 구현하세요 */}}>
             <Text style={styles.buttonText}>{step}</Text>
           </TouchableOpacity>
         ))}
@@ -64,7 +31,6 @@ const ReadingScreen = () => {
     </SafeAreaView>
   );
 };
-
 
 const styles = StyleSheet.create({
   container: {
@@ -94,12 +60,13 @@ const styles = StyleSheet.create({
   content: {
     flex: 1,
     justifyContent: 'center',
+  
   },
   button: {
     backgroundColor: '#fff',
     width: '100%',
-    height: '8%',
-    marginTop: 15,
+    height: '15%',
+    marginBottom: 30,
     alignItems: 'center',
     justifyContent: 'center',
     shadowColor: '#000',
@@ -107,8 +74,8 @@ const styles = StyleSheet.create({
       width: 0,
       height: 1,
     },
-    shadowOpacity: 0.22,
-    shadowRadius: 2.22,
+    shadowOpacity: 0.25,
+    shadowRadius: 3.84,
     elevation: 3,
   },
   buttonText: {
@@ -118,4 +85,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default ReadingScreen;
+export default ReadTutorial;

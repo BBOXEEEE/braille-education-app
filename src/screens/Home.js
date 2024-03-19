@@ -1,7 +1,7 @@
 import React from 'react';
 import { View, Text, TouchableHighlight, StyleSheet, SafeAreaView } from 'react-native';
 
-const MainScreen = ({ navigation }) => {
+const Home = ({ navigation }) => {
   return (
     <SafeAreaView style={styles.container}>
       <View style={styles.header}>
@@ -12,25 +12,25 @@ const MainScreen = ({ navigation }) => {
           style={styles.button}
           underlayColor="#dcdcdc" 
           //onPress={() => navigation.navigate('ReadingWriting', { type: 'reading' })}>
-          onPress={() => navigation.navigate('Reading')}>
+          onPress={() => navigation.navigate('ReadMenu')}>
           <Text style={[styles.buttonText, styles.boldText]}>읽기</Text>
         </TouchableHighlight>
         <TouchableHighlight
           style={styles.button}
           underlayColor="#dcdcdc"
-          onPress={() => navigation.navigate('Writing')}>
+          onPress={() => navigation.navigate('WriteMenu')}>
           <Text style={[styles.buttonText, styles.boldText]}>쓰기</Text>
         </TouchableHighlight>
         <TouchableHighlight
           style={styles.button}
           underlayColor="#dcdcdc"
-          onPress={() => navigation.navigate('Shooting')}>
+          onPress={() => navigation.navigate('CameraMenu')}>
           <Text style={[styles.buttonText, styles.boldText]}>촬영하기</Text>
         </TouchableHighlight>
         <TouchableHighlight
           style={styles.button}
           underlayColor="#dcdcdc"
-          onPress={() => navigation.navigate('Vocabulary')}>
+          onPress={() => navigation.navigate('VocabularyMenu')}>
           <Text style={[styles.buttonText, styles.boldText]}>단어장</Text>
         </TouchableHighlight>
       </View>
@@ -87,7 +87,7 @@ const styles = StyleSheet.create({
   },
 });
 
-export default MainScreen;
+export default Home;
 
 
 //폰 크기에 따라 변경 되는 거

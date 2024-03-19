@@ -1,7 +1,7 @@
 import React from 'react';
 import { View, Text, StyleSheet } from 'react-native';
 
-const ReadingScreen = () => {
+const VocabularyMenu = () => {
   return (
     <View style={styles.container}>
       <Text>Reading Screen</Text>
@@ -18,4 +18,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default ReadingScreen;
+export default VocabularyMenu;
