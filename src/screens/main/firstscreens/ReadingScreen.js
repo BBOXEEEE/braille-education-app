@@ -3,39 +3,35 @@ import { View, Text, TouchableOpacity, StyleSheet, SafeAreaView, ScrollView } fr
 import { useNavigation } from '@react-navigation/native';
 
 const steps = [
-  '튜토리얼', '자음', '모음', '받침', '약자', '숫자', '약어', '문장부호', '영어(알파벳)'
+  '튜토리얼', '자음', '모음', '받침', '약자', '숫자', '약어', '영어(알파벳)'
 ];
 
 const ReadingScreen = () => {
   const navigation = useNavigation();
 
   const handlePress = (step) => {
-    // 예시: '튜토리얼'을 누르면 'TutorialScreen'으로 이동
     let screenName = '';
     switch(step) {
       case '튜토리얼':
-        screenName = 'TutorialScreen';
+        screenName = 'RTutorialScreen';
         break;
       case '자음':
-        screenName = 'InitialConsonantReader';
+        screenName = 'RConsonantScreen';
         break;
       case '모음':
-        screenName = 'VowelScreen';
+        screenName = 'RVowelScreen';
         break;
       case '받침':
-        screenName = 'FinalConsonantScreen';
+        screenName = 'RFinalConsonantScreen';
         break;
       case '약자':
-        screenName = 'AbbreviationScreen';
+        screenName = 'RAbbreviationScreen';
         break;
       case '숫자':
-        screenName = 'NumberScreen';
+        screenName = 'RNumberScreen';
         break;
       case '약어':
-        screenName = 'AcronymScreen';
-        break;
-      case '문장부호':
-        screenName = 'PunctuationScreen';
+        screenName = 'RAcronymScreen';
         break;
       case '영어(알파벳)':
         screenName = 'InitialConsonantWritter';

@@ -7,13 +7,15 @@ import ReadingScreen from '../screens/main/firstscreens/ReadingScreen';
 import WritingScreen from '../screens/main/firstscreens/WritingScreen';
 import ShootingScreen from '../screens/main/firstscreens/ShootingScreen';
 import VocabularyScreen from '../screens/main/firstscreens/VocabularyScreen';
-import TutorialScreen from '../screens/main/firstscreens/secondscreens/TutorialScreen';
+import RTutorialScreen from '../screens/main/firstscreens/secondscreens/RTutorialScreen';
+import RConsonantScreen from '../screens/main/firstscreens/secondscreens/RConsonantScreen';
 
-import InitialConsonantReader from '../screens/reader/InitialConsonantReader';
+import WTutorialScreen from '../screens/main/firstscreens/secondscreens/WTutorialScreen';
+import WConsonantScreen from '../screens/main/firstscreens/secondscreens/WConsonantScreen';
+
+import InitialConsonantReader from '../screens/reader/InitialConsonantReader'
 
 import InitialConsonantWritter from '../screens/writter/InitialConsonantWritter';
-
-//import ReadingWriting from '../screens/main/firstscreens/secondscreens/ReadingWritingScreen';
 
 
 const Stack = createNativeStackNavigator();
@@ -29,9 +31,13 @@ const AppNavigator = () => {
         {/*<Stack.Screen name="ReadingWritingScreen" component={ReadingWritingScreen} />*/}
         <Stack.Screen name="Shooting" component={ShootingScreen} />
         <Stack.Screen name="Vocabulary" component={VocabularyScreen} />
-        <Stack.Screen name="TutorialScreen" component={TutorialScreen} />
+        <Stack.Screen name="RTutorialScreen" component={RTutorialScreen} />
+        <Stack.Screen name="RConsonantScreen" component={RConsonantScreen} />
+        <Stack.Screen name="WTutorialScreen" component={WTutorialScreen} />
+        <Stack.Screen name="WConsonantScreen" component={WConsonantScreen} />
         <Stack.Screen name="InitialConsonantReader" component={InitialConsonantReader} />
         <Stack.Screen name="InitialConsonantWritter" component={InitialConsonantWritter} />
+
         
       </Stack.Navigator>
     </NavigationContainer>

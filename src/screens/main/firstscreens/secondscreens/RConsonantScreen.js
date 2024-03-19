@@ -3,50 +3,23 @@ import { View, Text, TouchableOpacity, StyleSheet, SafeAreaView, ScrollView } fr
 import { useNavigation } from '@react-navigation/native';
 
 const steps = [
-  '튜토리얼', '자음', '모음', '받침', '약자', '숫자', '약어', '영어(알파벳)'
+  { name: '학습하기', screen: 'InitialConsonantReader' },
+  { name: '시험보기', screen: 'TestScreen' }
 ];
 
-const WritingScreen = () => {
+
+const RConsonantScreen = () => {
   const navigation = useNavigation();
 
-  const handlePress = (step) => {
-    let screenName = '';
-    switch(step) {
-      case '튜토리얼':
-        screenName = 'WTutorialScreen';
-        break;
-      case '자음':
-        screenName = 'WConsonantScreen';
-        break;
-      case '모음':
-        screenName = 'WVowelScreen';
-        break;
-      case '받침':
-        screenName = 'WFinalConsonantScreen';
-        break;
-      case '약자':
-        screenName = 'WAbbreviationScreen';
-        break;
-      case '숫자':
-        screenName = 'WNumberScreen';
-        break;
-      case '약어':
-        screenName = 'WAcronymScreen';
-        break;
-      case '영어(알파벳)':
-        screenName = 'WW';
-        break;
-    }
-    if (screenName) {
-      navigation.navigate(screenName);
-    }
+  const navigateToScreen = (screenName) => {
+    navigation.navigate(screenName);
   };
 
   return (
     <SafeAreaView style={styles.container}>
       <View style={styles.header}>
         <TouchableOpacity onPress={() => navigation.goBack()}>
-          <Text style={styles.headerButton}>{'\u003C'} Back</Text>
+        <Text style={styles.headerButton}>{'\u003C'} Back</Text>
         </TouchableOpacity>
         <Text style={styles.headerTitle}>T&T</Text>
         <View style={styles.menuPlaceholder} />
@@ -56,15 +29,14 @@ const WritingScreen = () => {
           <TouchableOpacity
             key={index}
             style={styles.button}
-            onPress={() => handlePress(step)}>
-            <Text style={styles.buttonText}>{step}</Text>
+            onPress={() => navigateToScreen(step.screen)}>
+            <Text style={styles.buttonText}>{step.name}</Text>
           </TouchableOpacity>
         ))}
       </View>
     </SafeAreaView>
   );
 };
-
 
 const styles = StyleSheet.create({
   container: {
@@ -94,12 +66,13 @@ const styles = StyleSheet.create({
   content: {
     flex: 1,
     justifyContent: 'center',
+  
   },
   button: {
     backgroundColor: '#fff',
     width: '100%',
-    height: '8%',
-    marginTop: 15,
+    height: '15%',
+    marginBottom: 30,
     alignItems: 'center',
     justifyContent: 'center',
     shadowColor: '#000',
@@ -107,8 +80,8 @@ const styles = StyleSheet.create({
       width: 0,
       height: 1,
     },
-    shadowOpacity: 0.22,
-    shadowRadius: 2.22,
+    shadowOpacity: 0.25,
+    shadowRadius: 3.84,
     elevation: 3,
   },
   buttonText: {
@@ -118,4 +91,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default WritingScreen;
+export default RConsonantScreen;
