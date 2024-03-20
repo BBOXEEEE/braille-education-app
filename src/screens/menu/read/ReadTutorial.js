@@ -3,11 +3,18 @@ import { View, Text, TouchableOpacity, StyleSheet, SafeAreaView, ScrollView } fr
 import { useNavigation } from '@react-navigation/native';
 
 const steps = [
-  '학습하기', '시험보기'
+  { name: '학습하기', screen: '' },
+  { name: '시험보기', screen: '' }
 ];
+
 
 const ReadTutorial = () => {
   const navigation = useNavigation();
+
+  const navigateToScreen = (screenName) => {
+    navigation.navigate(screenName);
+  };
+
 
   return (
     <SafeAreaView style={styles.container}>
@@ -23,8 +30,8 @@ const ReadTutorial = () => {
           <TouchableOpacity
             key={index}
             style={styles.button}
-            onPress={() => {/* 여기에 각 단계별로 이동하는 로직을 구현하세요 */}}>
-            <Text style={styles.buttonText}>{step}</Text>
+            onPress={() => navigateToScreen(step.screen)}>
+            <Text style={styles.buttonText}>{step.name}</Text>
           </TouchableOpacity>
         ))}
       </View>

@@ -5,13 +5,13 @@ import { useNavigation } from '@react-navigation/native';
 const steps = [
   { name: '튜토리얼', screen: 'WriteTutorial' },
   { name: '자음', screen: 'WriteInitialConsonant' },
-  { name: '모음', screen: '' },
-  { name: '받침', screen: '' },
-  { name: '약어 1단계', screen: '' },
-  { name: '약어 2단계', screen: '' },
-  { name: '약어 3단계', screen: '' },
-  { name: '숫자', screen: '' },
-  { name: '영어(알파벳)', screen: '' }
+  { name: '모음', screen: 'WriteVowel' },
+  { name: '받침', screen: 'WriteFinalConsonant' },
+  { name: '약어 1단계', screen: 'WriteAbbreviation1' },
+  { name: '약어 2단계', screen: 'WriteAbbreviation2' },
+  { name: '약어 3단계', screen: 'WriteAbbreviation3' },
+  { name: '숫자', screen: 'WriteNumber' },
+  { name: '영어(알파벳)', screen: 'WriteAlphabet' }
 ];
 
 const WriteMenu = () => {
