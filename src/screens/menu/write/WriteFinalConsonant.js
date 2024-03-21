@@ -1,12 +1,18 @@
-import React from 'react';
-import { View, Text, TouchableOpacity, StyleSheet, SafeAreaView, ScrollView } from 'react-native';
-import { useNavigation } from '@react-navigation/native';
+import React from "react";
+import {
+  View,
+  Text,
+  TouchableOpacity,
+  StyleSheet,
+  SafeAreaView,
+  ScrollView,
+} from "react-native";
+import { useNavigation } from "@react-navigation/native";
 
 const steps = [
-  { name: '학습하기', screen: '' },
-  { name: '시험보기', screen: '' }
+  { name: "학습하기", screen: "FinalConsonantWritter" },
+  { name: "시험보기", screen: "" },
 ];
-
 
 const WriteFinalConsonant = () => {
   const navigation = useNavigation();
@@ -15,12 +21,11 @@ const WriteFinalConsonant = () => {
     navigation.navigate(screenName);
   };
 
-
   return (
     <SafeAreaView style={styles.container}>
       <View style={styles.header}>
         <TouchableOpacity onPress={() => navigation.goBack()}>
-        <Text style={styles.headerButton}>{'\u003C'} Back</Text>
+          <Text style={styles.headerButton}>{"\u003C"} Back</Text>
         </TouchableOpacity>
         <Text style={styles.headerTitle}>T&T</Text>
         <View style={styles.menuPlaceholder} />
@@ -30,7 +35,8 @@ const WriteFinalConsonant = () => {
           <TouchableOpacity
             key={index}
             style={styles.button}
-            onPress={() => navigateToScreen(step.screen)}>
+            onPress={() => navigateToScreen(step.screen)}
+          >
             <Text style={styles.buttonText}>{step.name}</Text>
           </TouchableOpacity>
         ))}
@@ -42,41 +48,40 @@ const WriteFinalConsonant = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#f0f0f0',
+    backgroundColor: "#f0f0f0",
   },
   header: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    backgroundColor: '#000',
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    backgroundColor: "#000",
     paddingHorizontal: 15,
     paddingVertical: 15,
   },
   headerButton: {
-    color: '#fff',
+    color: "#fff",
     fontSize: 18,
   },
   headerTitle: {
-    color: '#fff',
+    color: "#fff",
     fontSize: 26,
-    fontWeight: 'bold',
+    fontWeight: "bold",
   },
   menuPlaceholder: {
     width: 48, // Back 버튼과 메뉴 버튼의 공간을 동일하게 만들기 위함
   },
   content: {
     flex: 1,
-    justifyContent: 'center',
-  
+    justifyContent: "center",
   },
   button: {
-    backgroundColor: '#fff',
-    width: '100%',
-    height: '15%',
+    backgroundColor: "#fff",
+    width: "100%",
+    height: "15%",
     marginBottom: 30,
-    alignItems: 'center',
-    justifyContent: 'center',
-    shadowColor: '#000',
+    alignItems: "center",
+    justifyContent: "center",
+    shadowColor: "#000",
     shadowOffset: {
       width: 0,
       height: 1,
@@ -87,8 +92,8 @@ const styles = StyleSheet.create({
   },
   buttonText: {
     fontSize: 18,
-    fontWeight: 'bold',
-    color: '#000',
+    fontWeight: "bold",
+    color: "#000",
   },
 });
 

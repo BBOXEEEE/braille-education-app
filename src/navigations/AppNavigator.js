@@ -1,54 +1,60 @@
-import React from 'react';
-import { NavigationContainer } from '@react-navigation/native';
-import { createNativeStackNavigator } from '@react-navigation/native-stack';
+import React from "react";
+import { NavigationContainer } from "@react-navigation/native";
+import { createNativeStackNavigator } from "@react-navigation/native-stack";
 
 // Home
-import Home from '../screens/Home';
-import Splash from '../screens/Splash';
+import Home from "../screens/Home";
+import Splash from "../screens/Splash";
 
 // Menu
-import ReadMenu from '../screens/menu/read/ReadMenu';
-import WriteMenu from '../screens/menu/write/WriteMenu'
-import CameraMenu from '../screens/menu/camera/CameraMenu';
-import VocabularyMenu from '../screens/menu/vocabulary/VocabularyMenu';
+import ReadMenu from "../screens/menu/read/ReadMenu";
+import WriteMenu from "../screens/menu/write/WriteMenu";
+import CameraMenu from "../screens/menu/camera/CameraMenu";
+import VocabularyMenu from "../screens/menu/vocabulary/VocabularyMenu";
 
 // Read
-import ReadTutorial from '../screens/menu/read/ReadTutorial';
-import ReadInitialConsonant from '../screens/menu/read/ReadInitialConsonant';
-import ReadVowel from '../screens/menu/read/ReadVowel';
-import ReadFinalConsonant from '../screens/menu/read/ReadFinalConsonant';
-import ReadAbbreviation1 from '../screens/menu/read/ReadAbbreviation1';
-import ReadAbbreviation2 from '../screens/menu/read/ReadAbbreviation2';
-import ReadAbbreviation3 from '../screens/menu/read/ReadAbbreviation3';
-import ReadNumber from '../screens/menu/read/ReadNumber';
-import ReadAlphabet from '../screens/menu/read/ReadAlphabet';
+import ReadTutorial from "../screens/menu/read/ReadTutorial";
+import ReadInitialConsonant from "../screens/menu/read/ReadInitialConsonant";
+import ReadVowel from "../screens/menu/read/ReadVowel";
+import ReadFinalConsonant from "../screens/menu/read/ReadFinalConsonant";
+import ReadAbbreviation1 from "../screens/menu/read/ReadAbbreviation1";
+import ReadAbbreviation2 from "../screens/menu/read/ReadAbbreviation2";
+import ReadAbbreviation3 from "../screens/menu/read/ReadAbbreviation3";
+import ReadNumber from "../screens/menu/read/ReadNumber";
+import ReadAlphabet from "../screens/menu/read/ReadAlphabet";
 
-import InitialConsonantReader from '../screens/reader/InitialConsonantReader'
-import VowelReader from '../screens/reader/VowelReader';
-import FinalConsonantReader from '../screens/reader/FinalConsonantReader';
-import AbbreviationReader1 from '../screens/reader/AbbreviationReader1';
-import AbbreviationReader2 from '../screens/reader/AbbreviationReader2';
-import AbbreviationReader3 from '../screens/reader/AbbreviationReader3';
-import NumberReader from '../screens/reader/NumberReader';
-import AlphabetReader from '../screens/reader/AlphabetReader';
+import InitialConsonantReader from "../screens/reader/InitialConsonantReader";
+import VowelReader from "../screens/reader/VowelReader";
+import FinalConsonantReader from "../screens/reader/FinalConsonantReader";
+import AbbreviationReader1 from "../screens/reader/AbbreviationReader1";
+import AbbreviationReader2 from "../screens/reader/AbbreviationReader2";
+import AbbreviationReader3 from "../screens/reader/AbbreviationReader3";
+import NumberReader from "../screens/reader/NumberReader";
+import AlphabetReader from "../screens/reader/AlphabetReader";
 
 // Write
-import WriteTutorial from '../screens/menu/write/WriteTutorial';
-import WriteInitialConsonant from '../screens/menu/write/WriteInitialConsonant';
-import WriteVowel from '../screens/menu/write/WriteVowel';
-import WriteFinalConsonant from '../screens/menu/write/WriteFinalConsonant';
-import WriteAbbreviation1 from '../screens/menu/write/WriteAbbreviation1';
-import WriteAbbreviation2 from '../screens/menu/write/WriteAbbreviation2';
-import WriteAbbreviation3 from '../screens/menu/write/WriteAbbreviation3';
-import WriteNumber from '../screens/menu/write/WriteNumber';
-import WriteAlphabet from '../screens/menu/write/WriteAlphabet';
+import WriteTutorial from "../screens/menu/write/WriteTutorial";
+import WriteInitialConsonant from "../screens/menu/write/WriteInitialConsonant";
+import WriteVowel from "../screens/menu/write/WriteVowel";
+import WriteFinalConsonant from "../screens/menu/write/WriteFinalConsonant";
+import WriteAbbreviation1 from "../screens/menu/write/WriteAbbreviation1";
+import WriteAbbreviation2 from "../screens/menu/write/WriteAbbreviation2";
+import WriteAbbreviation3 from "../screens/menu/write/WriteAbbreviation3";
+import WriteNumber from "../screens/menu/write/WriteNumber";
+import WriteAlphabet from "../screens/menu/write/WriteAlphabet";
 
-import InitialConsonantWritter from '../screens/writter/InitialConsonantWritter';
+import InitialConsonantWritter from "../screens/writter/InitialConsonantWritter";
+import VowelWritter from "../screens/writter/VowelWritter";
+import FinalConsonantWritter from "../screens/writter/FinalConsonantWritter";
+import AbbreviationWritter1 from "../screens/writter/AbbreviationWritter1";
+import AbbreviationWritter2 from "../screens/writter/AbbreviationWritter2";
+import AbbreviationWritter3 from "../screens/writter/AbbreviationWritter3";
+import NumberWritter from "../screens/writter/NumberWritter";
+import AlphabetWritter from "../screens/writter/AlphabetWritter";
 
 // Camera
 
 // Voca
-
 
 const Stack = createNativeStackNavigator();
 
@@ -65,37 +71,93 @@ const AppNavigator = () => {
         <Stack.Screen name="VocabularyMenu" component={VocabularyMenu} />
         {/* Read */}
         <Stack.Screen name="ReadTutorial" component={ReadTutorial} />
-        <Stack.Screen name="ReadInitialConsonant" component={ReadInitialConsonant} />
+        <Stack.Screen
+          name="ReadInitialConsonant"
+          component={ReadInitialConsonant}
+        />
         <Stack.Screen name="ReadVowel" component={ReadVowel} />
-        <Stack.Screen name="ReadFinalConsonant" component={ReadFinalConsonant} />
+        <Stack.Screen
+          name="ReadFinalConsonant"
+          component={ReadFinalConsonant}
+        />
         <Stack.Screen name="ReadAbbreviation1" component={ReadAbbreviation1} />
         <Stack.Screen name="ReadAbbreviation2" component={ReadAbbreviation2} />
         <Stack.Screen name="ReadAbbreviation3" component={ReadAbbreviation3} />
         <Stack.Screen name="ReadNumber" component={ReadNumber} />
         <Stack.Screen name="ReadAlphabet" component={ReadAlphabet} />
 
-        <Stack.Screen name="InitialConsonantReader" component={InitialConsonantReader} />
+        <Stack.Screen
+          name="InitialConsonantReader"
+          component={InitialConsonantReader}
+        />
         <Stack.Screen name="VowelReader" component={VowelReader} />
-        <Stack.Screen name="FinalConsonantReader" component={FinalConsonantReader} />
-        <Stack.Screen name="AbbreviationReader1" component={AbbreviationReader1} />
-        <Stack.Screen name="AbbreviationReader2" component={AbbreviationReader2} />
-        <Stack.Screen name="AbbreviationReader3" component={AbbreviationReader3} />
+        <Stack.Screen
+          name="FinalConsonantReader"
+          component={FinalConsonantReader}
+        />
+        <Stack.Screen
+          name="AbbreviationReader1"
+          component={AbbreviationReader1}
+        />
+        <Stack.Screen
+          name="AbbreviationReader2"
+          component={AbbreviationReader2}
+        />
+        <Stack.Screen
+          name="AbbreviationReader3"
+          component={AbbreviationReader3}
+        />
         <Stack.Screen name="NumberReader" component={NumberReader} />
         <Stack.Screen name="AlphabetReader" component={AlphabetReader} />
 
-
         {/* Write */}
         <Stack.Screen name="WriteTutorial" component={WriteTutorial} />
-        <Stack.Screen name="WriteInitialConsonant" component={WriteInitialConsonant} />
+        <Stack.Screen
+          name="WriteInitialConsonant"
+          component={WriteInitialConsonant}
+        />
         <Stack.Screen name="WriteVowel" component={WriteVowel} />
-        <Stack.Screen name="WriteFinalConsonant" component={WriteFinalConsonant} />
-        <Stack.Screen name="WriteAbbreviation1" component={WriteAbbreviation1} />
-        <Stack.Screen name="WriteAbbreviation2" component={WriteAbbreviation2} />
-        <Stack.Screen name="WriteAbbreviation3" component={WriteAbbreviation3} />
+        <Stack.Screen
+          name="WriteFinalConsonant"
+          component={WriteFinalConsonant}
+        />
+        <Stack.Screen
+          name="WriteAbbreviation1"
+          component={WriteAbbreviation1}
+        />
+        <Stack.Screen
+          name="WriteAbbreviation2"
+          component={WriteAbbreviation2}
+        />
+        <Stack.Screen
+          name="WriteAbbreviation3"
+          component={WriteAbbreviation3}
+        />
         <Stack.Screen name="WriteNumber" component={WriteNumber} />
         <Stack.Screen name="WriteAlphabet" component={WriteAlphabet} />
-
-        <Stack.Screen name="InitialConsonantWritter" component={InitialConsonantWritter} />
+        <Stack.Screen
+          name="InitialConsonantWritter"
+          component={InitialConsonantWritter}
+        />
+        <Stack.Screen name="VowelWritter" component={VowelWritter} />
+        <Stack.Screen
+          name="FinalConsonantWritter"
+          component={FinalConsonantWritter}
+        />
+        <Stack.Screen
+          name="AbbreviationWritter1"
+          component={AbbreviationWritter1}
+        />
+        <Stack.Screen
+          name="AbbreviationWritter2"
+          component={AbbreviationWritter2}
+        />
+        <Stack.Screen
+          name="AbbreviationWritter3"
+          component={AbbreviationWritter3}
+        />
+        <Stack.Screen name="NumberWritter" component={NumberWritter} />
+        <Stack.Screen name="AlphabetWritter" component={AlphabetWritter} />
       </Stack.Navigator>
     </NavigationContainer>
   );
