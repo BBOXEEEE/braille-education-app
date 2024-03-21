@@ -71,91 +71,41 @@ const AppNavigator = () => {
         <Stack.Screen name="VocabularyMenu" component={VocabularyMenu} />
         {/* Read */}
         <Stack.Screen name="ReadTutorial" component={ReadTutorial} />
-        <Stack.Screen
-          name="ReadInitialConsonant"
-          component={ReadInitialConsonant}
-        />
+        <Stack.Screen name="ReadInitialConsonant" component={ReadInitialConsonant} />
         <Stack.Screen name="ReadVowel" component={ReadVowel} />
-        <Stack.Screen
-          name="ReadFinalConsonant"
-          component={ReadFinalConsonant}
-        />
+        <Stack.Screen name="ReadFinalConsonant" component={ReadFinalConsonant} />
         <Stack.Screen name="ReadAbbreviation1" component={ReadAbbreviation1} />
         <Stack.Screen name="ReadAbbreviation2" component={ReadAbbreviation2} />
         <Stack.Screen name="ReadAbbreviation3" component={ReadAbbreviation3} />
         <Stack.Screen name="ReadNumber" component={ReadNumber} />
         <Stack.Screen name="ReadAlphabet" component={ReadAlphabet} />
 
-        <Stack.Screen
-          name="InitialConsonantReader"
-          component={InitialConsonantReader}
-        />
+        <Stack.Screen name="InitialConsonantReader" component={InitialConsonantReader} />
         <Stack.Screen name="VowelReader" component={VowelReader} />
-        <Stack.Screen
-          name="FinalConsonantReader"
-          component={FinalConsonantReader}
-        />
-        <Stack.Screen
-          name="AbbreviationReader1"
-          component={AbbreviationReader1}
-        />
-        <Stack.Screen
-          name="AbbreviationReader2"
-          component={AbbreviationReader2}
-        />
-        <Stack.Screen
-          name="AbbreviationReader3"
-          component={AbbreviationReader3}
-        />
+        <Stack.Screen name="FinalConsonantReader" component={FinalConsonantReader} />
+        <Stack.Screen name="AbbreviationReader1" component={AbbreviationReader1} />
+        <Stack.Screen name="AbbreviationReader2" component={AbbreviationReader2} />
+        <Stack.Screen name="AbbreviationReader3" component={AbbreviationReader3} />
         <Stack.Screen name="NumberReader" component={NumberReader} />
         <Stack.Screen name="AlphabetReader" component={AlphabetReader} />
 
         {/* Write */}
         <Stack.Screen name="WriteTutorial" component={WriteTutorial} />
-        <Stack.Screen
-          name="WriteInitialConsonant"
-          component={WriteInitialConsonant}
-        />
+        <Stack.Screen name="WriteInitialConsonant" component={WriteInitialConsonant} />
         <Stack.Screen name="WriteVowel" component={WriteVowel} />
-        <Stack.Screen
-          name="WriteFinalConsonant"
-          component={WriteFinalConsonant}
-        />
-        <Stack.Screen
-          name="WriteAbbreviation1"
-          component={WriteAbbreviation1}
-        />
-        <Stack.Screen
-          name="WriteAbbreviation2"
-          component={WriteAbbreviation2}
-        />
-        <Stack.Screen
-          name="WriteAbbreviation3"
-          component={WriteAbbreviation3}
-        />
+        <Stack.Screen name="WriteFinalConsonant" component={WriteFinalConsonant} />
+        <Stack.Screen name="WriteAbbreviation1" component={WriteAbbreviation1} />
+        <Stack.Screen name="WriteAbbreviation2" component={WriteAbbreviation2} />
+        <Stack.Screen name="WriteAbbreviation3" component={WriteAbbreviation3} />
         <Stack.Screen name="WriteNumber" component={WriteNumber} />
         <Stack.Screen name="WriteAlphabet" component={WriteAlphabet} />
-        <Stack.Screen
-          name="InitialConsonantWritter"
-          component={InitialConsonantWritter}
-        />
+		
+        <Stack.Screen name="InitialConsonantWritter" component={InitialConsonantWritter} />
         <Stack.Screen name="VowelWritter" component={VowelWritter} />
-        <Stack.Screen
-          name="FinalConsonantWritter"
-          component={FinalConsonantWritter}
-        />
-        <Stack.Screen
-          name="AbbreviationWritter1"
-          component={AbbreviationWritter1}
-        />
-        <Stack.Screen
-          name="AbbreviationWritter2"
-          component={AbbreviationWritter2}
-        />
-        <Stack.Screen
-          name="AbbreviationWritter3"
-          component={AbbreviationWritter3}
-        />
+        <Stack.Screen name="FinalConsonantWritter" component={FinalConsonantWritter} />
+        <Stack.Screen name="AbbreviationWritter1" component={AbbreviationWritter1} />
+        <Stack.Screen name="AbbreviationWritter2" component={AbbreviationWritter2} />
+        <Stack.Screen name="AbbreviationWritter3" component={AbbreviationWritter3} />
         <Stack.Screen name="NumberWritter" component={NumberWritter} />
         <Stack.Screen name="AlphabetWritter" component={AlphabetWritter} />
       </Stack.Navigator>
