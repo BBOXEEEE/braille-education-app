@@ -1,12 +1,12 @@
 import BrailleWritter from "../../components/BrailleWritter";
 import BrailleList from "../../constants/BrailleList";
 
-const initialConsonant = BrailleList.ABBREVIATION_FIRST;
+const initialConsonant = BrailleList.ABBREVIATION_SECOND;
 const category = initialConsonant.category;
 const brailleSymbols = initialConsonant.symbols;
 const brailleList = initialConsonant.braille;
 
-const AbbreviationReader1 = () => {
+const AbbreviationWritter2 = () => {
   return (
     <BrailleWritter
       category={category}
@@ -16,4 +16,4 @@ const AbbreviationReader1 = () => {
   );
 };
 
-export default AbbreviationReader1;
+export default AbbreviationWritter2;
