@@ -4,7 +4,7 @@ import { useNavigation } from '@react-navigation/native';
 
 const steps = [
   { name: '학습하기', screen: 'InitialConsonantWritter' },
-  { name: '시험보기', screen: '' }
+  { name: '시험보기', screen: 'InitialConsonantWTester' }
 ];
 
 

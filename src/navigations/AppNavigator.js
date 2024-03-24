@@ -45,14 +45,16 @@ import WriteAbbreviation3 from "../screens/menu/write/WriteAbbreviation3";
 import WriteNumber from "../screens/menu/write/WriteNumber";
 import WriteAlphabet from "../screens/menu/write/WriteAlphabet";
 
-import InitialConsonantWritter from "../screens/writter/InitialConsonantWritter";
-import VowelWritter from "../screens/writter/VowelWritter";
-import FinalConsonantWritter from "../screens/writter/FinalConsonantWritter";
-import AbbreviationWritter1 from "../screens/writter/AbbreviationWritter1";
-import AbbreviationWritter2 from "../screens/writter/AbbreviationWritter2";
-import AbbreviationWritter3 from "../screens/writter/AbbreviationWritter3";
-import NumberWritter from "../screens/writter/NumberWritter";
-import AlphabetWritter from "../screens/writter/AlphabetWritter";
+import InitialConsonantWritter from "../screens/write/writter/InitialConsonantWritter";
+import VowelWritter from "../screens/write/writter/VowelWritter";
+import FinalConsonantWritter from "../screens/write/writter/FinalConsonantWritter";
+import AbbreviationWritter1 from "../screens/write/writter/AbbreviationWritter1";
+import AbbreviationWritter2 from "../screens/write/writter/AbbreviationWritter2";
+import AbbreviationWritter3 from "../screens/write/writter/AbbreviationWritter3";
+import NumberWritter from "../screens/write/writter/NumberWritter";
+import AlphabetWritter from "../screens/write/writter/AlphabetWritter";
+
+import InitialConsonantWTester from "../screens/write/tester/InitialConsonantWTester";
 
 // Camera
 
@@ -112,6 +114,8 @@ const AppNavigator = () => {
         <Stack.Screen name="AbbreviationWritter3" component={AbbreviationWritter3} />
         <Stack.Screen name="NumberWritter" component={NumberWritter} />
         <Stack.Screen name="AlphabetWritter" component={AlphabetWritter} />
+
+        <Stack.Screen name="InitialConsonantWTester" component={InitialConsonantWTester} />
       </Stack.Navigator>
     </NavigationContainer>
   );
