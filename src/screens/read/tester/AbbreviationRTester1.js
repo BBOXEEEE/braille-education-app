@@ -1,13 +1,13 @@
-import BrailleReader from '../../components/BrailleReader';
-import BrailleList from '../../constants/BrailleList';
+import BrailleReader from '../../../components/BrailleReader';
+import BrailleList from '../../../constants/BrailleList';
 
-const initialConsonant = BrailleList.NUMBER;
+const initialConsonant = BrailleList.ABBREVIATION_FIRST;
 const category = initialConsonant.category;;
 const brailleSymbols = initialConsonant.symbols;
 const brailleList = initialConsonant.braille;
 
-const NumberReader = () => {
+const AbbreviationRTester1 = () => {
     return <BrailleReader category={category} brailleSymbols={brailleSymbols} brailleList={brailleList} />;
 };
 
-export default NumberReader;
+export default AbbreviationRTester1;

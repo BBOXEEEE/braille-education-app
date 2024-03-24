@@ -158,8 +158,6 @@ const BrailleReader = ({ category, brailleSymbols, brailleList }) => {
     );
 };
 
-const { height } = Dimensions.get('window');
-
 const styles = StyleSheet.create({
     container: {
         flex: 1,
