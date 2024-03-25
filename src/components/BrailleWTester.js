@@ -74,7 +74,7 @@ const BrailleWTester = ({ category, brailleSymbols, brailleList }) => {
 
   useEffect(() => {
     Speech.speak(
-      "점자 쓰기입니다. 1점부터 6점까지 터치하여 점자를 입력하세요.",
+      "점자 쓰기 시험입니다. 1점부터 6점까지 터치하여 점자를 입력하세요.",
       {
         rate: 1.5,
       }
@@ -82,7 +82,7 @@ const BrailleWTester = ({ category, brailleSymbols, brailleList }) => {
     const select = whatDot(brailleList[brailleIndex]);
     inputBraille = new Array(brailleList[brailleIndex].length).fill(0);
     Speech.speak(
-      ` ${category}, ${brailleSymbols[brailleIndex]} 입니다. ${select} 입니다. `,
+      ` ${category}, ${brailleSymbols[brailleIndex]} 입니다. `,
       {
         rate: 1.5,
       }
@@ -131,7 +131,7 @@ const BrailleWTester = ({ category, brailleSymbols, brailleList }) => {
         );
         touchNum = 0;
       } else {
-        Speech.speak("올바른 입력 입니다.", {
+        Speech.speak("올바른 입력 입니다! ", {
           rate: 1.5,
         });
         touchNum = 0;
@@ -152,6 +152,15 @@ const BrailleWTester = ({ category, brailleSymbols, brailleList }) => {
       if (input[i] != result[i]) return false;
     }
     return true;
+  };
+
+  const brailleCheck = (currentIndex) => {
+    console.log(currentIndex.current);
+    const select = whatDot(brailleList[currentIndex.current]);
+    console.log(` ${category}, ${brailleSymbols[currentIndex.current]}은 ${select} 입니다. `);
+    Speech.speak(` ${category}, ${brailleSymbols[currentIndex.current]}은 ${select} 입니다. `, {
+      rate: 1.5,
+    });
   };
 
   const whatDot = (braille) => {
@@ -197,8 +206,7 @@ const BrailleWTester = ({ category, brailleSymbols, brailleList }) => {
       Speech.speak(`다음 ${category} 은 `, {
         rate: 1.5,
       });
-      const select = whatDot(brailleList[newIndex]);
-      Speech.speak(` ${brailleSymbols[newIndex]} 입니다. ${select} 입니다. `, {
+      Speech.speak(` ${brailleSymbols[newIndex]} 입니다. `, {
         rate: 1.5,
       });
       inputBraille = new Array(brailleList[newIndex].length).fill(0);
@@ -213,8 +221,7 @@ const BrailleWTester = ({ category, brailleSymbols, brailleList }) => {
       Speech.speak(`이전 ${category} 은 `, {
         rate: 1.5,
       });
-      const select = whatDot(brailleList[newIndex]);
-      Speech.speak(` ${brailleSymbols[newIndex]} 입니다. ${select} 입니다. `, {
+      Speech.speak(` ${brailleSymbols[newIndex]} 입니다. `, {
         rate: 1.5,
       });
       inputBraille = new Array(brailleList[newIndex].length).fill(0);
@@ -232,25 +239,27 @@ const BrailleWTester = ({ category, brailleSymbols, brailleList }) => {
           const touch = touches[0];
           const index = getTouchedAreaIndex(touch.pageX, touch.pageY);
           if (touch.pageX >= nextButton.x + 50 && touch.pageY <= nextButton.y) {
-            // 현재 페이지가 마지막 페이지이면, 다음 자음으로 이동
             console.log(currentPageRef.current, maxPageRef.current);
             if (currentPageRef.current >= maxPageRef.current) {
               goToNextBraille();
-            } else {
-              handleNextPage(); // 다음 페이지로
+            } 
+            else {
+              handleNextPage();
             }
-          } else if (
-            touch.pageX < prevButton.x &&
-            touch.pageY <= prevButton.y
-          ) {
-            // 현재 페이지가 첫 페이지이면, 이전 자음으로 이동
+          } 
+          else if ( touch.pageX < prevButton.x && touch.pageY <= prevButton.y) {
             console.log(currentPageRef.current, maxPageRef.current);
             if (currentPageRef.current === 0) {
               goToPrevBraille();
-            } else {
-              handlePrevPage(); // 이전 페이지로
+            } 
+            else {
+              handlePrevPage();
             }
-          } else if (lastTapRef.current && now - lastTapRef.current < 300) {
+          } 
+          else if (touch.pageX >= prevButton.x && touch.pageX <= nextButton.x && touch.pageY <= prevButton.y) {
+            brailleCheck(brailleIndexRef);
+          }
+          else if (lastTapRef.current && now - lastTapRef.current < 300) {
             handleDoubleTap(index);
           }
           lastTapRef.current = now;
