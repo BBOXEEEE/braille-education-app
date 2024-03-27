@@ -13,9 +13,9 @@ const BrailleScreen = ({ steps }) => {
     <SafeAreaView style={styles.container}>
       <View style={styles.header}>
         <TouchableOpacity onPress={() => navigation.goBack()}>
-          <Text style={styles.headerButton}>{'\u003C'} Back</Text>
+          <Text style={styles.headerButton}>Back</Text>
         </TouchableOpacity>
-        <Text style={styles.headerTitle}>T&T</Text>
+        <Text style={styles.headerTitle}>점자랑</Text>
         <View style={styles.menuPlaceholder} />
       </View>
       <View style={styles.content}>
@@ -55,7 +55,7 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
   },
   menuPlaceholder: {
-    width: 48,
+    width: 38,
   },
   content: {
     flex: 1,

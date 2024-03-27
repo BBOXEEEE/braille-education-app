@@ -7,10 +7,12 @@ import Home from "../screens/Home";
 import Splash from "../screens/Splash";
 
 // Menu
+import TutorialMenu from "../screens/menu/tutorial/TutorialMenu";
 import ReadMenu from "../screens/menu/read/ReadMenu";
 import WriteMenu from "../screens/menu/write/WriteMenu";
 import CameraMenu from "../screens/menu/camera/CameraMenu";
 import VocabularyMenu from "../screens/menu/vocabulary/VocabularyMenu";
+
 
 // Read
 import ReadTutorial from "../screens/menu/read/ReadTutorial";
@@ -69,6 +71,7 @@ const AppNavigator = () => {
         <Stack.Screen name="Splash" component={Splash} />
         <Stack.Screen name="Home" component={Home} />
         {/* Menu */}
+        <Stack.Screen name="TutorialMenu" component={TutorialMenu} />
         <Stack.Screen name="ReadMenu" component={ReadMenu} />
         <Stack.Screen name="WriteMenu" component={WriteMenu} />
         <Stack.Screen name="CameraMenu" component={CameraMenu} />

@@ -11,7 +11,7 @@ const Splash = ({ navigation }) => {
 
   return (
     <View style={styles.container}>
-      <Text style={styles.logoText}>T&T</Text>
+      <Text style={styles.logoText}>점자랑</Text>
     </View>
   );
 };
