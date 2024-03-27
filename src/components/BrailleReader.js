@@ -4,11 +4,13 @@ import * as Haptics from 'expo-haptics';
 import { Audio } from 'expo-av';
 import * as Speech from 'expo-speech';
 
+// 화면 영역 분할
 const window = Dimensions.get('window');
 const width = window.width;
 const top = window.height / 3;
 const bottom = window.height * 2 / 3;
 
+// 점자 영역 설정
 const points = [
     {
       x: 0,
@@ -59,12 +61,15 @@ const getTouchedAreaIndex = (touchX, touchY) => {
 const BrailleReader = ({ category, brailleSymbols, brailleList }) => {
     const [currentBraille, setCurrentBraille] = useState(0);
     const [touchIndex, setTouchIndex] = useState(-1);
+    const [previousTouchTime, setPreviousTouchTime] = useState(null);
     const currentBrailleRef = useRef(currentBraille);
     const touchIndexRef = useRef(touchIndex);
+    const previousTouchTimeRef = useRef(null);
 
     useEffect(() => {
         currentBrailleRef.current = currentBraille;
         touchIndexRef.current = touchIndex;
+        // previousTouchTimeRef.current = previousTouchTime;
     }, [currentBraille, touchIndex]);
 
     const tts_information = () => {
@@ -103,6 +108,19 @@ const BrailleReader = ({ category, brailleSymbols, brailleList }) => {
             onStartShouldSetPanResponder: () => true,
             onMoveShouldSetPanResponder: () => true,
             onPanResponderGrant: (evt) => {
+                const currentTouchTime = Date.now();
+                const touch = evt.nativeEvent.touches;
+                if (touch[0].pageY < top) {
+                    const isDoubleTouched = (previousTouchTimeRef.current) && (currentTouchTime - previousTouchTimeRef.current) < 300;
+                    if (isDoubleTouched) {
+                        handleDoubleTouch(touch[0].pageX, touch[0].pageY);
+                    }
+                    else {
+                        handleTouch(touch[0].pageX, touch[0].pageY);
+                    }
+                    previousTouchTimeRef.current = currentTouchTime;
+                    setPreviousTouchTime(previousTouchTimeRef.current);
+                }
             },
             onPanResponderMove: (evt) => {
                 const touches = evt.nativeEvent.touches;
@@ -119,40 +137,32 @@ const BrailleReader = ({ category, brailleSymbols, brailleList }) => {
             },
         })
     ).current;
-
+    
     // 화면 상단 터치 이벤트 처리
-    const handleTopTouch = (evt) => {
-        const { locationX } = evt.nativeEvent;
-        const width = Dimensions.get('window').width;
-        console.log(locationX);
-        console.log('width/2: ', width/2);
+    const handleTouch = (X, Y) => {
+        const threshold = width / 3;
+        console.log('handleTouch!');
+    };
 
-        if (locationX > width / 2) {
-            currentBrailleRef.current = (currentBrailleRef.current + 1) % brailleList.length;
-        } else {
-            if (currentBrailleRef.current - 1 >= 0) {
-                currentBrailleRef.current = (currentBrailleRef.current - 1) % brailleList.length;
-            }
-        }
-        setCurrentBraille(currentBrailleRef.current);
-    }
+    // 화면 상단 더블 터치 이벤트 처리
+    const handleDoubleTouch = (X, Y) => {
+        console.log('handleDoubleTouch!');
+    };
 
     return (
-        <View style={styles.container}>
+        <View {...panResponder.panHandlers} style={styles.container}>
             { /* Top 1/3 */}
-            <TouchableWithoutFeedback onPress={handleTopTouch}>
-                <View style={styles.top}>
-                    { /* <Text style={styles.text}>이전</Text> */}
-                    <Text style={styles.symbol}>{brailleSymbols[currentBrailleRef.current]}</Text>
-                    { /* <Text style={styles.text}>다음</Text> */}
-                </View>
-            </TouchableWithoutFeedback>
+            <View style={styles.top}>
+                <Text style={styles.text}>이전</Text>
+                <Text style={styles.symbol}>{brailleSymbols[currentBrailleRef.current]}</Text>
+                <Text style={styles.text}>다음</Text>
+            </View>
 
             { /* Bottom 2/3 */}
-            <View {...panResponder.panHandlers} style={styles.bottom} >
+            <View  style={styles.bottom} >
                 {points.map((_, index) => (
-                    <View key={index} style={styles.circleContainer}>
-                        <View style={styles.circle} />
+                    <View key={index} style={styles.dotContainer}>
+                        <View style={styles.dot} />
                     </View>
                 ))}
             </View>
@@ -169,20 +179,17 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         flexWrap: 'wrap',
         justifyContent: 'space-around',
+        backgroundColor: 'lightgray',
     },
     text: {
         fontSize: 24,
         fontWeight: 'bold',
         marginTop: 150,
-        flex: 1,
-        textAlign: 'center',
     },
     symbol: {
         fontSize: 36,
         fontWeight: 'bold',
         marginTop: 150,
-        flex: 1,
-        textAlign: 'center',
     },
     bottom: {
         flex: 2,
@@ -190,13 +197,13 @@ const styles = StyleSheet.create({
         flexWrap: 'wrap',
         justifyContent: 'space-around',
     },
-    circleContainer: {
+    dotContainer: {
         width: '50%',
         height: '33.3%',
         alignItems: 'center',
         justifyContent: 'center',
     },
-    circle: {
+    dot: {
         width: 80,
         height: 80,
         borderRadius: 50,
