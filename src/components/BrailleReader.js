@@ -69,8 +69,8 @@ const BrailleReader = ({ category, brailleSymbols, brailleList }) => {
     useEffect(() => {
         currentBrailleRef.current = currentBraille;
         touchIndexRef.current = touchIndex;
-        // previousTouchTimeRef.current = previousTouchTime;
-    }, [currentBraille, touchIndex]);
+        previousTouchTimeRef.current = previousTouchTime;
+    }, [currentBraille, touchIndex, previousTouchTime]);
 
     const tts_information = () => {
         const text = `현재 읽고있는 점자는 ${category} ${brailleSymbols[currentBrailleRef.current]} 입니다.`;
@@ -113,10 +113,10 @@ const BrailleReader = ({ category, brailleSymbols, brailleList }) => {
                 if (touch[0].pageY < top) {
                     const isDoubleTouched = (previousTouchTimeRef.current) && (currentTouchTime - previousTouchTimeRef.current) < 300;
                     if (isDoubleTouched) {
-                        handleDoubleTouch(touch[0].pageX, touch[0].pageY);
+                        handleDoubleTouch(touch[0].pageX);
                     }
                     else {
-                        handleTouch(touch[0].pageX, touch[0].pageY);
+                        handleTouch(touch[0].pageX);
                     }
                     previousTouchTimeRef.current = currentTouchTime;
                     setPreviousTouchTime(previousTouchTimeRef.current);
@@ -139,14 +139,63 @@ const BrailleReader = ({ category, brailleSymbols, brailleList }) => {
     ).current;
     
     // 화면 상단 터치 이벤트 처리
-    const handleTouch = (X, Y) => {
-        const threshold = width / 3;
+    const handleTouch = (touch) => {
         console.log('handleTouch!');
+        const threshold = width / 3;
+
+        // 화면 상단 좌측 : 이전 버튼 TTS
+        if (touch <= threshold) {
+            const text = `이전`;
+            const options = {
+                voice: "com.apple.voice.compact.ko-KR.Yuna",
+                rate: 1.4
+            };
+            Speech.speak(text, options);
+        }
+        // 화면 상단 중앙 : 묵자 TTS
+        else if (touch > threshold && touch < 2 * threshold) {
+            const text = `${brailleSymbols[currentBrailleRef.current]}`;
+            const options = {
+                voice: "com.apple.voice.compact.ko-KR.Yuna",
+                rate: 1.4
+            };
+            Speech.speak(text, options);
+        }
+        // 화면 상단 우측 : 다음 버튼 TTS
+        else {
+            const text = `다음`;
+            const options = {
+                voice: "com.apple.voice.compact.ko-KR.Yuna",
+                rate: 1.4
+            };
+            Speech.speak(text, options);
+        }
     };
 
     // 화면 상단 더블 터치 이벤트 처리
-    const handleDoubleTouch = (X, Y) => {
+    const handleDoubleTouch = (touch) => {
         console.log('handleDoubleTouch!');
+        const threshold = width / 3;
+
+        // 화면 상단 좌측 : 이전 버튼
+        if (touch <= threshold) {
+            if (currentBrailleRef.current - 1 >= 0) currentBrailleRef.current -= 1;
+            else currentBrailleRef.current = brailleList.length - 1;
+        }
+        // 화면 상단 중앙 : 묵자
+        else if (touch > threshold && touch < 2 * threshold) {
+            const text = `현재 읽고있는 점자는 ${category} ${brailleSymbols[currentBrailleRef.current]} 입니다.`;
+            const options = {
+                voice: "com.apple.voice.compact.ko-KR.Yuna",
+                rate: 1.4
+            };
+            Speech.speak(text, options);
+        }
+        // 화면 상단 우측 : 다음 버튼
+        else {
+            currentBrailleRef.current = (currentBrailleRef.current + 1) % brailleList.length;
+        }
+        setCurrentBraille(currentBrailleRef.current);
     };
 
     return (
@@ -179,7 +228,6 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         flexWrap: 'wrap',
         justifyContent: 'space-around',
-        backgroundColor: 'lightgray',
     },
     text: {
         fontSize: 24,
