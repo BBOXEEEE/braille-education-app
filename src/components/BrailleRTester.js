@@ -1,14 +1,16 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { View, PanResponder, Dimensions, StyleSheet, Text, TouchableWithoutFeedback } from 'react-native';
 import * as Haptics from 'expo-haptics';
-import { Audio } from 'expo-av';
 import * as Speech from 'expo-speech';
+import getRandomBrailleIndex from './RandomBrailleGenerator';
 
+// 화면 영역 분할
 const window = Dimensions.get('window');
 const width = window.width;
 const top = window.height / 3;
 const bottom = window.height * 2 / 3;
 
+// 점자 영역 설정
 const points = [
     {
       x: 0,
@@ -56,19 +58,30 @@ const getTouchedAreaIndex = (touchX, touchY) => {
     return index;
 };
 
-const BrailleReader = ({ category, brailleSymbols, brailleList }) => {
+// 랜덤 점자 인덱스
+let randomIndex = [];
+
+const BrailleRTester = ({ category, brailleSymbols, brailleList }) => {
     const [currentBraille, setCurrentBraille] = useState(0);
     const [touchIndex, setTouchIndex] = useState(-1);
+    const [previousTouchTime, setPreviousTouchTime] = useState(null);
     const currentBrailleRef = useRef(currentBraille);
     const touchIndexRef = useRef(touchIndex);
+    const previousTouchTimeRef = useRef(null);
+
+    // 랜덤 점자 인덱스 초기화
+    useEffect(() => {
+        randomIndex = getRandomBrailleIndex(brailleList);
+    }, []);
 
     useEffect(() => {
         currentBrailleRef.current = currentBraille;
         touchIndexRef.current = touchIndex;
-    }, [currentBraille, touchIndex]);
+        previousTouchTimeRef.current = previousTouchTime;
+    }, [currentBraille, touchIndex, previousTouchTime]);
 
     const tts_information = () => {
-        const text = `현재 읽고있는 점자는 ${category} ${brailleSymbols[currentBrailleRef.current]} 입니다.`;
+        const text = `다음 ${category} 를 읽고 정답확인을 눌러 정답을 확인하세요!`;
         const options = {
             voice: "com.apple.voice.compact.ko-KR.Yuna",
             rate: 1.4
@@ -87,7 +100,7 @@ const BrailleReader = ({ category, brailleSymbols, brailleList }) => {
             voice: "com.apple.voice.compact.ko-KR.Yuna",
             rate: 1.5
         };
-        if (brailleList[currentBrailleRef.current][index] === 1) {
+        if (brailleList[randomIndex[currentBrailleRef.current]][index] === 1) {
             options.pitch = 1.5;
         }
         Speech.speak(text, options);
@@ -103,6 +116,19 @@ const BrailleReader = ({ category, brailleSymbols, brailleList }) => {
             onStartShouldSetPanResponder: () => true,
             onMoveShouldSetPanResponder: () => true,
             onPanResponderGrant: (evt) => {
+                const currentTouchTime = Date.now();
+                const touch = evt.nativeEvent.touches;
+                if (touch[0].pageY < top) {
+                    const isDoubleTouched = (previousTouchTimeRef.current) && (currentTouchTime - previousTouchTimeRef.current) < 300;
+                    if (isDoubleTouched) {
+                        handleDoubleTouch(touch[0].pageX);
+                    }
+                    else {
+                        handleTouch(touch[0].pageX);
+                    }
+                    previousTouchTimeRef.current = currentTouchTime;
+                    setPreviousTouchTime(previousTouchTimeRef.current);
+                }
             },
             onPanResponderMove: (evt) => {
                 const touches = evt.nativeEvent.touches;
@@ -112,47 +138,88 @@ const BrailleReader = ({ category, brailleSymbols, brailleList }) => {
                     setTouchIndex(touchIndexRef.current);
 
                     // 해당 영역의 brailleList 값이 1일 경우 햅틱 피드백
-                    if (brailleList[currentBrailleRef.current][touchIndexRef.current] === 1) {
+                    if (brailleList[randomIndex[currentBrailleRef.current]][touchIndexRef.current] === 1) {
                         Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Heavy);
                     }
                 });
             },
         })
     ).current;
-
+    
     // 화면 상단 터치 이벤트 처리
-    const handleTopTouch = (evt) => {
-        const { locationX } = evt.nativeEvent;
-        const width = Dimensions.get('window').width;
-        console.log(locationX);
-        console.log('width/2: ', width/2);
+    const handleTouch = (touch) => {
+        console.log('handleTouch!');
+        const threshold = width / 3;
 
-        if (locationX > width / 2) {
-            currentBrailleRef.current = (currentBrailleRef.current + 1) % brailleList.length;
-        } else {
-            if (currentBrailleRef.current - 1 >= 0) {
-                currentBrailleRef.current = (currentBrailleRef.current - 1) % brailleList.length;
-            }
+        // 화면 상단 좌측 : 이전 버튼 TTS
+        if (touch <= threshold) {
+            const text = `이전`;
+            const options = {
+                voice: "com.apple.voice.compact.ko-KR.Yuna",
+                rate: 1.4
+            };
+            Speech.speak(text, options);
+        }
+        // 화면 상단 중앙 : 정답확인 TTS
+        else if (touch > threshold && touch < 2 * threshold) {
+            const text = `정답확인`;
+            const options = {
+                voice: "com.apple.voice.compact.ko-KR.Yuna",
+                rate: 1.4
+            };
+            Speech.speak(text, options);
+        }
+        // 화면 상단 우측 : 다음 버튼 TTS
+        else {
+            const text = `다음`;
+            const options = {
+                voice: "com.apple.voice.compact.ko-KR.Yuna",
+                rate: 1.4
+            };
+            Speech.speak(text, options);
+        }
+    };
+
+    // 화면 상단 더블 터치 이벤트 처리
+    const handleDoubleTouch = (touch) => {
+        console.log('handleDoubleTouch!');
+        const threshold = width / 3;
+
+        // 화면 상단 좌측 : 이전 버튼
+        if (touch <= threshold) {
+            if (currentBrailleRef.current - 1 >= 0) currentBrailleRef.current -= 1;
+            else currentBrailleRef.current = randomIndex.length - 1;
+        }
+        // 화면 상단 중앙 : 묵자
+        else if (touch > threshold && touch < 2 * threshold) {
+            const text = `정답은 ${category} ${brailleSymbols[randomIndex[currentBrailleRef.current]]} 입니다.`;
+            const options = {
+                voice: "com.apple.voice.compact.ko-KR.Yuna",
+                rate: 1.4
+            };
+            Speech.speak(text, options);
+        }
+        // 화면 상단 우측 : 다음 버튼
+        else {
+            currentBrailleRef.current = (currentBrailleRef.current + 1) % randomIndex.length;
         }
         setCurrentBraille(currentBrailleRef.current);
-    }
+    };
 
     return (
-        <View style={styles.container}>
+        <View {...panResponder.panHandlers} style={styles.container}>
             { /* Top 1/3 */}
-            <TouchableWithoutFeedback onPress={handleTopTouch}>
-                <View style={styles.top}>
-                    { /* <Text style={styles.text}>이전</Text> */}
-                    <Text style={styles.symbol}>{brailleSymbols[currentBrailleRef.current]}</Text>
-                    { /* <Text style={styles.text}>다음</Text> */}
-                </View>
-            </TouchableWithoutFeedback>
+            <View style={styles.top}>
+                <Text style={styles.text}>이전</Text>
+                <Text style={styles.text}>정답확인</Text>
+                <Text style={styles.text}>다음</Text>
+            </View>
 
             { /* Bottom 2/3 */}
-            <View {...panResponder.panHandlers} style={styles.bottom} >
+            <View  style={styles.bottom} >
                 {points.map((_, index) => (
-                    <View key={index} style={styles.circleContainer}>
-                        <View style={styles.circle} />
+                    <View key={index} style={styles.dotContainer}>
+                        <View style={styles.dot} />
                     </View>
                 ))}
             </View>
@@ -174,15 +241,6 @@ const styles = StyleSheet.create({
         fontSize: 24,
         fontWeight: 'bold',
         marginTop: 150,
-        flex: 1,
-        textAlign: 'center',
-    },
-    symbol: {
-        fontSize: 36,
-        fontWeight: 'bold',
-        marginTop: 150,
-        flex: 1,
-        textAlign: 'center',
     },
     bottom: {
         flex: 2,
@@ -190,13 +248,13 @@ const styles = StyleSheet.create({
         flexWrap: 'wrap',
         justifyContent: 'space-around',
     },
-    circleContainer: {
+    dotContainer: {
         width: '50%',
         height: '33.3%',
         alignItems: 'center',
         justifyContent: 'center',
     },
-    circle: {
+    dot: {
         width: 80,
         height: 80,
         borderRadius: 50,
@@ -204,4 +262,4 @@ const styles = StyleSheet.create({
     },
 });
 
-export default BrailleReader;
+export default BrailleRTester;
