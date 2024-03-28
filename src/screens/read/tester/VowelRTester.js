@@ -1,13 +1,13 @@
-import BrailleReader from '../../../components/BrailleReader';
+import BrailleRTester from '../../../components/BrailleRTester';
 import BrailleList from '../../../constants/BrailleList';
 
-const initialConsonant = BrailleList.VOWEL;
-const category = initialConsonant.category;;
-const brailleSymbols = initialConsonant.symbols;
-const brailleList = initialConsonant.braille;
+const braille = BrailleList.VOWEL;
+const category = braille.category;;
+const brailleSymbols = braille.symbols;
+const brailleList = braille.braille;
 
 const VowelRTester = () => {
-    return <BrailleReader category={category} brailleSymbols={brailleSymbols} brailleList={brailleList} />;
+    return <BrailleRTester category={category} brailleSymbols={brailleSymbols} brailleList={brailleList} />;
 };
 
 export default VowelRTester;
