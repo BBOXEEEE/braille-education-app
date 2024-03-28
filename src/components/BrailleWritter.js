@@ -309,57 +309,63 @@ const BrailleWritter = ({ category, brailleSymbols, brailleList }) => {
   ).current;
 
   return (
-    <View style={styles.container} {...panResponder.panHandlers}>
-      {points.map((point, index) => (
-        <View
-          key={index}
-          style={[
-            styles.point,
-            { left: point.x + point.width / 2 - 30,  top: point.y + point.height / 2 - 30,},
-          ]}
-        />
-      ))}
-      {/* 첫 번째 영역의 중간 지점에 Text 컴포넌트를 추가하여 brailleSimbols[0] 값을 표시 */}
-      <Text style={styles.buttonText}>{brailleSymbols[brailleIndex]}</Text>
-      <Text style={styles.nextButton}>다음</Text>
-      <Text style={styles.prevButton}>이전</Text>
-    </View>
+    <View {...panResponder.panHandlers} style={styles.container}>
+            { /* Top 1/3 */}
+            <View style={styles.top}>
+                <Text style={styles.text}>이전</Text>
+                <Text style={styles.symbol}>{brailleSymbols[brailleIndex]}</Text>
+                <Text style={styles.text}>다음</Text>
+            </View>
+
+            { /* Bottom 2/3 */}
+            <View  style={styles.bottom} >
+                {points.map((_, index) => (
+                    <View key={index} style={styles.dotContainer}>
+                        <View style={styles.dot} />
+                    </View>
+                ))}
+            </View>
+        </View>
   );
 };
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
-    justifyContent: "center",
-    alignItems: "center",
-    backgroundColor: "#fff",
+      flex: 1,
   },
-  point: {
-    position: "absolute",
-    width: 60,
-    height: 60,
-    backgroundColor: "black",
-    borderRadius: 30,
+  top: {
+      flex: 1,
+      flexDirection: 'row',
+      flexWrap: 'wrap',
+      justifyContent: 'space-around',
   },
-  buttonText: {
-    position: "absolute",
-    left: (prevButton.x + nextButton.x) / 2,
-    top: window.height / 3 - window.height / 6,
-    color: "black",
-    fontSize: 40,
-  }, 
-  nextButton: {
-    position: "absolute",
-    left: nextButton.x + window.width / 6, 
-    top: nextButton.y - window.height / 6,
-    fontSize: 30,
+  text: {
+      fontSize: 24,
+      fontWeight: 'bold',
+      marginTop: 150,
   },
-  prevButton: {
-    position: "absolute",
-    left: prevButton.x - window.width / 6,
-    top: prevButton.y - window.height / 6,
-    fontSize: 30,
+  symbol: {
+      fontSize: 36,
+      fontWeight: 'bold',
+      marginTop: 150,
+  },
+  bottom: {
+      flex: 2,
+      flexDirection: 'row',
+      flexWrap: 'wrap',
+      justifyContent: 'space-around',
+  },
+  dotContainer: {
+      width: '50%',
+      height: '33.3%',
+      alignItems: 'center',
+      justifyContent: 'center',
+  },
+  dot: {
+      width: 80,
+      height: 80,
+      borderRadius: 50,
+      backgroundColor: 'black',
   },
 });
-
 export default BrailleWritter;
