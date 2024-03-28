@@ -4,7 +4,7 @@ import { createNativeStackNavigator } from "@react-navigation/native-stack";
 
 // Home
 import Home from "../screens/Home";
-import Splash from "../screens/Splash";
+//import Splash from "../screens/Splash";
 
 // Menu
 import TutorialMenu from "../screens/menu/tutorial/TutorialMenu";
@@ -82,7 +82,7 @@ const AppNavigator = () => {
   return (
     <NavigationContainer>
       <Stack.Navigator screenOptions={{ headerShown: false }}>
-        <Stack.Screen name="Splash" component={Splash} />
+        {/*<Stack.Screen name="Splash" component={Splash} />*/}
         <Stack.Screen name="Home" component={Home} />
         {/* Menu */}
         <Stack.Screen name="TutorialMenu" component={TutorialMenu} />
