@@ -162,12 +162,7 @@ const BrailleWritter = ({ category, brailleSymbols, brailleList }) => {
         str += ` 점, `;
       }
       if (braille[i] == 1) {
-        if (i <= 5) {
-          str += `${i + 1},`;
-        } 
-        else {
-          str += `${i - 5},`;
-        }
+        str += `${(i % 6) + 1 }, `;
       }
     }
     str += " 점, ";
@@ -188,7 +183,6 @@ const BrailleWritter = ({ category, brailleSymbols, brailleList }) => {
   const handlePrevPage = () => {
     setCurrentPage((prevPage) => {
       const prevPageCalculated = Math.max(prevPage - 1, 0);
-      console.log("왜 말을 안하냐 맞으래? ");
       Speech.speak("이전 칸 입니다. ", {
         rate: 1.5,
       });

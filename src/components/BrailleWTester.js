@@ -170,12 +170,7 @@ const BrailleWTester = ({ category, brailleSymbols, brailleList }) => {
         str += " 점, ";
       }
       if (braille[i] == 1) {
-        if (i <= 5) {
-          str += `${i + 1} `;
-        } 
-        else {
-          str += `${i - 5} `;
-        }
+        str += `${(i % 6) + 1 }, `;
       }
     }
     str += " 점, ";
