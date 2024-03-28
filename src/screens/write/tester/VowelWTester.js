@@ -1,14 +1,14 @@
-import BrailleWritter from "../../../components/BrailleWritter";
+import BrailleWTester from "../../../components/BrailleWTester";
 import BrailleList from "../../../constants/BrailleList";
 
-const braille = BrailleList.ABBREVIATION_FIRST;
+const braille = BrailleList.VOWEL;
 const category = braille.category;
 const brailleSymbols = braille.symbols;
 const brailleList = braille.brailleList;
 
-const AbbreviationWTester1 = () => {
+const VowelWTester = () => {
   return (
-    <BrailleWritter
+    <BrailleWTester
       category={category}
       brailleSymbols={brailleSymbols}
       brailleList={brailleList}
@@ -16,4 +16,4 @@ const AbbreviationWTester1 = () => {
   );
 };
 
-export default AbbreviationWTester1;
+export default VowelWTester;

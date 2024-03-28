@@ -2,6 +2,7 @@ import React, { useRef, useState, useEffect } from "react";
 import { StyleSheet, View, PanResponder, Text } from "react-native";
 import * as Speech from "expo-speech";
 import { Dimensions } from "react-native";
+import getRandomBrailleIndex from './RandomBrailleGenerator';
 
 const window = Dimensions.get("window");
 const points = [
@@ -54,9 +55,9 @@ const getTouchedAreaIndex = (touchX, touchY) => {
   return index;
 };
 
-const nextButton = { x: window.width / 2 + 50, y: window.height / 3 };
-const prevButton = { x: window.width / 2 - 50, y: window.height / 3 };
-
+const nextButton = { x: window.width * 2 / 3, y: window.height / 3 };
+const prevButton = { x: window.width / 3 , y: window.height / 3 };
+let randomIndex = [];
 const speakMessages = ["4점", "5점", "6점", "1점", "2점", "3점"];
 var speakIndex = [false, false, false, false, false, false];
 
@@ -79,10 +80,10 @@ const BrailleWTester = ({ category, brailleSymbols, brailleList }) => {
         rate: 1.5,
       }
     );
-    const select = whatDot(brailleList[brailleIndex]);
-    inputBraille = new Array(brailleList[brailleIndex].length).fill(0);
+    randomIndex = getRandomBrailleIndex(brailleList);
+    inputBraille = new Array(brailleList[randomIndex[brailleIndex]].length).fill(0);
     Speech.speak(
-      ` ${category}, ${brailleSymbols[brailleIndex]} 입니다. `,
+      ` ${category}, ${brailleSymbols[randomIndex[brailleIndex]]} 입니다. `,
       {
         rate: 1.5,
       }
@@ -91,7 +92,7 @@ const BrailleWTester = ({ category, brailleSymbols, brailleList }) => {
 
   useEffect(() => {
     brailleIndexRef.current = brailleIndex;
-    const currentBrailleLength = brailleList[brailleIndex].length;
+    const currentBrailleLength = brailleList[randomIndex[brailleIndex]].length;
     const calculatedMaxPage = Math.ceil(currentBrailleLength / 6) - 1;
     setMaxPage(calculatedMaxPage);
     setCurrentPage(0);
@@ -119,19 +120,19 @@ const BrailleWTester = ({ category, brailleSymbols, brailleList }) => {
 
     const brailleOne = brailleOneNum(currentBrailleIndex);
     touchNum++;
-    console.log(inputBraille, brailleList[currentBrailleIndex]);
+    console.log(inputBraille, brailleList[randomIndex[currentBrailleIndex]]);
 
     if (brailleOne == touchNum) {
-      if (!isCorrect(inputBraille, brailleList[currentBrailleIndex])) {
+      if (!isCorrect(inputBraille, brailleList[randomIndex[currentBrailleIndex]])) {
         Speech.speak("잘못된 입력 입니다. 다시 입력하세요.", {
           rate: 1.5,
         });
-        inputBraille = new Array(brailleList[currentBrailleIndex].length).fill(
+        inputBraille = new Array(brailleList[randomIndex[currentBrailleIndex]].length).fill(
           0
         );
         touchNum = 0;
       } else {
-        Speech.speak("올바른 입력 입니다! ", {
+        Speech.speak("정답 입니다! ", {
           rate: 1.5,
         });
         touchNum = 0;
@@ -141,8 +142,8 @@ const BrailleWTester = ({ category, brailleSymbols, brailleList }) => {
 
   const brailleOneNum = (currentBrailleIndex) => {
     var num = 0;
-    for (var i = 0; i < brailleList[currentBrailleIndex].length; i++) {
-      if (brailleList[currentBrailleIndex][i] == 1) num += 1;
+    for (var i = 0; i < brailleList[randomIndex[currentBrailleIndex]].length; i++) {
+      if (brailleList[randomIndex[currentBrailleIndex]][i] == 1) num += 1;
     }
     return num;
   };
@@ -155,10 +156,9 @@ const BrailleWTester = ({ category, brailleSymbols, brailleList }) => {
   };
 
   const brailleCheck = (currentIndex) => {
-    console.log(currentIndex.current);
-    const select = whatDot(brailleList[currentIndex.current]);
-    console.log(` ${category}, ${brailleSymbols[currentIndex.current]}은 ${select} 입니다. `);
-    Speech.speak(` ${category}, ${brailleSymbols[currentIndex.current]}은 ${select} 입니다. `, {
+    const select = whatDot(brailleList[randomIndex[currentIndex.current]]);
+    console.log(` ${category}, ${brailleSymbols[randomIndex[currentIndex.current]]}은 ${select} 입니다. `);
+    Speech.speak(` ${category} ${brailleSymbols[randomIndex[currentIndex.current]]}은 ${select} 입니다. `, {
       rate: 1.5,
     });
   };
@@ -166,14 +166,19 @@ const BrailleWTester = ({ category, brailleSymbols, brailleList }) => {
   const whatDot = (braille) => {
     var str = "";
     for (var i = 0; i < braille.length; i++) {
+      if (i != 0 && i % 6 == 0) {
+        str += " 점, ";
+      }
       if (braille[i] == 1) {
-        if (i + 1 <= 6) {
-          str += `${i + 1} 점, `;
-        } else {
-          str += `${Math.floor(i / 6) + 1} 번째 ${i - 5} 점, `;
+        if (i <= 5) {
+          str += `${i + 1} `;
+        } 
+        else {
+          str += `${i - 5} `;
         }
       }
     }
+    str += " 점, ";
     return str;
   };
 
@@ -181,7 +186,7 @@ const BrailleWTester = ({ category, brailleSymbols, brailleList }) => {
   const handleNextPage = () => {
     setCurrentPage((prevPage) => {
       const nextPage = Math.min(prevPage + 1, maxPageRef.current);
-      Speech.speak("다음 페이지입니다. ", {
+      Speech.speak("다음 칸 입니다. ", {
         rate: 1.5,
       });
       return nextPage;
@@ -191,8 +196,7 @@ const BrailleWTester = ({ category, brailleSymbols, brailleList }) => {
   const handlePrevPage = () => {
     setCurrentPage((prevPage) => {
       const prevPageCalculated = Math.max(prevPage - 1, 0);
-      console.log("왜 말을 안하냐 맞으래? ");
-      Speech.speak("이전 페이지입니다. ", {
+      Speech.speak("이전 칸 입니다. ", {
         rate: 1.5,
       });
       return prevPageCalculated;
@@ -202,14 +206,14 @@ const BrailleWTester = ({ category, brailleSymbols, brailleList }) => {
   // 자음 인덱스 이동 함수
   const goToNextBraille = () => {
     setBrailleIndex((prevIndex) => {
-      const newIndex = (prevIndex + 1) % brailleSymbols.length;
+      const newIndex = (prevIndex + 1) % randomIndex.length;
       Speech.speak(`다음 ${category} 은 `, {
         rate: 1.5,
       });
-      Speech.speak(` ${brailleSymbols[newIndex]} 입니다. `, {
+      Speech.speak(` ${brailleSymbols[randomIndex[newIndex]]} 입니다. `, {
         rate: 1.5,
       });
-      inputBraille = new Array(brailleList[newIndex].length).fill(0);
+      inputBraille = new Array(brailleList[randomIndex[newIndex]].length).fill(0);
       return newIndex;
     });
   };
@@ -217,14 +221,14 @@ const BrailleWTester = ({ category, brailleSymbols, brailleList }) => {
   const goToPrevBraille = () => {
     setBrailleIndex((prevIndex) => {
       let newIndex = prevIndex - 1;
-      if (newIndex < 0) newIndex = brailleSymbols.length - 1;
+      if (newIndex < 0) newIndex = randomIndex.length - 1;
       Speech.speak(`이전 ${category} 은 `, {
         rate: 1.5,
       });
-      Speech.speak(` ${brailleSymbols[newIndex]} 입니다. `, {
+      Speech.speak(` ${brailleSymbols[randomIndex[newIndex]]} 입니다. `, {
         rate: 1.5,
       });
-      inputBraille = new Array(brailleList[newIndex].length).fill(0);
+      inputBraille = new Array(brailleList[randomIndex[newIndex]].length).fill(0);
       return newIndex;
     });
   };
@@ -238,26 +242,52 @@ const BrailleWTester = ({ category, brailleSymbols, brailleList }) => {
         if (touches.length === 1) {
           const touch = touches[0];
           const index = getTouchedAreaIndex(touch.pageX, touch.pageY);
-          if (touch.pageX >= nextButton.x + 50 && touch.pageY <= nextButton.y) {
-            console.log(currentPageRef.current, maxPageRef.current);
+          if (touch.pageX >= nextButton.x && touch.pageY <= nextButton.y) {
             if (currentPageRef.current >= maxPageRef.current) {
-              goToNextBraille();
+              console.log("다음");
+              if (now - lastTapRef.current < 300) {
+                goToNextBraille();
+              }
+              else {
+                Speech.speak("다음", { rate: 1.5 });
+              }
             } 
             else {
-              handleNextPage();
+              if (now - lastTapRef.current < 300) {
+                handleNextPage();
+              }
+              else {
+                Speech.speak("다음", { rate: 1.5 });
+              }
             }
           } 
-          else if ( touch.pageX < prevButton.x && touch.pageY <= prevButton.y) {
-            console.log(currentPageRef.current, maxPageRef.current);
+          else if ( touch.pageX <= prevButton.x && touch.pageY <= prevButton.y) {
             if (currentPageRef.current === 0) {
-              goToPrevBraille();
+              console.log("이전");
+              if (now - lastTapRef.current < 300) {
+                goToPrevBraille();
+              }
+              else {
+                Speech.speak("이전", { rate: 1.5 });
+              }
             } 
             else {
-              handlePrevPage();
+              if (now - lastTapRef.current < 300) {
+                handlePrevPage();
+              }
+              else {
+                Speech.speak("이전", { rate: 1.5 });
+              }
             }
           } 
-          else if (touch.pageX >= prevButton.x && touch.pageX <= nextButton.x && touch.pageY <= prevButton.y) {
-            brailleCheck(brailleIndexRef);
+          else if (touch.pageX <= nextButton.x && touch.pageX >= prevButton.x && touch.pageY <= prevButton.y) {
+            console.log("정답보기");
+            if (now - lastTapRef.current < 300) {
+              brailleCheck(brailleIndexRef);
+            }
+            else {
+              Speech.speak("정답보기", { rate: 1.5 });  
+            }
           }
           else if (lastTapRef.current && now - lastTapRef.current < 300) {
             handleDoubleTap(index);
@@ -304,7 +334,9 @@ const BrailleWTester = ({ category, brailleSymbols, brailleList }) => {
         />
       ))}
       {/* 첫 번째 영역의 중간 지점에 Text 컴포넌트를 추가하여 brailleSimbols[0] 값을 표시 */}
-      <Text style={styles.buttonText}>{brailleSymbols[brailleIndex]}</Text>
+      <Text style={styles.buttonText}>정답</Text>
+      <Text style={styles.nextButton}>다음</Text>
+      <Text style={styles.prevButton}>이전</Text>
     </View>
   );
 };
@@ -325,10 +357,22 @@ const styles = StyleSheet.create({
   },
   buttonText: {
     position: "absolute",
-    left: window.width / 2 - 20,
-    top: window.height / 3 / 2,
+    left: (prevButton.x + nextButton.x) / 2,
+    top: window.height / 3 - window.height / 6,
     color: "black",
-    fontSize: 50,
+    fontSize: 40,
+  }, 
+  nextButton: {
+    position: "absolute",
+    left: nextButton.x + window.width / 6, 
+    top: nextButton.y - window.height / 6,
+    fontSize: 30,
+  },
+  prevButton: {
+    position: "absolute",
+    left: prevButton.x - window.width / 6,
+    top: prevButton.y - window.height / 6,
+    fontSize: 30,
   },
 });
 

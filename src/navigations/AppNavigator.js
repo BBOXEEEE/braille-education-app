@@ -64,6 +64,13 @@ import NumberWritter from "../screens/write/writter/NumberWritter";
 import AlphabetWritter from "../screens/write/writter/AlphabetWritter";
 
 import InitialConsonantWTester from "../screens/write/tester/InitialConsonantWTester";
+import VowelWTester from "../screens/write/tester/VowelWTester";
+import FinalConsonantWTester from "../screens/write/tester/FinalConsonantWTester";
+import AbbreviationWTester1 from "../screens/write/tester/AbbreviationWTester1";
+import AbbreviationWTester2 from "../screens/write/tester/AbbreviationWTester2";
+import AbbreviationWTester3 from "../screens/write/tester/AbbreviationWTester3";
+import AlphabetWTester from "../screens/write/tester/AlphabetWTester";
+import NumberWTester from "../screens/write/tester/NumberWTester";
 
 // Camera
 
@@ -133,6 +140,14 @@ const AppNavigator = () => {
         <Stack.Screen name="AlphabetWritter" component={AlphabetWritter} />
 
         <Stack.Screen name="InitialConsonantWTester" component={InitialConsonantWTester} />
+        <Stack.Screen name="VowelWTester" component={VowelWTester} />
+        <Stack.Screen name="FinalConsonantWTester" component={FinalConsonantWTester} />
+        <Stack.Screen name="AbbreviationWTester1" component={AbbreviationWTester1} />
+        <Stack.Screen name="AbbreviationWTester2" component={AbbreviationWTester2} />
+        <Stack.Screen name="AbbreviationWTester3" component={AbbreviationWTester3} />
+        <Stack.Screen name="AlphabetWTester" component={AlphabetWTester} />
+        <Stack.Screen name="NumberWTester" component={NumberWTester} />
+
       </Stack.Navigator>
     </NavigationContainer>
   );

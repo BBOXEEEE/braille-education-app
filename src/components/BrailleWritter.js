@@ -159,18 +159,18 @@ const BrailleWritter = ({ category, brailleSymbols, brailleList }) => {
     var str = "";
     for (var i = 0; i < braille.length; i++) {
       if (i != 0 && i % 6 == 0) {
-        str += ` 점`;
+        str += ` 점, `;
       }
       if (braille[i] == 1) {
         if (i <= 5) {
-          str += `${i + 1}, `;
+          str += `${i + 1},`;
         } 
         else {
-          str += ` ${i - 5}, `;
+          str += `${i - 5},`;
         }
       }
     }
-    str += " 점";
+    str += " 점, ";
     return str;
   };
 
@@ -241,24 +241,44 @@ const BrailleWritter = ({ category, brailleSymbols, brailleList }) => {
           const touch = touches[0];
           const index = getTouchedAreaIndex(touch.pageX, touch.pageY);
           if (touch.pageX >= nextButton.x + 50 && touch.pageY <= nextButton.y) {
-            // 현재 페이지가 마지막 페이지이면, 다음 자음으로 이동
-            console.log(currentPageRef.current, maxPageRef.current);
-            if (currentPageRef.current >= maxPageRef.current && now - lastTapRef.current < 300) {
-              goToNextBraille();
+            if (currentPageRef.current >= maxPageRef.current) {
+              console.log("다음");
+              if (now - lastTapRef.current < 300) {
+                goToNextBraille();
+              }
+              else {
+                Speech.speak("다음", { rate: 1.5 });
+              }
             } 
-            else if (currentPageRef.current != maxPageRef.current && now - lastTapRef.current < 300) {
-              handleNextPage(); // 다음 페이지로
+            else {
+              if (now - lastTapRef.current < 300) {
+                handleNextPage();
+              }
+              else {
+                Speech.speak("다음", { rate: 1.5 });
+              }
             }
           } 
           else if (touch.pageX < prevButton.x && touch.pageY <= prevButton.y ) {
-            // 현재 페이지가 첫 페이지이면, 이전 자음으로 이동
-            console.log(currentPageRef.current, maxPageRef.current);
-            if (currentPageRef.current === 0 && now - lastTapRef.current < 300) {
-              goToPrevBraille();
-            } else if (currentPageRef.current != 0 && now - lastTapRef.current < 300) {
-              handlePrevPage(); // 이전 페이지로
+            if (currentPageRef.current === 0) {
+              console.log("이전");
+              if (now - lastTapRef.current < 300) {
+                goToPrevBraille();
+              }
+              else {
+                Speech.speak("이전", { rate: 1.5 });
+              }
+            } 
+            else {
+              if (now - lastTapRef.current < 300) {
+                handlePrevPage();
+              }
+              else {
+                Speech.speak("이전", { rate: 1.5 });
+              }
             }
-          } else if (lastTapRef.current && now - lastTapRef.current < 300) {
+          } 
+          else if (lastTapRef.current && now - lastTapRef.current < 300) {
             handleDoubleTap(index);
           }
           lastTapRef.current = now;
@@ -323,20 +343,20 @@ const styles = StyleSheet.create({
   },
   buttonText: {
     position: "absolute",
-    left: window.width / 2 - 20,
-    top: window.height / 3 - window.height / 6 - 10,
+    left: (prevButton.x + nextButton.x) / 2,
+    top: window.height / 3 - window.height / 6,
     color: "black",
-    fontSize: 50,
-  },
+    fontSize: 40,
+  }, 
   nextButton: {
     position: "absolute",
-    left: nextButton.x + window.width / 9, 
+    left: nextButton.x + window.width / 6, 
     top: nextButton.y - window.height / 6,
     fontSize: 30,
   },
   prevButton: {
     position: "absolute",
-    left: prevButton.x - window.width / 5,
+    left: prevButton.x - window.width / 6,
     top: prevButton.y - window.height / 6,
     fontSize: 30,
   },
