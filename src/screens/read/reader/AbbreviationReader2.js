@@ -1,10 +1,10 @@
 import BrailleReader from '../../../components/BrailleReader';
 import BrailleList from '../../../constants/BrailleList';
 
-const initialConsonant = BrailleList.ABBREVIATION_SECOND;
-const category = initialConsonant.category;;
-const brailleSymbols = initialConsonant.symbols;
-const brailleList = initialConsonant.braille;
+const braille = BrailleList.ABBREVIATION_SECOND;
+const category = braille.category;;
+const brailleSymbols = braille.symbols;
+const brailleList = braille.brailleList;
 
 const AbbreviationReader2 = () => {
     return <BrailleReader category={category} brailleSymbols={brailleSymbols} brailleList={brailleList} />;
