@@ -61,6 +61,22 @@ const getTouchedAreaIndex = (touchX, touchY) => {
 // 랜덤 점자 인덱스
 let randomIndex = [];
 
+const getComponentBraille = (braille) => {
+    let result = "";
+
+    braille.forEach((dot, index) => {
+        if (index != 0 && index % 6 === 0) {
+            result += "점 ";
+        }
+        if (dot === 1) {
+            result += `${(index % 6) + 1} `;
+        }
+    });
+    result += "점";
+
+    return result;
+};
+
 const BrailleRTester = ({ category, brailleSymbols, brailleList }) => {
     const [currentBraille, setCurrentBraille] = useState(0);
     const [touchIndex, setTouchIndex] = useState(-1);
@@ -72,6 +88,15 @@ const BrailleRTester = ({ category, brailleSymbols, brailleList }) => {
     // 랜덤 점자 인덱스 초기화
     useEffect(() => {
         randomIndex = getRandomBrailleIndex(brailleList);
+    }, []);
+
+    useEffect(() => {
+        const text = `점자 읽기 시험입니다.`;
+        const options = {
+            voice: "com.apple.voice.compact.ko-KR.Yuna",
+            rate: 1.4
+        };
+        Speech.speak(text, options);
     }, []);
 
     useEffect(() => {
@@ -190,9 +215,11 @@ const BrailleRTester = ({ category, brailleSymbols, brailleList }) => {
             if (currentBrailleRef.current - 1 >= 0) currentBrailleRef.current -= 1;
             else currentBrailleRef.current = randomIndex.length - 1;
         }
-        // 화면 상단 중앙 : 묵자
+        // 화면 상단 중앙 : 정답확인
         else if (touch > threshold && touch < 2 * threshold) {
-            const text = `정답은 ${category} ${brailleSymbols[randomIndex[currentBrailleRef.current]]} 입니다.`;
+            const component = getComponentBraille(brailleList[randomIndex[currentBrailleRef.current]]);
+            const text = `정답은 ${category} ${brailleSymbols[randomIndex[currentBrailleRef.current]]} 입니다. 
+                        ${brailleSymbols[randomIndex[currentBrailleRef.current]]} 은 ${component} 입니다.`;
             const options = {
                 voice: "com.apple.voice.compact.ko-KR.Yuna",
                 rate: 1.4

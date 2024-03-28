@@ -58,6 +58,22 @@ const getTouchedAreaIndex = (touchX, touchY) => {
     return index;
 };
 
+const getComponentBraille = (braille) => {
+    let result = "";
+
+    braille.forEach((dot, index) => {
+        if (index != 0 && index % 6 === 0) {
+            result += "점 ";
+        }
+        if (dot === 1) {
+            result += `${(index % 6) + 1} `;
+        }
+    });
+    result += "점";
+
+    return result;
+};
+
 const BrailleReader = ({ category, brailleSymbols, brailleList }) => {
     const [currentBraille, setCurrentBraille] = useState(0);
     const [touchIndex, setTouchIndex] = useState(-1);
@@ -72,8 +88,19 @@ const BrailleReader = ({ category, brailleSymbols, brailleList }) => {
         previousTouchTimeRef.current = previousTouchTime;
     }, [currentBraille, touchIndex, previousTouchTime]);
 
+    useEffect(() => {
+        const text = `점자 읽기입니다. 다음 점자를 읽어보세요!`;
+        const options = {
+            voice: "com.apple.voice.compact.ko-KR.Yuna",
+            rate: 1.4
+        };
+        Speech.speak(text, options);
+    }, []);
+
     const tts_information = () => {
-        const text = `현재 읽고있는 점자는 ${category} ${brailleSymbols[currentBrailleRef.current]} 입니다.`;
+        const component = getComponentBraille(brailleList[currentBrailleRef.current]);
+        const text = `${category} ${brailleSymbols[currentBrailleRef.current]} 입니다. ${component} 입니다.`;
+        console.log(getComponentBraille(brailleList[currentBrailleRef.current]));
         const options = {
             voice: "com.apple.voice.compact.ko-KR.Yuna",
             rate: 1.4
@@ -154,12 +181,7 @@ const BrailleReader = ({ category, brailleSymbols, brailleList }) => {
         }
         // 화면 상단 중앙 : 묵자 TTS
         else if (touch > threshold && touch < 2 * threshold) {
-            const text = `${brailleSymbols[currentBrailleRef.current]}`;
-            const options = {
-                voice: "com.apple.voice.compact.ko-KR.Yuna",
-                rate: 1.4
-            };
-            Speech.speak(text, options);
+            tts_information();
         }
         // 화면 상단 우측 : 다음 버튼 TTS
         else {
@@ -184,7 +206,7 @@ const BrailleReader = ({ category, brailleSymbols, brailleList }) => {
         }
         // 화면 상단 중앙 : 묵자
         else if (touch > threshold && touch < 2 * threshold) {
-            const text = `현재 읽고있는 점자는 ${category} ${brailleSymbols[currentBrailleRef.current]} 입니다.`;
+            const text = `${category} ${brailleSymbols[currentBrailleRef.current]} 입니다.`;
             const options = {
                 voice: "com.apple.voice.compact.ko-KR.Yuna",
                 rate: 1.4
