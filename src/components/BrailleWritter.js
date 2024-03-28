@@ -54,8 +54,8 @@ const getTouchedAreaIndex = (touchX, touchY) => {
   return index;
 };
 
-const nextButton = { x: window.width / 2 + 50, y: window.height / 3 };
-const prevButton = { x: window.width / 2 - 50, y: window.height / 3 };
+const nextButton = { x: window.width / 2 + window.width / 8, y: window.height / 3 };
+const prevButton = { x: window.width / 2 - window.width / 8, y: window.height / 3 };
 
 const speakMessages = ["4점", "5점", "6점", "1점", "2점", "3점"];
 var speakIndex = [false, false, false, false, false, false];
@@ -81,6 +81,7 @@ const BrailleWritter = ({ category, brailleSymbols, brailleList }) => {
     );
     const select = whatDot(brailleList[brailleIndex]);
     inputBraille = new Array(brailleList[brailleIndex].length).fill(0);
+    console.log(` ${brailleSymbols[brailleIndex]}은 ${select} 입니다. `);
     Speech.speak(
       ` ${category}, ${brailleSymbols[brailleIndex]} 입니다. ${select} 입니다. `,
       {
@@ -157,14 +158,19 @@ const BrailleWritter = ({ category, brailleSymbols, brailleList }) => {
   const whatDot = (braille) => {
     var str = "";
     for (var i = 0; i < braille.length; i++) {
+      if (i != 0 && i % 6 == 0) {
+        str += ` 점`;
+      }
       if (braille[i] == 1) {
-        if (i + 1 <= 6) {
-          str += `${i + 1} 점, `;
-        } else {
-          str += `${Math.floor(i / 6) + 1} 번째 ${i - 5} 점, `;
+        if (i <= 5) {
+          str += `${i + 1}, `;
+        } 
+        else {
+          str += ` ${i - 5}, `;
         }
       }
     }
+    str += " 점";
     return str;
   };
 
@@ -172,7 +178,7 @@ const BrailleWritter = ({ category, brailleSymbols, brailleList }) => {
   const handleNextPage = () => {
     setCurrentPage((prevPage) => {
       const nextPage = Math.min(prevPage + 1, maxPageRef.current);
-      Speech.speak("다음 페이지입니다. ", {
+      Speech.speak("다음 칸 입니다. ", {
         rate: 1.5,
       });
       return nextPage;
@@ -183,7 +189,7 @@ const BrailleWritter = ({ category, brailleSymbols, brailleList }) => {
     setCurrentPage((prevPage) => {
       const prevPageCalculated = Math.max(prevPage - 1, 0);
       console.log("왜 말을 안하냐 맞으래? ");
-      Speech.speak("이전 페이지입니다. ", {
+      Speech.speak("이전 칸 입니다. ", {
         rate: 1.5,
       });
       return prevPageCalculated;
@@ -198,9 +204,11 @@ const BrailleWritter = ({ category, brailleSymbols, brailleList }) => {
         rate: 1.5,
       });
       const select = whatDot(brailleList[newIndex]);
+      console.log(` ${brailleSymbols[newIndex]}은 ${select} 입니다. `);
       Speech.speak(` ${brailleSymbols[newIndex]} 입니다. ${select} 입니다. `, {
         rate: 1.5,
       });
+      
       inputBraille = new Array(brailleList[newIndex].length).fill(0);
       return newIndex;
     });
@@ -214,6 +222,7 @@ const BrailleWritter = ({ category, brailleSymbols, brailleList }) => {
         rate: 1.5,
       });
       const select = whatDot(brailleList[newIndex]);
+      console.log(` ${brailleSymbols[newIndex]}은 ${select} 입니다. `);
       Speech.speak(` ${brailleSymbols[newIndex]} 입니다. ${select} 입니다. `, {
         rate: 1.5,
       });
@@ -234,20 +243,19 @@ const BrailleWritter = ({ category, brailleSymbols, brailleList }) => {
           if (touch.pageX >= nextButton.x + 50 && touch.pageY <= nextButton.y) {
             // 현재 페이지가 마지막 페이지이면, 다음 자음으로 이동
             console.log(currentPageRef.current, maxPageRef.current);
-            if (currentPageRef.current >= maxPageRef.current) {
+            if (currentPageRef.current >= maxPageRef.current && now - lastTapRef.current < 300) {
               goToNextBraille();
-            } else {
+            } 
+            else if (currentPageRef.current != maxPageRef.current && now - lastTapRef.current < 300) {
               handleNextPage(); // 다음 페이지로
             }
-          } else if (
-            touch.pageX < prevButton.x &&
-            touch.pageY <= prevButton.y
-          ) {
+          } 
+          else if (touch.pageX < prevButton.x && touch.pageY <= prevButton.y ) {
             // 현재 페이지가 첫 페이지이면, 이전 자음으로 이동
             console.log(currentPageRef.current, maxPageRef.current);
-            if (currentPageRef.current === 0) {
+            if (currentPageRef.current === 0 && now - lastTapRef.current < 300) {
               goToPrevBraille();
-            } else {
+            } else if (currentPageRef.current != 0 && now - lastTapRef.current < 300) {
               handlePrevPage(); // 이전 페이지로
             }
           } else if (lastTapRef.current && now - lastTapRef.current < 300) {
@@ -287,15 +295,14 @@ const BrailleWritter = ({ category, brailleSymbols, brailleList }) => {
           key={index}
           style={[
             styles.point,
-            {
-              left: point.x + point.width / 2 - 30,
-              top: point.y + point.height / 2 - 30,
-            },
+            { left: point.x + point.width / 2 - 30,  top: point.y + point.height / 2 - 30,},
           ]}
         />
       ))}
       {/* 첫 번째 영역의 중간 지점에 Text 컴포넌트를 추가하여 brailleSimbols[0] 값을 표시 */}
       <Text style={styles.buttonText}>{brailleSymbols[brailleIndex]}</Text>
+      <Text style={styles.nextButton}>다음</Text>
+      <Text style={styles.prevButton}>이전</Text>
     </View>
   );
 };
@@ -317,9 +324,21 @@ const styles = StyleSheet.create({
   buttonText: {
     position: "absolute",
     left: window.width / 2 - 20,
-    top: window.height / 3 / 2,
+    top: window.height / 3 - window.height / 6 - 10,
     color: "black",
     fontSize: 50,
+  },
+  nextButton: {
+    position: "absolute",
+    left: nextButton.x + window.width / 9, 
+    top: nextButton.y - window.height / 6,
+    fontSize: 30,
+  },
+  prevButton: {
+    position: "absolute",
+    left: prevButton.x - window.width / 5,
+    top: prevButton.y - window.height / 6,
+    fontSize: 30,
   },
 });
 
