@@ -3,7 +3,7 @@ import BrailleScreen from '../../../components/BrailleScreen';
 
 const steps = [
   { name: '학습하기', screen: 'VowelReader' },
-  { name: '시험보기', screen: '' }
+  { name: '시험보기', screen: 'VowelRTester' }
 ];
 
 const ReadVowel = () => {

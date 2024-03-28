@@ -35,6 +35,13 @@ import NumberReader from "../screens/read/reader/NumberReader";
 import AlphabetReader from "../screens/read/reader/AlphabetReader";
 
 import InitialConsonantRTester from "../screens/read/tester/InitialConsonantRTester";
+import VowelRTester from "../screens/read/tester/VowelRTester";
+import FinalConsonantRTester from "../screens/read/tester/FinalConsonantRTester";
+import AbbreviationRTester1 from "../screens/read/tester/AbbreviationRTester1";
+import AbbreviationRTester2 from "../screens/read/tester/AbbreviationRTester2";
+import AbbreviationRTester3 from "../screens/read/tester/AbbreviationRTester3";
+import NumberRTester from "../screens/read/tester/NumberRTester";
+import AlphabetRTester from "../screens/read/tester/AlphabetRTester";
 
 // Write
 import WriteTutorial from "../screens/menu/write/WriteTutorial";
@@ -97,6 +104,13 @@ const AppNavigator = () => {
         <Stack.Screen name="AlphabetReader" component={AlphabetReader} />
 
         <Stack.Screen name="InitialConsonantRTester" component={InitialConsonantRTester} />
+        <Stack.Screen name="VowelRTester" component={VowelRTester} />
+        <Stack.Screen name="FinalConsonantRTester" component={FinalConsonantRTester} />
+        <Stack.Screen name="AbbreviationRTester1" component={AbbreviationRTester1} />
+        <Stack.Screen name="AbbreviationRTester2" component={AbbreviationRTester2} />
+        <Stack.Screen name="AbbreviationRTester3" component={AbbreviationRTester3} />
+        <Stack.Screen name="NumberRTester" component={NumberRTester} />
+        <Stack.Screen name="AlphabetRTester" component={AlphabetRTester} />
 
         {/* Write */}
         <Stack.Screen name="WriteTutorial" component={WriteTutorial} />
