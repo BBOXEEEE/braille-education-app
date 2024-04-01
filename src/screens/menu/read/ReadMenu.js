@@ -1,6 +1,7 @@
-import React from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { View, Text, TouchableOpacity, StyleSheet, SafeAreaView, ScrollView } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
+import * as Speech from 'expo-speech';
 
 const steps = [
   { name: '튜토리얼', screen: 'ReadTutorial' },
@@ -15,10 +16,33 @@ const steps = [
 ];
 
 const ReadMenu = () => {
+  const [previousTouchTime, setPreviousTouchTime] = useState(null);
+  const previousTouchTimeRef = useRef(null);
+  useEffect(() => {
+    previousTouchTimeRef.current = previousTouchTime;
+  }, [previousTouchTime]);
+
   const navigation = useNavigation();
 
-  const navigateToScreen = (screenName) => {
-    navigation.navigate(screenName);
+  // 터치 이벤트 처리
+  const handlePressButton = (name, screen) => {
+    console.log(name);
+    const currentTouchTime = Date.now();
+    const isDoubleTouched = (previousTouchTimeRef.current) && (currentTouchTime - previousTouchTimeRef.current) < 300;
+
+    if (isDoubleTouched) {
+      navigation.navigate(screen);
+    }
+    else {
+      const text = `${name}`;
+      const options = {
+        voice: "com.apple.voice.compact.ko-KR.Yuna",
+        rate: 1.4
+      };
+      Speech.speak(text, options);
+    }
+    previousTouchTimeRef.current = currentTouchTime;
+    setPreviousTouchTime(previousTouchTimeRef.current);
   };
 
   return (
@@ -35,7 +59,7 @@ const ReadMenu = () => {
           <TouchableOpacity
             key={index}
             style={styles.button}
-            onPress={() => navigateToScreen(step.screen)}>
+            onPress={() => handlePressButton(step.name, step.screen)}>
             <Text style={styles.buttonText}>{step.name}</Text>
           </TouchableOpacity>
         ))}

@@ -1,13 +1,96 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { View, Text, TouchableOpacity, Modal, StyleSheet, SafeAreaView } from 'react-native';
 import * as Speech from 'expo-speech';
 
+// 말하기 속도 조절
 const ttsOptions = [
   { rate: 1, label: "느리게" },
   { rate: 1.15, label: "보통" },
   { rate: 1.4, label: "조금 빠르게" },
   { rate: 1.5, label: "빠르게" },
 ];
+
+const Home = ({ navigation }) => {
+  const [previousTouchTime, setPreviousTouchTime] = useState(null);
+  const previousTouchTimeRef = useRef(null);
+  useEffect(() => {
+    previousTouchTimeRef.current = previousTouchTime;
+  }, [previousTouchTime]);
+  const [modalVisible, setModalVisible] = useState(false);
+
+  const steps = [
+    { name: '튜토리얼', navigateTo: () => navigation.navigate('TutorialMenu') },
+    { name: '읽기', navigateTo: () => navigation.navigate('ReadMenu') },
+    { name: '쓰기', navigateTo: () => navigation.navigate('WriteMenu') },
+    { name: '촬영하기', navigateTo: () => navigation.navigate('CameraMenu') },
+    { name: '단어장', navigateTo: () => navigation.navigate('VocabularyMenu') },
+    { name: '말하기 속도 조절', navigateTo: () => setModalVisible(true) },
+  ];
+
+  // 터치 이벤트 처리
+  const handlePressButton = (name, screen) => {
+    const currentTouchTime = Date.now();
+    const isDoubleTouched = (previousTouchTimeRef.current) && (currentTouchTime - previousTouchTimeRef.current) < 300;
+
+    if (isDoubleTouched) {
+      screen();
+    }
+    else {
+      const text = `${name}`;
+      const options = {
+        voice: "com.apple.voice.compact.ko-KR.Yuna",
+        rate: 1.4
+      };
+      Speech.speak(text, options);
+    }
+    previousTouchTimeRef.current = currentTouchTime;
+    setPreviousTouchTime(previousTouchTimeRef.current);
+  };
+
+  // 말하기 속도 조절 터치 이벤트 처리
+  const handlePressTTSButton = (label, rate) => {
+    const currentTouchTime = Date.now();
+    const isDoubleTouched = (previousTouchTimeRef.current) && (currentTouchTime - previousTouchTimeRef.current) < 300;
+
+    if (isDoubleTouched) {
+      setModalVisible(false);
+    }
+    else {
+      const text = `${label}`;
+      const options = {
+        voice: 'com.apple.voice.compact.ko-KR.Yuna',
+        rate,
+      };
+
+      Speech.speak(text, options);
+    }
+    previousTouchTimeRef.current = currentTouchTime;
+    setPreviousTouchTime(previousTouchTimeRef.current);
+  };
+
+  return (
+    <SafeAreaView style={styles.container}>
+      <View style={styles.header}>
+        <Text style={styles.headerTitle}>점자랑</Text>
+      </View>
+      <View style={styles.content}>
+        {steps.map((step, index) => (
+          <TouchableOpacity
+            key={index}
+            style={styles.button}
+            onPress={() => handlePressButton(step.name, step.navigateTo)}>
+            <Text style={[styles.buttonText, styles.boldText]}>{step.name}</Text>
+          </TouchableOpacity>
+        ))}
+      </View>
+      <TTSModal
+        visible={modalVisible}
+        onClose={() => setModalVisible(false)}
+        onOptionSelected={handlePressTTSButton}
+      />
+    </SafeAreaView>
+  );
+};
 
 const TTSModal = ({ visible, onClose, onOptionSelected }) => (
   <Modal
@@ -21,7 +104,7 @@ const TTSModal = ({ visible, onClose, onOptionSelected }) => (
           <TouchableOpacity
             key={option.rate}
             style={styles.squareButton}
-            onPress={() => onOptionSelected(option.rate)}>
+            onPress={() => onOptionSelected(option.label, option.rate)}>
             <Text style={styles.buttonText}>{option.label}</Text>
           </TouchableOpacity>
         ))}
@@ -29,54 +112,6 @@ const TTSModal = ({ visible, onClose, onOptionSelected }) => (
     </View>
   </Modal>
 );
-
-const Home = ({ navigation }) => {
-  const [modalVisible, setModalVisible] = useState(false);
-
-  const tts = (rate) => {
-    const option = ttsOptions.find(option => option.rate === rate);
-    const text = option ? option.label : "설정 오류";
-    const options = {
-      voice: 'com.apple.voice.compact.ko-KR.Yuna',
-      rate,
-    };
-
-    Speech.speak(text, options);
-    setModalVisible(false);
-  };
-
-  const navigationOptions = [
-    { label: '튜토리얼', navigateTo: () => navigation.navigate('TutorialMenu') },
-    { label: '읽기', navigateTo: () => navigation.navigate('ReadMenu') },
-    { label: '쓰기', navigateTo: () => navigation.navigate('WriteMenu') },
-    { label: '촬영하기', navigateTo: () => navigation.navigate('CameraMenu') },
-    { label: '단어장', navigateTo: () => navigation.navigate('VocabularyMenu') },
-    { label: 'TTS 속도 조절', navigateTo: () => setModalVisible(true) },
-  ];
-
-  return (
-    <SafeAreaView style={styles.container}>
-      <TTSModal
-        visible={modalVisible}
-        onClose={() => setModalVisible(false)}
-        onOptionSelected={tts}
-      />
-      <View style={styles.header}>
-        <Text style={styles.headerTitle}>점자랑</Text>
-      </View>
-      <View style={styles.content}>
-        {navigationOptions.map((option, index) => (
-          <TouchableOpacity
-            key={index}
-            style={styles.button}
-            onPress={option.navigateTo}>
-            <Text style={[styles.buttonText, styles.boldText]}>{option.label}</Text>
-          </TouchableOpacity>
-        ))}
-      </View>
-    </SafeAreaView>
-  );
-};
 
 const styles = StyleSheet.create({
   container: {
