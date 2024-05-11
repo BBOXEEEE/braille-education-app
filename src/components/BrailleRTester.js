@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { View, PanResponder, Dimensions, StyleSheet, Text, TouchableWithoutFeedback } from 'react-native';
 import * as Haptics from 'expo-haptics';
-import * as Speech from 'expo-speech';
+import { useTTS } from './TTSContext';
 import getRandomBrailleIndex from './RandomBrailleGenerator';
 
 // 화면 영역 분할
@@ -78,6 +78,7 @@ const getComponentBraille = (braille) => {
 };
 
 const BrailleRTester = ({ category, brailleSymbols, brailleList }) => {
+    const { speech } = useTTS();
     const [currentBraille, setCurrentBraille] = useState(0);
     const [touchIndex, setTouchIndex] = useState(-1);
     const [previousTouchTime, setPreviousTouchTime] = useState(null);
@@ -91,12 +92,8 @@ const BrailleRTester = ({ category, brailleSymbols, brailleList }) => {
     }, []);
 
     useEffect(() => {
-        const text = `점자 읽기 시험입니다.`;
-        const options = {
-            voice: "com.apple.voice.compact.ko-KR.Yuna",
-            rate: 1.4
-        };
-        Speech.speak(text, options);
+        const message = `점자 읽기 시험입니다.`;
+        speech(message);
     }, []);
 
     useEffect(() => {
@@ -106,12 +103,8 @@ const BrailleRTester = ({ category, brailleSymbols, brailleList }) => {
     }, [currentBraille, touchIndex, previousTouchTime]);
 
     const tts_information = () => {
-        const text = `다음 ${category} 를 읽고 정답확인을 눌러 정답을 확인하세요!`;
-        const options = {
-            voice: "com.apple.voice.compact.ko-KR.Yuna",
-            rate: 1.4
-        };
-        Speech.speak(text, options);
+        const message = `다음 ${category} 를 읽고 정답확인을 눌러 정답을 확인하세요!`;
+        speech(message);
     };
 
     useEffect(() => {
@@ -120,15 +113,12 @@ const BrailleRTester = ({ category, brailleSymbols, brailleList }) => {
 
     function tts_dot(index) {
         if (index === -1) return;
-        const text = `${index+1}점`;
-        const options = {
-            voice: "com.apple.voice.compact.ko-KR.Yuna",
-            rate: 1.5
-        };
+        const message = `${index+1}점`;
+        let pitch = 1;
         if (brailleList[randomIndex[currentBrailleRef.current]][index] === 1) {
-            options.pitch = 1.5;
+            pitch = 1.5;
         }
-        Speech.speak(text, options);
+        speech(message, null, pitch);
     };
 
     useEffect(() => {
@@ -178,30 +168,18 @@ const BrailleRTester = ({ category, brailleSymbols, brailleList }) => {
 
         // 화면 상단 좌측 : 이전 버튼 TTS
         if (touch <= threshold) {
-            const text = `이전`;
-            const options = {
-                voice: "com.apple.voice.compact.ko-KR.Yuna",
-                rate: 1.4
-            };
-            Speech.speak(text, options);
+            const message = `이전`;
+            speech(message);
         }
         // 화면 상단 중앙 : 정답확인 TTS
         else if (touch > threshold && touch < 2 * threshold) {
-            const text = `정답확인`;
-            const options = {
-                voice: "com.apple.voice.compact.ko-KR.Yuna",
-                rate: 1.4
-            };
-            Speech.speak(text, options);
+            const message = `정답확인`;
+            speech(message);
         }
         // 화면 상단 우측 : 다음 버튼 TTS
         else {
-            const text = `다음`;
-            const options = {
-                voice: "com.apple.voice.compact.ko-KR.Yuna",
-                rate: 1.4
-            };
-            Speech.speak(text, options);
+            const message = `다음`;
+            speech(message);
         }
     };
 
@@ -218,13 +196,9 @@ const BrailleRTester = ({ category, brailleSymbols, brailleList }) => {
         // 화면 상단 중앙 : 정답확인
         else if (touch > threshold && touch < 2 * threshold) {
             const component = getComponentBraille(brailleList[randomIndex[currentBrailleRef.current]]);
-            const text = `정답은 ${category} ${brailleSymbols[randomIndex[currentBrailleRef.current]]} 입니다. 
+            const message = `정답은 ${category} ${brailleSymbols[randomIndex[currentBrailleRef.current]]} 입니다. 
                         ${brailleSymbols[randomIndex[currentBrailleRef.current]]} 은 ${component} 입니다.`;
-            const options = {
-                voice: "com.apple.voice.compact.ko-KR.Yuna",
-                rate: 1.4
-            };
-            Speech.speak(text, options);
+            speech(message);
         }
         // 화면 상단 우측 : 다음 버튼
         else {

@@ -1,6 +1,6 @@
 import React, { useRef, useState, useEffect } from "react";
 import { StyleSheet, View, PanResponder, Text } from "react-native";
-import * as Speech from "expo-speech";
+import { useTTS } from "./TTSContext";
 import { Dimensions } from "react-native";
 
 const window = Dimensions.get("window");
@@ -61,6 +61,7 @@ const speakMessages = ["4점", "5점", "6점", "1점", "2점", "3점"];
 var speakIndex = [false, false, false, false, false, false];
 
 const BrailleWritter = ({ category, brailleSymbols, brailleList }) => {
+  const { speech } = useTTS();
   const [brailleIndex, setBrailleIndex] = useState(0);
   const [lastTap, setLastTap] = useState(null);
   const brailleIndexRef = useRef(brailleIndex);
@@ -73,21 +74,12 @@ const BrailleWritter = ({ category, brailleSymbols, brailleList }) => {
   const currentPageRef = useRef(currentPage);
 
   useEffect(() => {
-    Speech.speak(
-      "점자 쓰기입니다. 1점부터 6점까지 터치하여 점자를 입력하세요.",
-      {
-        rate: 1.5,
-      }
-    );
     const select = whatDot(brailleList[brailleIndex]);
     inputBraille = new Array(brailleList[brailleIndex].length).fill(0);
-    console.log(` ${brailleSymbols[brailleIndex]}은 ${select} 입니다. `);
-    Speech.speak(
-      ` ${category}, ${brailleSymbols[brailleIndex]} 입니다. ${select} 입니다. `,
-      {
-        rate: 1.5,
-      }
-    );
+
+    const message = `점자 쓰기입니다. 1점부터 6점까지 터치하여 점자를 입력하세요.
+                    ${category}, ${brailleSymbols[brailleIndex]} 입니다. ${select} 입니다.`;
+    speech(message);
   }, []);
 
   useEffect(() => {
@@ -124,17 +116,15 @@ const BrailleWritter = ({ category, brailleSymbols, brailleList }) => {
 
     if (brailleOne == touchNum) {
       if (!isCorrect(inputBraille, brailleList[currentBrailleIndex])) {
-        Speech.speak("잘못된 입력 입니다. 다시 입력하세요.", {
-          rate: 1.5,
-        });
+        const message = "잘못된 입력 입니다. 다시 입력하세요.";
+        speech(message);
         inputBraille = new Array(brailleList[currentBrailleIndex].length).fill(
           0
         );
         touchNum = 0;
       } else {
-        Speech.speak("올바른 입력 입니다.", {
-          rate: 1.5,
-        });
+        const message = "올바른 입력 입니다.";
+        speech(message);
         touchNum = 0;
       }
     }
@@ -173,9 +163,8 @@ const BrailleWritter = ({ category, brailleSymbols, brailleList }) => {
   const handleNextPage = () => {
     setCurrentPage((prevPage) => {
       const nextPage = Math.min(prevPage + 1, maxPageRef.current);
-      Speech.speak("다음 칸 입니다. ", {
-        rate: 1.5,
-      });
+      const message = "다음 칸 입니다.";
+      speech(message);
       return nextPage;
     });
   };
@@ -183,9 +172,8 @@ const BrailleWritter = ({ category, brailleSymbols, brailleList }) => {
   const handlePrevPage = () => {
     setCurrentPage((prevPage) => {
       const prevPageCalculated = Math.max(prevPage - 1, 0);
-      Speech.speak("이전 칸 입니다. ", {
-        rate: 1.5,
-      });
+      const message = "이전 칸 입니다.";
+      speech(message);
       return prevPageCalculated;
     });
   };
@@ -194,14 +182,9 @@ const BrailleWritter = ({ category, brailleSymbols, brailleList }) => {
   const goToNextBraille = () => {
     setBrailleIndex((prevIndex) => {
       const newIndex = (prevIndex + 1) % brailleSymbols.length;
-      Speech.speak(`다음 ${category} 은 `, {
-        rate: 1.5,
-      });
       const select = whatDot(brailleList[newIndex]);
-      console.log(` ${brailleSymbols[newIndex]}은 ${select} 입니다. `);
-      Speech.speak(` ${brailleSymbols[newIndex]} 입니다. ${select} 입니다. `, {
-        rate: 1.5,
-      });
+      const message = `다음 ${category} 은 ${brailleSymbols[newIndex]} 입니다. ${select} 입니다.`;
+      speech(message);
       
       inputBraille = new Array(brailleList[newIndex].length).fill(0);
       return newIndex;
@@ -212,14 +195,10 @@ const BrailleWritter = ({ category, brailleSymbols, brailleList }) => {
     setBrailleIndex((prevIndex) => {
       let newIndex = prevIndex - 1;
       if (newIndex < 0) newIndex = brailleSymbols.length - 1;
-      Speech.speak(`이전 ${category} 은 `, {
-        rate: 1.5,
-      });
       const select = whatDot(brailleList[newIndex]);
-      console.log(` ${brailleSymbols[newIndex]}은 ${select} 입니다. `);
-      Speech.speak(` ${brailleSymbols[newIndex]} 입니다. ${select} 입니다. `, {
-        rate: 1.5,
-      });
+      const message = `이전 ${category} 은 ${brailleSymbols[newIndex]} 입니다. ${select} 입니다.`;
+      speech(message);
+
       inputBraille = new Array(brailleList[newIndex].length).fill(0);
       return newIndex;
     });
@@ -241,7 +220,8 @@ const BrailleWritter = ({ category, brailleSymbols, brailleList }) => {
                 goToNextBraille();
               }
               else {
-                Speech.speak("다음", { rate: 1.5 });
+                const message = "다음";
+                speech(message);
               }
             } 
             else {
@@ -249,7 +229,8 @@ const BrailleWritter = ({ category, brailleSymbols, brailleList }) => {
                 handleNextPage();
               }
               else {
-                Speech.speak("다음", { rate: 1.5 });
+                const message = "다음";
+                speech(message);
               }
             }
           } 
@@ -260,7 +241,8 @@ const BrailleWritter = ({ category, brailleSymbols, brailleList }) => {
                 goToPrevBraille();
               }
               else {
-                Speech.speak("이전", { rate: 1.5 });
+                const message = "이전";
+                speech(message);
               }
             } 
             else {
@@ -268,7 +250,8 @@ const BrailleWritter = ({ category, brailleSymbols, brailleList }) => {
                 handlePrevPage();
               }
               else {
-                Speech.speak("이전", { rate: 1.5 });
+                const message = "이전";
+                speech(message);
               }
             }
           } 
@@ -287,9 +270,8 @@ const BrailleWritter = ({ category, brailleSymbols, brailleList }) => {
             `Touched area index: ${index}, X : ${touch.pageX}, Y : ${touch.pageY}`
           );
           if (index !== -1 && !speakIndex[index]) {
-            Speech.speak(speakMessages[index], {
-              rate: 1.5,
-            });
+            const message = speakMessages[index];
+            speech(message);
             for (var i = 0; i < 6; ++i) {
               if (i != index) {
                 speakIndex[i] = false;

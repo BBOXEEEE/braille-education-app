@@ -1,6 +1,6 @@
 import React, { useRef, useState, useEffect } from "react";
 import { StyleSheet, View, PanResponder, Text } from "react-native";
-import * as Speech from "expo-speech";
+import { useTTS } from "./TTSContext";
 import { Dimensions } from "react-native";
 import getRandomBrailleIndex from './RandomBrailleGenerator';
 
@@ -62,6 +62,7 @@ const speakMessages = ["4점", "5점", "6점", "1점", "2점", "3점"];
 var speakIndex = [false, false, false, false, false, false];
 
 const BrailleWTester = ({ category, brailleSymbols, brailleList }) => {
+  const { speech } = useTTS();
   const [brailleIndex, setBrailleIndex] = useState(0);
   const [lastTap, setLastTap] = useState(null);
   const brailleIndexRef = useRef(brailleIndex);
@@ -74,20 +75,11 @@ const BrailleWTester = ({ category, brailleSymbols, brailleList }) => {
   const currentPageRef = useRef(currentPage);
 
   useEffect(() => {
-    Speech.speak(
-      "점자 쓰기 시험입니다. 1점부터 6점까지 터치하여 점자를 입력하세요.    ",
-      {
-        rate: 1.5,
-      }
-    );
     randomIndex = getRandomBrailleIndex(brailleList);
     inputBraille = new Array(brailleList[randomIndex[brailleIndex]].length).fill(0);
-    Speech.speak(
-      ` ${category}, ${brailleSymbols[randomIndex[brailleIndex]]} 입니다. `,
-      {
-        rate: 1.5,
-      }
-    );
+    const message = `점자 쓰기 시험입니다. 1점부터 6점까지 터치하여 점자를 입력하세요.
+                    ${category}, ${brailleSymbols[randomIndex[brailleIndex]]} 입니다.`;
+    speech(message);
   }, []);
 
   useEffect(() => {
@@ -124,17 +116,15 @@ const BrailleWTester = ({ category, brailleSymbols, brailleList }) => {
 
     if (brailleOne == touchNum) {
       if (!isCorrect(inputBraille, brailleList[randomIndex[currentBrailleIndex]])) {
-        Speech.speak("잘못된 입력 입니다. 다시 입력하세요.", {
-          rate: 1.5,
-        });
+        const message = "잘못된 입력 입니다. 다시 입력하세요.";
+        speech(message);
         inputBraille = new Array(brailleList[randomIndex[currentBrailleIndex]].length).fill(
           0
         );
         touchNum = 0;
       } else {
-        Speech.speak("정답 입니다! ", {
-          rate: 1.5,
-        });
+        const message = "정답 입니다! ";
+        speech(message);
         touchNum = 0;
       }
     }
@@ -157,10 +147,8 @@ const BrailleWTester = ({ category, brailleSymbols, brailleList }) => {
 
   const brailleCheck = (currentIndex) => {
     const select = whatDot(brailleList[randomIndex[currentIndex.current]]);
-    console.log(` ${category}, ${brailleSymbols[randomIndex[currentIndex.current]]}은 ${select} 입니다. `);
-    Speech.speak(` ${category} ${brailleSymbols[randomIndex[currentIndex.current]]}은 ${select} 입니다. `, {
-      rate: 1.5,
-    });
+    const message = ` ${category} ${brailleSymbols[randomIndex[currentIndex.current]]}은 ${select} 입니다.`;
+    speech(message);
   };
 
   const whatDot = (braille) => {
@@ -181,9 +169,8 @@ const BrailleWTester = ({ category, brailleSymbols, brailleList }) => {
   const handleNextPage = () => {
     setCurrentPage((prevPage) => {
       const nextPage = Math.min(prevPage + 1, maxPageRef.current);
-      Speech.speak("다음 칸 입니다. ", {
-        rate: 1.5,
-      });
+      const message = "다음 칸 입니다.";
+      speech(message);
       return nextPage;
     });
   };
@@ -191,9 +178,8 @@ const BrailleWTester = ({ category, brailleSymbols, brailleList }) => {
   const handlePrevPage = () => {
     setCurrentPage((prevPage) => {
       const prevPageCalculated = Math.max(prevPage - 1, 0);
-      Speech.speak("이전 칸 입니다. ", {
-        rate: 1.5,
-      });
+      const message = "이전 칸 입니다.";
+      speech(message);
       return prevPageCalculated;
     });
   };
@@ -202,12 +188,8 @@ const BrailleWTester = ({ category, brailleSymbols, brailleList }) => {
   const goToNextBraille = () => {
     setBrailleIndex((prevIndex) => {
       const newIndex = (prevIndex + 1) % randomIndex.length;
-      Speech.speak(`다음 ${category} 은 `, {
-        rate: 1.5,
-      });
-      Speech.speak(` ${brailleSymbols[randomIndex[newIndex]]} 입니다. `, {
-        rate: 1.5,
-      });
+      const message = `다음 ${category} 은 ${brailleSymbols[randomIndex[newIndex]]} 입니다.`;
+      speech(message);
       inputBraille = new Array(brailleList[randomIndex[newIndex]].length).fill(0);
       return newIndex;
     });
@@ -217,12 +199,8 @@ const BrailleWTester = ({ category, brailleSymbols, brailleList }) => {
     setBrailleIndex((prevIndex) => {
       let newIndex = prevIndex - 1;
       if (newIndex < 0) newIndex = randomIndex.length - 1;
-      Speech.speak(`이전 ${category} 은 `, {
-        rate: 1.5,
-      });
-      Speech.speak(` ${brailleSymbols[randomIndex[newIndex]]} 입니다. `, {
-        rate: 1.5,
-      });
+      const message = `이전 ${category} 은 ${brailleSymbols[randomIndex[newIndex]]} 입니다.`;
+      speech(message);
       inputBraille = new Array(brailleList[randomIndex[newIndex]].length).fill(0);
       return newIndex;
     });
@@ -244,7 +222,8 @@ const BrailleWTester = ({ category, brailleSymbols, brailleList }) => {
                 goToNextBraille();
               }
               else {
-                Speech.speak("다음", { rate: 1.5 });
+                const message = "다음";
+                speech(message);
               }
             } 
             else {
@@ -252,7 +231,8 @@ const BrailleWTester = ({ category, brailleSymbols, brailleList }) => {
                 handleNextPage();
               }
               else {
-                Speech.speak("다음", { rate: 1.5 });
+                const message = "다음";
+                speech(message);
               }
             }
           } 
@@ -263,7 +243,8 @@ const BrailleWTester = ({ category, brailleSymbols, brailleList }) => {
                 goToPrevBraille();
               }
               else {
-                Speech.speak("이전", { rate: 1.5 });
+                const message = "이전";
+                speech(message);
               }
             } 
             else {
@@ -271,7 +252,8 @@ const BrailleWTester = ({ category, brailleSymbols, brailleList }) => {
                 handlePrevPage();
               }
               else {
-                Speech.speak("이전", { rate: 1.5 });
+                const message = "이전";
+                speech(message);
               }
             }
           } 
@@ -281,7 +263,8 @@ const BrailleWTester = ({ category, brailleSymbols, brailleList }) => {
               brailleCheck(brailleIndexRef);
             }
             else {
-              Speech.speak("정답확인", { rate: 1.5 });  
+              const message = "정답확인";
+              speech(message);
             }
           }
           else if (lastTapRef.current && now - lastTapRef.current < 300) {
@@ -299,9 +282,8 @@ const BrailleWTester = ({ category, brailleSymbols, brailleList }) => {
             `Touched area index: ${index}, X : ${touch.pageX}, Y : ${touch.pageY}`
           );
           if (index !== -1 && !speakIndex[index]) {
-            Speech.speak(speakMessages[index], {
-              rate: 1.5,
-            });
+            const message = speakMessages[index];
+            speech(message);
             for (var i = 0; i < 6; ++i) {
               if (i != index) {
                 speakIndex[i] = false;

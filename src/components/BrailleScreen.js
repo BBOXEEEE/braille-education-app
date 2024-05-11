@@ -1,13 +1,33 @@
-import React from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { View, Text, TouchableOpacity, StyleSheet, SafeAreaView } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
+import { useTTS } from '../components/TTSContext';
 
 const BrailleScreen = ({ steps }) => {
+  const { speech } = useTTS();
+  const [previousTouchTime, setPreviousTouchTime] = useState(null);
+  const previousTouchTimeRef = useRef(null);
+  useEffect(() => {
+    previousTouchTimeRef.current = previousTouchTime;
+  }, [previousTouchTime]);
+
   const navigation = useNavigation();
 
-  const navigateToScreen = (screenName) => {
-    navigation.navigate(screenName);
-  };
+  // 터치 이벤트 처리
+  const handlePressButton = (name, screen) => {
+    const currentTouchTime = Date.now();
+    const isDoubleTouched = (previousTouchTimeRef.current) && (currentTouchTime - previousTouchTimeRef.current) < 300;
+
+    if (isDoubleTouched) {
+      navigation.navigate(screen);
+    }
+    else {
+      const message = `${name}`;
+      speech(message);
+    }
+    previousTouchTimeRef.current = currentTouchTime;
+    setPreviousTouchTime(previousTouchTimeRef.current);
+  }
 
   return (
     <SafeAreaView style={styles.container}>
@@ -23,7 +43,7 @@ const BrailleScreen = ({ steps }) => {
           <TouchableOpacity
             key={index}
             style={styles.button}
-            onPress={() => navigateToScreen(step.screen)}>
+            onPress={() => handlePressButton(step.name, step.screen)}>
             <Text style={styles.buttonText}>{step.name}</Text>
           </TouchableOpacity>
         ))}

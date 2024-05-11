@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { View, Text, TouchableOpacity, Modal, StyleSheet, SafeAreaView } from 'react-native';
 import * as Speech from 'expo-speech';
+import { useTTS } from '../components/TTSContext';
 
 // 말하기 속도 조절
 const ttsOptions = [
@@ -11,6 +12,9 @@ const ttsOptions = [
 ];
 
 const Home = ({ navigation }) => {
+  // TTS 말하기 속도 조절 Modal
+  const { updateRate, speech } = useTTS();
+
   const [previousTouchTime, setPreviousTouchTime] = useState(null);
   const previousTouchTimeRef = useRef(null);
   useEffect(() => {
@@ -36,12 +40,8 @@ const Home = ({ navigation }) => {
       screen();
     }
     else {
-      const text = `${name}`;
-      const options = {
-        voice: "com.apple.voice.compact.ko-KR.Yuna",
-        rate: 1.4
-      };
-      Speech.speak(text, options);
+      const message = `${name}`;
+      speech(message);
     }
     previousTouchTimeRef.current = currentTouchTime;
     setPreviousTouchTime(previousTouchTimeRef.current);
@@ -53,16 +53,12 @@ const Home = ({ navigation }) => {
     const isDoubleTouched = (previousTouchTimeRef.current) && (currentTouchTime - previousTouchTimeRef.current) < 300;
 
     if (isDoubleTouched) {
+      updateRate({ value: rate });
       setModalVisible(false);
     }
     else {
-      const text = `${label}`;
-      const options = {
-        voice: 'com.apple.voice.compact.ko-KR.Yuna',
-        rate,
-      };
-
-      Speech.speak(text, options);
+      const message = `${label}`;
+      speech(message, rate);
     }
     previousTouchTimeRef.current = currentTouchTime;
     setPreviousTouchTime(previousTouchTimeRef.current);

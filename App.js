@@ -1,13 +1,16 @@
 import { StatusBar } from 'expo-status-bar';
 import { StyleSheet, View } from 'react-native';
 import AppNavigator from './src/navigations/AppNavigator';
+import { TTSProvider } from './src/components/TTSContext';
 
 export default function App() {
   return (
-    <View style={styles.container}>
-      <AppNavigator />
-      <StatusBar style="auto" />
-    </View>
+    <TTSProvider>
+      <View style={styles.container}>
+        <AppNavigator />
+        <StatusBar style="auto" />
+      </View>
+    </TTSProvider>
   );
 }
 

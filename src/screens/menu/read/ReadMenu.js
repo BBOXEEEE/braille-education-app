@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { View, Text, TouchableOpacity, StyleSheet, SafeAreaView, ScrollView } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
-import * as Speech from 'expo-speech';
+import { useTTS } from '../../../components/TTSContext';
 
 const steps = [
   { name: '튜토리얼', screen: 'ReadTutorial' },
@@ -16,6 +16,7 @@ const steps = [
 ];
 
 const ReadMenu = () => {
+  const { speech } = useTTS();
   const [previousTouchTime, setPreviousTouchTime] = useState(null);
   const previousTouchTimeRef = useRef(null);
   useEffect(() => {
@@ -26,7 +27,6 @@ const ReadMenu = () => {
 
   // 터치 이벤트 처리
   const handlePressButton = (name, screen) => {
-    console.log(name);
     const currentTouchTime = Date.now();
     const isDoubleTouched = (previousTouchTimeRef.current) && (currentTouchTime - previousTouchTimeRef.current) < 300;
 
@@ -34,12 +34,8 @@ const ReadMenu = () => {
       navigation.navigate(screen);
     }
     else {
-      const text = `${name}`;
-      const options = {
-        voice: "com.apple.voice.compact.ko-KR.Yuna",
-        rate: 1.4
-      };
-      Speech.speak(text, options);
+      const message = `${name}`;
+      speech(message);
     }
     previousTouchTimeRef.current = currentTouchTime;
     setPreviousTouchTime(previousTouchTimeRef.current);
