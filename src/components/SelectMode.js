@@ -23,7 +23,12 @@ const SelectMode = ({ route, navigation }) => {
         const isDoubleTouched = (previousTouchTimeRef.current) && (currentTouchTime - previousTouchTimeRef.current) < 300;
 
         if (isDoubleTouched) {
-            navigation.navigate('WordReader', { item: item });
+            if (mode === "읽기") {
+                navigation.navigate('WordReader', { item: item });
+            }
+            else {
+                navigation.navigate('WordWritter', { item: item });
+            }
         }
         else {
             const message = `${mode}`;

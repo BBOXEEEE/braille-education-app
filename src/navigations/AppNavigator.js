@@ -76,6 +76,7 @@ import CameraModule from "../screens/camera/CameraModule";
 import ObjectList from "../components/ObjectList";
 import SelectMode from "../components/SelectMode";
 import WordReader from "../components/WordReader";
+import WordWritter from "../components/WordWritter";
 
 // Voca
 
@@ -152,9 +153,12 @@ const AppNavigator = () => {
 
         {/* Camera */}
         <Stack.Screen name="CameraModule" component={CameraModule} />
+
+        {/* Components */}
         <Stack.Screen name="ObjectList" component={ObjectList} />
         <Stack.Screen name="SelectMode" component={SelectMode} />
         <Stack.Screen name="WordReader" component={WordReader} />
+        <Stack.Screen name="WordWritter" component={WordWritter} />
 
       </Stack.Navigator>
     </NavigationContainer>
