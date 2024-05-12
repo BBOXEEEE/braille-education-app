@@ -1,37 +1,32 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { View, Text, TouchableOpacity, StyleSheet, SafeAreaView } from 'react-native';
-import { useTTS } from '../../../components/TTSContext';
-import { loadData } from '../../../components/BrailleStorage';
+import { useTTS } from './TTSContext';
 
-const VocabularyMenu = ({ navigation }) => {
+const modes = [
+    { name: "읽기"},
+    { name: "쓰기"},
+];
+
+const SelectMode = ({ route, navigation }) => {
+    const { item } = route.params;
     const { speech } = useTTS();
-    const [data, setData] = useState([]);
     const [previousTouchTime, setPreviousTouchTime] = useState(null);
     const previousTouchTimeRef = useRef(null);
-
-    // 단어 불러오기
-    useEffect(() => {
-        const load = async () => {
-            const loadedData = await loadData();
-            setData(loadedData);
-        };
-        load();
-    }, []);
 
     useEffect(() => {
         previousTouchTimeRef.current = previousTouchTime;
     }, [previousTouchTime]);
 
     // 터치 이벤트 처리
-    const handlePressButton = (item) => {
+    const handlePressButton = (mode, item) => {
         const currentTouchTime = Date.now();
         const isDoubleTouched = (previousTouchTimeRef.current) && (currentTouchTime - previousTouchTimeRef.current) < 300;
 
         if (isDoubleTouched) {
-            navigation.navigate('SelectMode', { item: item });
+            navigation.navigate('WordReader', { item: item });
         }
         else {
-            const message = `${item.word}`;
+            const message = `${mode}`;
             speech(message);
         }
         previousTouchTimeRef.current = currentTouchTime;
@@ -44,7 +39,7 @@ const VocabularyMenu = ({ navigation }) => {
         const isDoubleTouched = (previousTouchTimeRef.current) && (currentTouchTime - previousTouchTimeRef.current) < 300;
 
         if (isDoubleTouched) {
-            navigation.popToTop();
+            navigation.goBack();
         }
         else {
             const message = "뒤로가기";
@@ -64,9 +59,9 @@ const VocabularyMenu = ({ navigation }) => {
                 <View style={styles.menuPlaceHolder}></View>
             </View>
             <View style={styles.content}>
-                {data.map((item, index) => (
-                    <TouchableOpacity key={index} style={styles.button} onPress={() => handlePressButton(item)}>
-                        <Text style={styles.buttonText}>{item.word}</Text>
+                {modes.map((mode, index) => (
+                    <TouchableOpacity key={index} style={styles.button} onPress={() => handlePressButton(mode.name, item)}>
+                        <Text style={styles.buttonText}>{mode.name}</Text>
                     </TouchableOpacity>
                 ))}
             </View>
@@ -96,7 +91,7 @@ const styles = StyleSheet.create({
         fontSize: 26,
         fontWeight: 'bold',
     },
-    menuPlaceHolder: {
+    menuPlaceholder: {
         width: 38,
     },
     content: {
@@ -112,8 +107,8 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
         shadowColor: '#000',
         shadowOffset: {
-          width: 0,
-          height: 1,
+            width: 0,
+            height: 1,
         },
         shadowOpacity: 0.25,
         shadowRadius: 3.84,
@@ -124,6 +119,6 @@ const styles = StyleSheet.create({
         fontWeight: 'bold',
         color: '#000',
     },
-});
+  });
 
-export default VocabularyMenu;
+export default SelectMode;

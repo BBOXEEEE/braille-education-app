@@ -3,6 +3,7 @@ import { View, Text, TouchableOpacity, StyleSheet, SafeAreaView } from 'react-na
 import { CameraView, useCameraPermissions} from 'expo-camera';
 import axios from 'axios';
 import { useTTS } from '../../components/TTSContext';
+import ObjectList from '../../components/ObjectList';
 
 const CameraModule = ({ navigation }) => {
 	const { speech } = useTTS();
@@ -67,7 +68,6 @@ const CameraModule = ({ navigation }) => {
 
 		if (isDoubleTouched) {
 			const image = await cameraRef.current?.takePictureAsync();
-			console.log(JSON.stringify(image));
 			requestToServer(image);
 		}
 		else {
@@ -90,20 +90,18 @@ const CameraModule = ({ navigation }) => {
 			body.append('file', data);
 
 			const response = await axios.post(url, body, {
-				headers: {
-					'Content-Type': 'multipart/form-data',
-				},
+				headers: { 'Content-Type': 'multipart/form-data', },
 			});
 
 			if (response.status === 200) {
-				console.log(response.data);
-			}
-			else {
-				console.error(response.status);
+                navigation.navigate('ObjectList', { data: response.data });
 			}
 		}
 		catch (error) {
 			console.error(error);
+            const message = "인식에 실패했습니다.";
+            speech(message);
+            navigation.navigate('Home');
 		}
 	}
 

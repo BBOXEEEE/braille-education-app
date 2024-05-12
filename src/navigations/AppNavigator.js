@@ -4,14 +4,12 @@ import { createStackNavigator } from "@react-navigation/stack";
 
 // Home
 import Home from "../screens/Home";
-//import Splash from "../screens/Splash";
 
 // Menu
 import TutorialMenu from "../screens/menu/tutorial/TutorialMenu";
 import ReadMenu from "../screens/menu/read/ReadMenu";
 import WriteMenu from "../screens/menu/write/WriteMenu";
 import VocabularyMenu from "../screens/menu/vocabulary/VocabularyMenu";
-
 
 // Read
 import ReadTutorial from "../screens/menu/read/ReadTutorial";
@@ -73,6 +71,11 @@ import NumberWTester from "../screens/write/tester/NumberWTester";
 
 // Camera
 import CameraModule from "../screens/camera/CameraModule";
+
+// Components
+import ObjectList from "../components/ObjectList";
+import SelectMode from "../components/SelectMode";
+import WordReader from "../components/WordReader";
 
 // Voca
 
@@ -149,6 +152,9 @@ const AppNavigator = () => {
 
         {/* Camera */}
         <Stack.Screen name="CameraModule" component={CameraModule} />
+        <Stack.Screen name="ObjectList" component={ObjectList} />
+        <Stack.Screen name="SelectMode" component={SelectMode} />
+        <Stack.Screen name="WordReader" component={WordReader} />
 
       </Stack.Navigator>
     </NavigationContainer>

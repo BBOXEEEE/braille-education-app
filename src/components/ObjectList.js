@@ -1,22 +1,19 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { View, Text, TouchableOpacity, StyleSheet, SafeAreaView } from 'react-native';
-import { useTTS } from '../../../components/TTSContext';
-import { loadData } from '../../../components/BrailleStorage';
+import { useTTS } from './TTSContext';
+import { saveData } from './BrailleStorage';
 
-const VocabularyMenu = ({ navigation }) => {
+const ObjectList = ({ route, navigation }) => {
+    const { data } = route.params;
     const { speech } = useTTS();
-    const [data, setData] = useState([]);
     const [previousTouchTime, setPreviousTouchTime] = useState(null);
     const previousTouchTimeRef = useRef(null);
 
-    // 단어 불러오기
-    useEffect(() => {
-        const load = async () => {
-            const loadedData = await loadData();
-            setData(loadedData);
-        };
-        load();
-    }, []);
+    // data에 중복된 key 제거
+    const uniqueData = data.filter((item, index, self) => self.findIndex(t => t.word === item.word) === index);
+
+    // 단어 저장
+    saveData(data);
 
     useEffect(() => {
         previousTouchTimeRef.current = previousTouchTime;
@@ -64,7 +61,7 @@ const VocabularyMenu = ({ navigation }) => {
                 <View style={styles.menuPlaceHolder}></View>
             </View>
             <View style={styles.content}>
-                {data.map((item, index) => (
+                {uniqueData.map((item, index) => (
                     <TouchableOpacity key={index} style={styles.button} onPress={() => handlePressButton(item)}>
                         <Text style={styles.buttonText}>{item.word}</Text>
                     </TouchableOpacity>
@@ -126,4 +123,4 @@ const styles = StyleSheet.create({
     },
 });
 
-export default VocabularyMenu;
+export default ObjectList;
