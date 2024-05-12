@@ -9,9 +9,6 @@ const ObjectList = ({ route, navigation }) => {
     const [previousTouchTime, setPreviousTouchTime] = useState(null);
     const previousTouchTimeRef = useRef(null);
 
-    // data에 중복된 key 제거
-    const uniqueData = data.filter((item, index, self) => self.findIndex(t => t.word === item.word) === index);
-
     // 단어 저장
     saveData(data);
 
@@ -61,7 +58,7 @@ const ObjectList = ({ route, navigation }) => {
                 <View style={styles.menuPlaceHolder}></View>
             </View>
             <View style={styles.content}>
-                {uniqueData.map((item, index) => (
+                {data.map((item, index) => (
                     <TouchableOpacity key={index} style={styles.button} onPress={() => handlePressButton(item)}>
                         <Text style={styles.buttonText}>{item.word}</Text>
                     </TouchableOpacity>
