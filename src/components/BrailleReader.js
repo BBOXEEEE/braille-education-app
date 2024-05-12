@@ -93,15 +93,11 @@ const BrailleReader = ({ category, brailleSymbols, brailleList }) => {
         speech(message);
     }, []);
 
-    const tts_information = () => {
+    useEffect(() => {
         const component = getComponentBraille(brailleList[currentBrailleRef.current]);
         const message = `${category} ${brailleSymbols[currentBrailleRef.current]} 입니다. ${component} 입니다.`;
         // console.log(getComponentBraille(brailleList[currentBrailleRef.current]));
         speech(message);
-    };
-
-    useEffect(() => {
-        tts_information();
     }, [currentBraille]);
 
     function tts_dot(index) {
@@ -166,7 +162,10 @@ const BrailleReader = ({ category, brailleSymbols, brailleList }) => {
         }
         // 화면 상단 중앙 : 묵자 TTS
         else if (touch > threshold && touch < 2 * threshold) {
-            tts_information();
+            const component = getComponentBraille(brailleList[currentBrailleRef.current]);
+            const message = `${category} ${brailleSymbols[currentBrailleRef.current]} 입니다. ${component} 입니다.`;
+            // console.log(getComponentBraille(brailleList[currentBrailleRef.current]));
+            speech(message);
         }
         // 화면 상단 우측 : 다음 버튼 TTS
         else {
@@ -186,10 +185,7 @@ const BrailleReader = ({ category, brailleSymbols, brailleList }) => {
             else currentBrailleRef.current = brailleList.length - 1;
         }
         // 화면 상단 중앙 : 묵자
-        else if (touch > threshold && touch < 2 * threshold) {
-            const message = `${category} ${brailleSymbols[currentBrailleRef.current]} 입니다.`;
-            speech(message);
-        }
+        else if (touch > threshold && touch < 2 * threshold) {}
         // 화면 상단 우측 : 다음 버튼
         else {
             currentBrailleRef.current = (currentBrailleRef.current + 1) % brailleList.length;
