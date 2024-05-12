@@ -15,9 +15,15 @@
       "**/*"
     ],
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+      "infoPlist": {
+        "NSCameraUsageDescription": "이 앱에서는 카메라를 사용합니다.",
+        "NSMicrophoneUsageDescription": "이 앱에서는 마이크를 사용합니다.",
+        "NSPhotoLibraryUsageDescription": "이 앱에서는 사진 라이브러리를 사용합니다."
+      }
     },
     "android": {
+      "permissions": ["CAMERA", "RECORD_AUDIO", "WRITE_EXTERNAL_STORAGE"],
       "adaptiveIcon": {
         "foregroundImage": "./src/assets/adaptive-icon.png",
         "backgroundColor": "#ffffff"

@@ -10,7 +10,6 @@ import Home from "../screens/Home";
 import TutorialMenu from "../screens/menu/tutorial/TutorialMenu";
 import ReadMenu from "../screens/menu/read/ReadMenu";
 import WriteMenu from "../screens/menu/write/WriteMenu";
-import CameraMenu from "../screens/menu/camera/CameraMenu";
 import VocabularyMenu from "../screens/menu/vocabulary/VocabularyMenu";
 
 
@@ -73,6 +72,7 @@ import AlphabetWTester from "../screens/write/tester/AlphabetWTester";
 import NumberWTester from "../screens/write/tester/NumberWTester";
 
 // Camera
+import CameraModule from "../screens/camera/CameraModule";
 
 // Voca
 
@@ -88,7 +88,6 @@ const AppNavigator = () => {
         <Stack.Screen name="TutorialMenu" component={TutorialMenu} />
         <Stack.Screen name="ReadMenu" component={ReadMenu} />
         <Stack.Screen name="WriteMenu" component={WriteMenu} />
-        <Stack.Screen name="CameraMenu" component={CameraMenu} />
         <Stack.Screen name="VocabularyMenu" component={VocabularyMenu} />
         {/* Read */}
         <Stack.Screen name="ReadTutorial" component={ReadTutorial} />
@@ -147,6 +146,9 @@ const AppNavigator = () => {
         <Stack.Screen name="AbbreviationWTester3" component={AbbreviationWTester3} />
         <Stack.Screen name="AlphabetWTester" component={AlphabetWTester} />
         <Stack.Screen name="NumberWTester" component={NumberWTester} />
+
+        {/* Camera */}
+        <Stack.Screen name="CameraModule" component={CameraModule} />
 
       </Stack.Navigator>
     </NavigationContainer>

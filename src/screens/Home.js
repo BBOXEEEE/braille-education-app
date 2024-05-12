@@ -25,7 +25,7 @@ const Home = ({ navigation }) => {
     { name: '튜토리얼', navigateTo: () => navigation.navigate('TutorialMenu') },
     { name: '읽기', navigateTo: () => navigation.navigate('ReadMenu') },
     { name: '쓰기', navigateTo: () => navigation.navigate('WriteMenu') },
-    { name: '촬영하기', navigateTo: () => navigation.navigate('CameraMenu') },
+    { name: '촬영하기', navigateTo: () => navigation.navigate('CameraModule') },
     { name: '단어장', navigateTo: () => navigation.navigate('VocabularyMenu') },
     { name: '말하기 속도 조절', navigateTo: () => setModalVisible(true) },
   ];
