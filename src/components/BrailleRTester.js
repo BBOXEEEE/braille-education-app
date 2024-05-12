@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { View, PanResponder, Dimensions, StyleSheet, Text, TouchableWithoutFeedback } from 'react-native';
+import { useNavigation } from '@react-navigation/native';
+import { View, PanResponder, Dimensions, StyleSheet, Text, SafeAreaView, TouchableOpacity } from 'react-native';
 import * as Haptics from 'expo-haptics';
 import { useTTS } from './TTSContext';
 import getRandomBrailleIndex from './RandomBrailleGenerator';
@@ -85,6 +86,7 @@ const BrailleRTester = ({ category, brailleSymbols, brailleList }) => {
     const currentBrailleRef = useRef(currentBraille);
     const touchIndexRef = useRef(touchIndex);
     const previousTouchTimeRef = useRef(null);
+    const navigation = useNavigation();
 
     // 랜덤 점자 인덱스 초기화
     useEffect(() => {
@@ -207,29 +209,77 @@ const BrailleRTester = ({ category, brailleSymbols, brailleList }) => {
         setCurrentBraille(currentBrailleRef.current);
     };
 
-    return (
-        <View {...panResponder.panHandlers} style={styles.container}>
-            { /* Top 1/3 */}
-            <View style={styles.top}>
-                <Text style={styles.text}>이전</Text>
-                <Text style={styles.text}>정답확인</Text>
-                <Text style={styles.text}>다음</Text>
-            </View>
+    // 뒤로가기 버튼 이벤트 처리
+    const handleBackButton = () => {
+        const currentTouchTime = Date.now();
+        const isDoubleTouched = (previousTouchTimeRef.current) && (currentTouchTime - previousTouchTimeRef.current) < 300;
 
-            { /* Bottom 2/3 */}
-            <View  style={styles.bottom} >
-                {points.map((_, index) => (
-                    <View key={index} style={styles.dotContainer}>
-                        <View style={styles.dot} />
-                    </View>
-                ))}
+        if (isDoubleTouched) {
+            navigation.goBack();
+        }
+        else {
+            const message = "뒤로가기";
+            speech(message);
+        }
+        previousTouchTimeRef.current = currentTouchTime;
+        setPreviousTouchTime(previousTouchTimeRef.current);
+    };
+
+    return (
+        <SafeAreaView style={styles.container}>
+            <View style={styles.header}>
+                <TouchableOpacity onPress={handleBackButton}>
+                    <Text style={styles.headerButton}>Back</Text>
+                </TouchableOpacity>
+                <Text style={styles.headerTitle}>점자랑</Text>
+                <View style={styles.menuPlaceholder} />
             </View>
-        </View>
+            <View {...panResponder.panHandlers} style={styles.content}>
+                { /* Top 1/3 */}
+                <View style={styles.top}>
+                    <Text style={styles.text}>이전</Text>
+                    <Text style={styles.text}>정답확인</Text>
+                    <Text style={styles.text}>다음</Text>
+                </View>
+
+                { /* Bottom 2/3 */}
+                <View  style={styles.bottom} >
+                    {points.map((_, index) => (
+                        <View key={index} style={styles.dotContainer}>
+                            <View style={styles.dot} />
+                        </View>
+                    ))}
+                </View>
+            </View>
+        </SafeAreaView>
     );
 };
 
 const styles = StyleSheet.create({
     container: {
+        flex: 1,
+        backgroundColor: '#f0f0f0',
+    },
+    header: {
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        alignItems: 'center',
+        backgroundColor: '#000',
+        padding: 15,
+    },
+    headerButton: {
+        color: '#fff',
+        fontSize: 18,
+    },
+    headerTitle: {
+        color: '#fff',
+        fontSize: 26,
+        fontWeight: 'bold',
+    },
+    menuPlaceholder: {
+        width: 38,
+    },
+    content: {
         flex: 1,
     },
     top: {
@@ -241,7 +291,7 @@ const styles = StyleSheet.create({
     text: {
         fontSize: 24,
         fontWeight: 'bold',
-        marginTop: 150,
+        marginTop: '20%',
     },
     bottom: {
         flex: 2,
