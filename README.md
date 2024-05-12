@@ -15,9 +15,9 @@
 
 |Name|Role|Git|
 |:--:|:--:|:--:|
-|박세현|팀장|[bboxeeee](https://github.com/BBOXEEEE)
-|조승대|팀원|[babbaja](https://github.com/babbaja)
-|오주영|팀원|[JuYeong17](https://github.com/JuYeong17)
+|Sehyeon Park|팀장|[bboxeeee](https://github.com/BBOXEEEE)
+|Seungdae Cho|팀원|[babbaja](https://github.com/babbaja)
+|Juyeong Oh|팀원|[JuYeong17](https://github.com/JuYeong17)
 
 ## ⚙️ Installation
 
