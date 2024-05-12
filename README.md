@@ -40,4 +40,5 @@ $ npm install
 $ npx expo start
 ```
 
-You can run this application on iOS & Android simulator and your smartphone via Expo Go.
+You can run this App. on iOS & Android simulator and your smartphone via Expo Go.
+- For Android, directory name must consist of English!
