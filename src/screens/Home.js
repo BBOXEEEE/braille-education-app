@@ -1,6 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { View, Text, TouchableOpacity, Modal, StyleSheet, SafeAreaView } from 'react-native';
-import * as Speech from 'expo-speech';
 import { useTTS } from '../components/TTSContext';
 
 // 말하기 속도 조절

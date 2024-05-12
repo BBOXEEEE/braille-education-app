@@ -1,6 +1,6 @@
 import React from "react";
 import { NavigationContainer } from "@react-navigation/native";
-import { createNativeStackNavigator } from "@react-navigation/native-stack";
+import { createStackNavigator } from "@react-navigation/stack";
 
 // Home
 import Home from "../screens/Home";
@@ -76,12 +76,12 @@ import NumberWTester from "../screens/write/tester/NumberWTester";
 
 // Voca
 
-const Stack = createNativeStackNavigator();
+const Stack = createStackNavigator();
 
 const AppNavigator = () => {
   return (
     <NavigationContainer>
-      <Stack.Navigator screenOptions={{ headerShown: false }}>
+      <Stack.Navigator screenOptions={{ headerShown: false, gestureEnabled: false}}>
         {/*<Stack.Screen name="Splash" component={Splash} />*/}
         <Stack.Screen name="Home" component={Home} />
         {/* Menu */}

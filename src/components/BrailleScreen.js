@@ -29,10 +29,26 @@ const BrailleScreen = ({ steps }) => {
     setPreviousTouchTime(previousTouchTimeRef.current);
   }
 
+  // 뒤로가기 버튼 이벤트 처리
+  const handleBackButton = () => {
+    const currentTouchTime = Date.now();
+    const isDoubleTouched = (previousTouchTimeRef.current) && (currentTouchTime - previousTouchTimeRef.current) < 300;
+
+    if (isDoubleTouched) {
+      navigation.goBack();
+    }
+    else {
+      const message = "뒤로가기";
+      speech(message);
+    }
+    previousTouchTimeRef.current = currentTouchTime;
+    setPreviousTouchTime(previousTouchTimeRef.current);
+  }
+
   return (
     <SafeAreaView style={styles.container}>
       <View style={styles.header}>
-        <TouchableOpacity onPress={() => navigation.goBack()}>
+        <TouchableOpacity onPress={handleBackButton}>
           <Text style={styles.headerButton}>Back</Text>
         </TouchableOpacity>
         <Text style={styles.headerTitle}>점자랑</Text>
