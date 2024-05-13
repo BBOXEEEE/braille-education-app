@@ -11,6 +11,7 @@ import WriteMenu from "../screens/menu/write/WriteMenu";
 
 // Tutorial
 import TutorialMenu from "../screens/tutorial/TutorialMenu";
+import TutorialFunction from "../screens/tutorial/TutorialFunction";
 import ReadTutorial from "../screens/tutorial/ReadTutorial";
 import ReadTestTutorial from "../screens/tutorial/ReadTestTutorial";
 import ReadPractice from "../screens/tutorial/ReadPractice";
@@ -102,6 +103,7 @@ const AppNavigator = () => {
 
         {/* Tutorial */}
         <Stack.Screen name="TutorialMenu" component={TutorialMenu} />
+        <Stack.Screen name="TutorialFunction" component={TutorialFunction}/>
         <Stack.Screen name="ReadTutorial" component={ReadTutorial} />
         <Stack.Screen name="ReadTestTutorial" component={ReadTestTutorial} />
         <Stack.Screen name="ReadPractice" component={ReadPractice} />

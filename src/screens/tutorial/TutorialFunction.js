@@ -1,40 +1,41 @@
-import React, { useEffect} from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, SafeAreaView } from 'react-native';
+import React, { useState, useEffect, useRef } from 'react';
+import { View, Text, TouchableOpacity, Modal, StyleSheet, SafeAreaView } from 'react-native';
 import { useTTS } from '../../components/TTSContext';
 
-const TutorialMenu = ({ navigation }) => {
+const TutorialFunction = ({ navigation }) => {
+  // TTS 말하기 속도 조절 Modal
   const { speech } = useTTS();
-  const [previousTouchTime, setPreviousTouchTime] = React.useState(null);
-  const previousTouchTimeRef = React.useRef(null);
 
-  const explanation = "버튼을 클릭하는 방법에 대해 먼저 알려드리겠습니다. 버튼을 한번 누르게 되면 해당 버튼의 기능을 음성으로 안내하고 두번 누르게 되면 기능이 실행됩니다. 아래 '넘어가기' 버튼을 눌러주세요. '다시듣기' 버튼은 이 음성을 다시 들을 수 있습니다.";
-
+  const [previousTouchTime, setPreviousTouchTime] = useState(null);
+  const previousTouchTimeRef = useRef(null);
   useEffect(() => {
     previousTouchTimeRef.current = previousTouchTime;
   }, [previousTouchTime]);
+
+  const explanation = "다음은 앱 기능에 대한 설명입니다. 각 버튼을 눌러 기능 설명을 들으세요.";
 
   useEffect(() => {
     speech(explanation);
   }, []);
 
-  const buttons = [
-    { name: '다시듣기'},
-    { name: '넘어가기'},
+  const steps = [
+    { name: '읽기', message:'점자를 단계별로 읽는 것을 학습하고, 시험 볼 수 있습니다. 더 자세한 내용은 읽기 메뉴에 튜토리얼을 참고해주세요.'},
+    { name: '쓰기', message:'점자를 단계별로 써보고 쓰는것을 학습하고, 시험볼 수  있습니다. 더 자세한 내용은 쓰기 메뉴에 튜토리얼을 참고해주세요.'},
+    { name: '촬영하기',  message:'촬영한 주변 사물의 이름를 점자로 읽고 써 볼 수 있습니다.'},
+    { name: '단어장',message:'촬영하고 인지된 사물의 이름들을 저장해놓고 다시 학습할 수 있습니다.' },
+    { name: '말하기 속도 조절', message:'TTS 속도를 조절할 수 있습니다.' },
   ];
 
-  const handlePressButton = (name) => {
+  // 터치 이벤트 처리
+  const handlePressButton = (name, message) => {
     const currentTouchTime = Date.now();
     const isDoubleTouched = (previousTouchTimeRef.current) && (currentTouchTime - previousTouchTimeRef.current) < 300;
-  
+
     if (isDoubleTouched) {
-      if (name === '다시듣기') {
-        speech(explanation);
-      } else {
-        navigation.navigate('TutorialFunction');
-      }    
-    } else {
-      const word=`${name}`;
-      speech(word);
+      speech(message);
+    }
+    else {
+      speech(name);
     }
     previousTouchTimeRef.current = currentTouchTime;
     setPreviousTouchTime(previousTouchTimeRef.current);
@@ -61,9 +62,12 @@ const TutorialMenu = ({ navigation }) => {
         <View style={styles.menuPlaceholder} />
       </View>
       <View style={styles.content}>
-        {buttons.map((button, index) => (
-          <TouchableOpacity key={index} style={styles.button} onPress={() => handlePressButton(button.name)}>
-            <Text style={styles.buttonText}>{button.name}</Text>
+        {steps.map((step, index) => (
+          <TouchableOpacity
+            key={index}
+            style={styles.button}
+            onPress={() => handlePressButton(step.name, step.message)}>
+            <Text style={[styles.buttonText, styles.boldText]}>{step.name}</Text>
           </TouchableOpacity>
         ))}
       </View>
@@ -162,4 +166,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default TutorialMenu;
+export default TutorialFunction;
