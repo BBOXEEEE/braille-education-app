@@ -9,7 +9,6 @@ import Home from "../screens/Home";
 import TutorialMenu from "../screens/menu/tutorial/TutorialMenu";
 import ReadMenu from "../screens/menu/read/ReadMenu";
 import WriteMenu from "../screens/menu/write/WriteMenu";
-import VocabularyMenu from "../screens/menu/vocabulary/VocabularyMenu";
 
 // Read
 import ReadTutorial from "../screens/menu/read/ReadTutorial";
@@ -72,6 +71,9 @@ import NumberWTester from "../screens/write/tester/NumberWTester";
 // Camera
 import CameraModule from "../screens/camera/CameraModule";
 
+// Voca
+import VocabularyModule from "../screens/vocabulary/VocabularyModule";
+
 // Components
 import ObjectList from "../components/ObjectList";
 import SelectMode from "../components/SelectMode";
@@ -92,7 +94,7 @@ const AppNavigator = () => {
         <Stack.Screen name="TutorialMenu" component={TutorialMenu} />
         <Stack.Screen name="ReadMenu" component={ReadMenu} />
         <Stack.Screen name="WriteMenu" component={WriteMenu} />
-        <Stack.Screen name="VocabularyMenu" component={VocabularyMenu} />
+
         {/* Read */}
         <Stack.Screen name="ReadTutorial" component={ReadTutorial} />
         <Stack.Screen name="ReadInitialConsonant" component={ReadInitialConsonant} />
@@ -153,6 +155,9 @@ const AppNavigator = () => {
 
         {/* Camera */}
         <Stack.Screen name="CameraModule" component={CameraModule} />
+
+        {/* Voca */}
+        <Stack.Screen name="VocabularyModule" component={VocabularyModule} />
 
         {/* Components */}
         <Stack.Screen name="ObjectList" component={ObjectList} />

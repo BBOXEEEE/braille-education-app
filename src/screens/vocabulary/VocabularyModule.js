@@ -1,9 +1,9 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { View, Text, TouchableOpacity, StyleSheet, SafeAreaView } from 'react-native';
-import { useTTS } from '../../../components/TTSContext';
-import { loadData } from '../../../components/BrailleStorage';
+import { useTTS } from '../../components/TTSContext';
+import { loadData } from '../../components/BrailleStorage';
 
-const VocabularyMenu = ({ navigation }) => {
+const VocabularyModule = ({ navigation }) => {
     const { speech } = useTTS();
     const [data, setData] = useState([]);
     const [previousTouchTime, setPreviousTouchTime] = useState(null);
@@ -20,23 +20,32 @@ const VocabularyMenu = ({ navigation }) => {
         load();
     }, []);
 
+    // 저장된 단어가 없을 경우 TTS 안내
+    useEffect(() => {
+        if (data.length === 0) {
+            const message = "저장된 단어 목록이 없습니다.";
+            speech(message);
+        }
+    }, [data.length]);
+
+    // 현재 페이지의 항목
+    const currentItems = data.slice(currentPage * itemsPerPage, (currentPage + 1) * itemsPerPage);
+
     useEffect(() => {
         previousTouchTimeRef.current = previousTouchTime;
     }, [previousTouchTime]);
 
     const nextPage = () => {
-      if ((currentPage + 1) * itemsPerPage < data.length) {
-        setCurrentPage(currentPage + 1);
-      }
+        if ((currentPage + 1) * itemsPerPage < data.length) {
+            setCurrentPage(currentPage + 1);
+        }
     };
   
     const prevPage = () => {
-      if (currentPage > 0) {
-        setCurrentPage(currentPage - 1);
-      }
+        if (currentPage > 0) {
+            setCurrentPage(currentPage - 1);
+        }
     };
-
-    const currentItems = data.slice(currentPage * itemsPerPage, (currentPage + 1) * itemsPerPage);
 
     // 터치 이벤트 처리
     const handlePressButton = (item) => {
@@ -79,22 +88,26 @@ const VocabularyMenu = ({ navigation }) => {
                 <View style={styles.menuPlaceHolder}></View>
             </View>
             <View style={styles.content}>
-                {currentItems.map((item, index) => (
-                    <TouchableOpacity key={index} style={styles.button} onPress={() => handlePressButton(item)}>
-                        <Text style={styles.buttonText}>{item.word}</Text>
-                    </TouchableOpacity>
-                ))}
+                {data.length === 0 ? (
+                    <Text style={{ textAlign: 'center' }}>No saved word list.</Text>
+                ) : (
+                    currentItems.map((item, index) => (
+                        <TouchableOpacity key={index} style={styles.button} onPress={() => handlePressButton(item)}>
+                            <Text style={styles.buttonText}>{item.word}</Text>
+                        </TouchableOpacity>
+                    ))
+                )}
             </View>
             <View style={styles.footer}>
             {currentPage > 0 && (
-              <TouchableOpacity onPress={() => handleDoubleClick(prevPage, '이전 페이지')} style={styles.navButton}>
-              <Text style={styles.navText}>이전</Text>
-              </TouchableOpacity>
+                <TouchableOpacity onPress={() => handleDoubleClick(prevPage, '이전 페이지')} style={styles.navButton}>
+                    <Text style={styles.navText}>이전</Text>
+                </TouchableOpacity>
             )}
             {(currentPage + 1) * itemsPerPage < data.length && (
-              <TouchableOpacity onPress={() => handleDoubleClick(nextPage, '다음 페이지')} style={styles.navButton}>
-              <Text style={styles.navText}>다음</Text>
-              </TouchableOpacity>
+                <TouchableOpacity onPress={() => handleDoubleClick(nextPage, '다음 페이지')} style={styles.navButton}>
+                    <Text style={styles.navText}>다음</Text>
+                </TouchableOpacity>
             )}
           </View>
         </SafeAreaView>
@@ -167,4 +180,4 @@ const styles = StyleSheet.create({
     }
 });
 
-export default VocabularyMenu;
+export default VocabularyModule;
