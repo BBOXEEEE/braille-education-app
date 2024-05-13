@@ -1,5 +1,6 @@
 import React, { useRef, useState, useEffect } from "react";
-import { StyleSheet, View, PanResponder, Text } from "react-native";
+import { useNavigation } from '@react-navigation/native';
+import { StyleSheet, View, PanResponder, Text, SafeAreaView, TouchableOpacity } from "react-native";
 import { useTTS } from "./TTSContext";
 import { Dimensions } from "react-native";
 
@@ -72,6 +73,9 @@ const BrailleWritter = ({ category, brailleSymbols, brailleList }) => {
   const [maxPage, setMaxPage] = useState(0);
   const maxPageRef = useRef(maxPage);
   const currentPageRef = useRef(currentPage);
+  const [previousTouchTime, setPreviousTouchTime] = useState(null);
+  const previousTouchTimeRef = useRef(null);
+  const navigation = useNavigation();
 
   useEffect(() => {
     const select = whatDot(brailleList[brailleIndex]);
@@ -97,6 +101,10 @@ const BrailleWritter = ({ category, brailleSymbols, brailleList }) => {
   useEffect(() => {
     currentPageRef.current = currentPage;
   }, [currentPage]);
+
+  useEffect(() => {
+    previousTouchTimeRef.current = previousTouchTime;
+  }, [previousTouchTimeRef])
 
   const handleDoubleTap = (index) => {
     const currentBrailleIndex = brailleIndexRef.current;
@@ -292,29 +300,76 @@ const BrailleWritter = ({ category, brailleSymbols, brailleList }) => {
     })
   ).current;
 
-  return (
-    <View {...panResponder.panHandlers} style={styles.container}>
-            { /* Top 1/3 */}
-            <View style={styles.top}>
-                <Text style={styles.text}>이전</Text>
-                <Text style={styles.symbol}>{brailleSymbols[brailleIndex]}</Text>
-                <Text style={styles.text}>다음</Text>
-            </View>
+  const handleBackButton = () => {
+    const currentTouchTime = Date.now();
+    const isDoubleTouched = (previousTouchTimeRef.current) && (currentTouchTime - previousTouchTimeRef.current) < 300;
 
-            { /* Bottom 2/3 */}
-            <View  style={styles.bottom} >
-                {points.map((_, index) => (
-                    <View key={index} style={styles.dotContainer}>
-                        <View style={styles.dot} />
+    if (isDoubleTouched) {
+        navigation.goBack();
+    }
+    else {
+        const message = "뒤로가기";
+        speech(message);
+    }
+    previousTouchTimeRef.current = currentTouchTime;
+    setPreviousTouchTime(previousTouchTimeRef.current);
+};
+
+  return (
+    <SafeAreaView style={styles.container}>
+      <View style={styles.header}>
+        <TouchableOpacity onPress={handleBackButton}>
+          <Text style={styles.headerButton}>Back</Text>
+        </TouchableOpacity>
+        <Text style={styles.headerTitle}>점자랑</Text>
+        <View style={styles.menuPlaceholder} />
+      </View>
+      <View {...panResponder.panHandlers} style={styles.content}>
+        { /* Top 1/3 */}
+        <View style={styles.top}>
+          <Text style={styles.text}>이전</Text>
+          <Text style={styles.symbol}>{brailleSymbols[brailleIndex]}</Text>
+          <Text style={styles.text}>다음</Text>
+        </View>
+        
+        { /* Bottom 2/3 */}
+        <View  style={styles.bottom} >
+          {points.map((_, index) => (
+             <View key={index} style={styles.dotContainer}>
+              <View style={styles.dot} />
                     </View>
-                ))}
+              ))}
             </View>
         </View>
+    </SafeAreaView>
   );
 };
 
 const styles = StyleSheet.create({
   container: {
+      flex: 1,
+      backgroundColor: '#f0f0f0',
+  },
+  header: {
+      flexDirection: 'row',
+      justifyContent: 'space-between',
+      alignItems: 'center',
+      backgroundColor: '#000',
+      padding: 15,
+  },
+  headerButton: {
+      color: '#fff',
+      fontSize: 18,
+  },
+  headerTitle: {
+      color: '#fff',
+      fontSize: 26,
+      fontWeight: 'bold',
+  },
+  menuPlaceholder: {
+      width: 38,
+  },
+  content: {
       flex: 1,
   },
   top: {
@@ -326,12 +381,12 @@ const styles = StyleSheet.create({
   text: {
       fontSize: 24,
       fontWeight: 'bold',
-      marginTop: 150,
+      marginTop: '20%',
   },
   symbol: {
       fontSize: 36,
       fontWeight: 'bold',
-      marginTop: 150,
+      marginTop: '20%',
   },
   bottom: {
       flex: 2,
@@ -352,4 +407,5 @@ const styles = StyleSheet.create({
       backgroundColor: 'black',
   },
 });
+
 export default BrailleWritter;
