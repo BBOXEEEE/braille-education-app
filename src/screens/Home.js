@@ -21,6 +21,12 @@ const Home = ({ navigation }) => {
   }, [previousTouchTime]);
   const [modalVisible, setModalVisible] = useState(false);
 
+  // 앱 최초 실행 시 안내 TTS
+  useEffect(() => {
+    const message = "원활한 사용을 위해 Voice Over 혹은 TalkBack을 비활성화 해주세요. 버튼을 두번 터치하면 해당 화면으로 이동합니다.";
+    speech(message, 1.3);
+  }, []);
+
   const steps = [
     { name: '튜토리얼', navigateTo: () => navigation.navigate('TutorialMenu') },
     { name: '읽기', navigateTo: () => navigation.navigate('ReadMenu') },
