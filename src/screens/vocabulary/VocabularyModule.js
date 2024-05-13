@@ -16,17 +16,15 @@ const VocabularyModule = ({ navigation }) => {
         const load = async () => {
             const loadedData = await loadData();
             setData(loadedData);
+
+            // 저장된 단어 목록이 없을 경우 TTS 출력
+            if (loadedData.length === 0) {
+                const message = "저장된 단어 목록이 없습니다.";
+                speech(message);
+            }
         };
         load();
     }, []);
-
-    // 저장된 단어가 없을 경우 TTS 안내
-    useEffect(() => {
-        if (data.length === 0) {
-            const message = "저장된 단어 목록이 없습니다.";
-            speech(message);
-        }
-    }, [data.length]);
 
     // 현재 페이지의 항목
     const currentItems = data.slice(currentPage * itemsPerPage, (currentPage + 1) * itemsPerPage);
