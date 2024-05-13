@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { View, Text, TouchableOpacity, StyleSheet, SafeAreaView } from 'react-native';
-import { useTTS } from '../components/TTSContext';
+import { useTTS } from '../../components/TTSContext';
 
 const ReadTutorial = ({ navigation }) => {
     const { speech } = useTTS();
