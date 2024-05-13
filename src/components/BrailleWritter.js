@@ -101,18 +101,15 @@ const BrailleWritter = ({ category, brailleSymbols, brailleList }) => {
   const handleDoubleTap = (index) => {
     const currentBrailleIndex = brailleIndexRef.current;
     var pageIndex = index + currentPageRef.current * 6;
-    console.log(`Double tap on index: ${pageIndex}, index ${index}`);
     if (index >= 3 && index <= 5) {
       pageIndex -= 3;
     } else {
       pageIndex += 3;
     }
-    console.log(pageIndex);
     inputBraille[pageIndex] = 1;
 
     const brailleOne = brailleOneNum(currentBrailleIndex);
     touchNum++;
-    console.log(inputBraille, brailleList[currentBrailleIndex]);
 
     if (brailleOne == touchNum) {
       if (!isCorrect(inputBraille, brailleList[currentBrailleIndex])) {
@@ -221,7 +218,6 @@ const BrailleWritter = ({ category, brailleSymbols, brailleList }) => {
           const index = getTouchedAreaIndex(touch.pageX, touch.pageY);
           if (touch.pageX >= nextButton.x + 50 && touch.pageY <= nextButton.y) {
             if (currentPageRef.current >= maxPageRef.current) {
-              console.log("다음");
               if (now - lastTapRef.current < 300) {
                 goToNextBraille();
               }
@@ -242,7 +238,6 @@ const BrailleWritter = ({ category, brailleSymbols, brailleList }) => {
           } 
           else if (touch.pageX < prevButton.x && touch.pageY <= prevButton.y ) {
             if (currentPageRef.current === 0) {
-              console.log("이전");
               if (now - lastTapRef.current < 300) {
                 goToPrevBraille();
               }
@@ -262,7 +257,6 @@ const BrailleWritter = ({ category, brailleSymbols, brailleList }) => {
             }
           }
           else if (touch.pageX <= nextButton.x && touch.pageX >= prevButton.x && touch.pageY <= prevButton.y) {
-            console.log("정답확인");
             if (now - lastTapRef.current < 300) {
               brailleCheck(brailleIndexRef);
             }
@@ -282,9 +276,7 @@ const BrailleWritter = ({ category, brailleSymbols, brailleList }) => {
         const touches = evt.nativeEvent.touches;
         touches.forEach((touch) => {
           const index = getTouchedAreaIndex(touch.pageX, touch.pageY);
-          console.log(
-            `Touched area index: ${index}, X : ${touch.pageX}, Y : ${touch.pageY}`
-          );
+          // console.log(`Touched area index: ${index}, X : ${touch.pageX}, Y : ${touch.pageY}`);
           if (index !== -1 && !speakIndex[index]) {
             const message = speakMessages[index];
             speech(message);
