@@ -84,6 +84,7 @@ const BrailleRTester = ({ category, brailleSymbols, brailleList }) => {
     const [touchIndex, setTouchIndex] = useState(-1);
     const [previousTouchTime, setPreviousTouchTime] = useState(null);
     const currentBrailleRef = useRef(currentBraille);
+    const currentSpace = useRef(0);
     const touchIndexRef = useRef(touchIndex);
     const previousTouchTimeRef = useRef(null);
     const navigation = useNavigation();
@@ -104,20 +105,17 @@ const BrailleRTester = ({ category, brailleSymbols, brailleList }) => {
         previousTouchTimeRef.current = previousTouchTime;
     }, [currentBraille, touchIndex, previousTouchTime]);
 
-    const tts_information = () => {
+    useEffect(() => {
         const message = `다음 ${category} 를 읽고 정답확인을 눌러 정답을 확인하세요!`;
         speech(message);
-    };
-
-    useEffect(() => {
-        tts_information();
+        currentSpace.current = 0;
     }, [currentBraille]);
 
     function tts_dot(index) {
         if (index === -1) return;
         const message = `${index+1}점`;
         let pitch = 1;
-        if (brailleList[randomIndex[currentBrailleRef.current]][index] === 1) {
+        if (brailleList[randomIndex[currentBrailleRef.current]][index + (6 * currentSpace.current)] === 1) {
             pitch = 1.5;
         }
         speech(message, null, pitch);
@@ -125,6 +123,11 @@ const BrailleRTester = ({ category, brailleSymbols, brailleList }) => {
 
     useEffect(() => {
         tts_dot(touchIndex);
+
+        // 해당 영역의 brailleList 값이 1일 경우 햅틱 피드백
+        if (brailleList[currentBrailleRef.current][touchIndexRef.current + (6 * currentSpace.current)] === 1) {
+            Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Heavy);
+        }
     }, [touchIndex]);
 
     // PanResponder 초기화
@@ -153,11 +156,6 @@ const BrailleRTester = ({ category, brailleSymbols, brailleList }) => {
                 touches.forEach((touch) => {
                     touchIndexRef.current = getTouchedAreaIndex(touch.pageX, touch.pageY);
                     setTouchIndex(touchIndexRef.current);
-
-                    // 해당 영역의 brailleList 값이 1일 경우 햅틱 피드백
-                    if (brailleList[randomIndex[currentBrailleRef.current]][touchIndexRef.current] === 1) {
-                        Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Heavy);
-                    }
                 });
             },
         })
@@ -165,12 +163,17 @@ const BrailleRTester = ({ category, brailleSymbols, brailleList }) => {
     
     // 화면 상단 터치 이벤트 처리
     const handleTouch = (touch) => {
-        console.log('handleTouch!');
         const threshold = width / 3;
 
         // 화면 상단 좌측 : 이전 버튼 TTS
         if (touch <= threshold) {
-            const message = `이전`;
+            let message;
+            if (currentSpace.current === 0) {
+                message = "이전";
+            }
+            else {
+                message = "이전 칸";
+            }
             speech(message);
         }
         // 화면 상단 중앙 : 정답확인 TTS
@@ -180,20 +183,33 @@ const BrailleRTester = ({ category, brailleSymbols, brailleList }) => {
         }
         // 화면 상단 우측 : 다음 버튼 TTS
         else {
-            const message = `다음`;
+            let message;
+            if (currentSpace.current === brailleList[currentBrailleRef.current].length / 6 - 1) {
+                message = "다음";
+            }
+            else {
+                message = "다음 칸";
+            }
             speech(message);
         }
     };
 
     // 화면 상단 더블 터치 이벤트 처리
     const handleDoubleTouch = (touch) => {
-        console.log('handleDoubleTouch!');
         const threshold = width / 3;
 
         // 화면 상단 좌측 : 이전 버튼
         if (touch <= threshold) {
-            if (currentBrailleRef.current - 1 >= 0) currentBrailleRef.current -= 1;
-            else currentBrailleRef.current = randomIndex.length - 1;
+            // 이전 점자로 이동
+            if (currentSpace.current === 0) {
+                if (currentBrailleRef.current + 1 < brailleList.length) currentBrailleRef.current += 1;
+                else currentBrailleRef.current = 0;
+            }
+            // 이전 점자 칸으로 이동
+            else {
+                const prev = currentSpace.current - 1;
+                currentSpace.current = prev;
+            }
         }
         // 화면 상단 중앙 : 정답확인
         else if (touch > threshold && touch < 2 * threshold) {
@@ -204,7 +220,15 @@ const BrailleRTester = ({ category, brailleSymbols, brailleList }) => {
         }
         // 화면 상단 우측 : 다음 버튼
         else {
-            currentBrailleRef.current = (currentBrailleRef.current + 1) % randomIndex.length;
+            // 다음 점자로 이동
+            if (currentSpace.current === brailleList[currentBrailleRef.current].length / 6 - 1) {
+                currentBrailleRef.current = (currentBrailleRef.current + 1) % brailleList.length;
+            }
+            // 다음 점자 칸으로 이동
+            else {
+                const next = currentSpace.current + 1;
+                currentSpace.current = next;
+            }
         }
         setCurrentBraille(currentBrailleRef.current);
     };

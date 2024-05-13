@@ -200,6 +200,7 @@ const BrailleReader = ({ category, brailleSymbols, brailleList}) => {
                 if (currentBrailleRef.current + 1 < brailleList.length) currentBrailleRef.current += 1;
                 else currentBrailleRef.current = 0;
             }
+            // 이전 점자 칸으로 이동
             else {
                 const prev = currentSpace.current - 1;
                 currentSpace.current = prev;
