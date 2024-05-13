@@ -6,12 +6,18 @@ import { createStackNavigator } from "@react-navigation/stack";
 import Home from "../screens/Home";
 
 // Menu
-import TutorialMenu from "../screens/menu/tutorial/TutorialMenu";
 import ReadMenu from "../screens/menu/read/ReadMenu";
 import WriteMenu from "../screens/menu/write/WriteMenu";
 
+// Tutorial
+import TutorialMenu from "../screens/tutorial/TutorialMenu";
+import ReadTutorial from "../screens/tutorial/ReadTutorial";
+import ReadTestTutorial from "../screens/tutorial/ReadTestTutorial";
+import WriteTutorial from "../screens/tutorial/WriteTutorial";
+import WriteTestTutorial from "../screens/tutorial/WriteTestTutorial";
+
 // Read
-import ReadTutorialMenu from "../screens/menu/read/ReadTutorialMenu";
+import ReadTutorialMenu from "../screens/tutorial/ReadTutorialMenu";
 import ReadInitialConsonant from "../screens/menu/read/ReadInitialConsonant";
 import ReadVowel from "../screens/menu/read/ReadVowel";
 import ReadFinalConsonant from "../screens/menu/read/ReadFinalConsonant";
@@ -40,7 +46,7 @@ import NumberRTester from "../screens/read/tester/NumberRTester";
 import AlphabetRTester from "../screens/read/tester/AlphabetRTester";
 
 // Write
-import WriteTutorialMenu from "../screens/menu/write/WriteTutorialMenu";
+import WriteTutorialMenu from "../screens/tutorial/WriteTutorialMenu";
 import WriteInitialConsonant from "../screens/menu/write/WriteInitialConsonant";
 import WriteVowel from "../screens/menu/write/WriteVowel";
 import WriteFinalConsonant from "../screens/menu/write/WriteFinalConsonant";
@@ -80,24 +86,25 @@ import SelectMode from "../components/SelectMode";
 import WordReader from "../components/WordReader";
 import WordWritter from "../components/WordWritter";
 
-// Tutorial
-
-
-// Voca
-
 const Stack = createStackNavigator();
 
 const AppNavigator = () => {
   return (
     <NavigationContainer>
       <Stack.Navigator screenOptions={{ headerShown: false, gestureEnabled: false}}>
-        {/*<Stack.Screen name="Splash" component={Splash} />*/}
         <Stack.Screen name="Home" component={Home} />
+
         {/* Menu */}
-        <Stack.Screen name="TutorialMenu" component={TutorialMenu} />
         <Stack.Screen name="ReadMenu" component={ReadMenu} />
         <Stack.Screen name="WriteMenu" component={WriteMenu} />
 
+        {/* Tutorial */}
+        <Stack.Screen name="TutorialMenu" component={TutorialMenu} />
+        <Stack.Screen name="ReadTutorial" component={ReadTutorial} />
+        <Stack.Screen name="ReadTestTutorial" component={ReadTestTutorial} />
+        <Stack.Screen name="WriteTutorial" component={WriteTutorial} />
+        <Stack.Screen name="WriteTestTutorial" component={WriteTestTutorial} />
+        
         {/* Read */}
         <Stack.Screen name="ReadTutorialMenu" component={ReadTutorialMenu} />
         <Stack.Screen name="ReadInitialConsonant" component={ReadInitialConsonant} />
