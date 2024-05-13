@@ -8,6 +8,8 @@ const VocabularyMenu = ({ navigation }) => {
     const [data, setData] = useState([]);
     const [previousTouchTime, setPreviousTouchTime] = useState(null);
     const previousTouchTimeRef = useRef(null);
+    const [currentPage, setCurrentPage] = useState(0); // 현재 페이지 인덱스
+    const itemsPerPage = 5; // 페이지당 항목 수
 
     // 단어 불러오기
     useEffect(() => {
@@ -21,6 +23,20 @@ const VocabularyMenu = ({ navigation }) => {
     useEffect(() => {
         previousTouchTimeRef.current = previousTouchTime;
     }, [previousTouchTime]);
+
+    const nextPage = () => {
+      if ((currentPage + 1) * itemsPerPage < data.length) {
+        setCurrentPage(currentPage + 1);
+      }
+    };
+  
+    const prevPage = () => {
+      if (currentPage > 0) {
+        setCurrentPage(currentPage - 1);
+      }
+    };
+
+    const currentItems = data.slice(currentPage * itemsPerPage, (currentPage + 1) * itemsPerPage);
 
     // 터치 이벤트 처리
     const handlePressButton = (item) => {
@@ -38,38 +54,49 @@ const VocabularyMenu = ({ navigation }) => {
         setPreviousTouchTime(previousTouchTimeRef.current);
     };
 
-    // 뒤로가기 버튼 이벤트 처리
-    const handleBackButton = () => {
+    // 버튼 이벤트 처리
+    const handleDoubleClick = (action, message) => {
         const currentTouchTime = Date.now();
         const isDoubleTouched = (previousTouchTimeRef.current) && (currentTouchTime - previousTouchTimeRef.current) < 300;
 
         if (isDoubleTouched) {
-            navigation.popToTop();
-        }
-        else {
-            const message = "뒤로가기";
+            action();
+        } else {
             speech(message);
         }
         previousTouchTimeRef.current = currentTouchTime;
         setPreviousTouchTime(previousTouchTimeRef.current);
     };
 
+
     return (
         <SafeAreaView style={styles.container}>
             <View style={styles.header}>
-                <TouchableOpacity onPress={handleBackButton}>
+                <TouchableOpacity onPress={() => handleDoubleClick(() => navigation.popToTop(), '뒤로 가기')}>
                     <Text style={styles.headerButton}>Back</Text>
                 </TouchableOpacity>
                 <Text style={styles.headerTitle}>점자랑</Text>
                 <View style={styles.menuPlaceHolder}></View>
             </View>
             <View style={styles.content}>
-                {data.map((item, index) => (
+                {currentItems.map((item, index) => (
                     <TouchableOpacity key={index} style={styles.button} onPress={() => handlePressButton(item)}>
                         <Text style={styles.buttonText}>{item.word}</Text>
                     </TouchableOpacity>
                 ))}
             </View>
+            <View style={styles.footer}>
+            {currentPage > 0 && (
+              <TouchableOpacity onPress={() => handleDoubleClick(prevPage, '이전 페이지')} style={styles.navButton}>
+              <Text style={styles.navText}>이전</Text>
+              </TouchableOpacity>
+            )}
+            {(currentPage + 1) * itemsPerPage < data.length && (
+              <TouchableOpacity onPress={() => handleDoubleClick(nextPage, '다음 페이지')} style={styles.navButton}>
+              <Text style={styles.navText}>다음</Text>
+              </TouchableOpacity>
+            )}
+          </View>
         </SafeAreaView>
     );
 };
@@ -107,7 +134,7 @@ const styles = StyleSheet.create({
         backgroundColor: '#fff',
         width: '100%',
         height: '15%',
-        marginBottom: 30,
+        marginBottom: 23,
         alignItems: 'center',
         justifyContent: 'center',
         shadowColor: '#000',
@@ -120,10 +147,24 @@ const styles = StyleSheet.create({
         elevation: 3,
     },
     buttonText: {
-        fontSize: 18,
+        fontSize: 20,
         fontWeight: 'bold',
         color: '#000',
     },
+    footer: {
+        flexDirection: 'row',
+        justifyContent: 'space-around',
+    },
+    navButton: {
+        padding: 17,
+        backgroundColor: 'black',
+        borderRadius: 5,
+    },
+    navText: {
+        fontSize: 20,
+        color: 'white',
+        fontWeight: 'bold',
+    }
 });
 
 export default VocabularyMenu;
