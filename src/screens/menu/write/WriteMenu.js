@@ -4,7 +4,7 @@ import { useNavigation } from '@react-navigation/native';
 import { useTTS } from '../../../components/TTSContext';
 
 const steps = [
-  { name: '튜토리얼', screen: 'WriteTutorial' },
+  { name: '튜토리얼', screen: 'WriteTutorialMenu' },
   { name: '자음', screen: 'WriteInitialConsonant' },
   { name: '모음', screen: 'WriteVowel' },
   { name: '받침', screen: 'WriteFinalConsonant' },

@@ -3,7 +3,7 @@ import { View, Text, TouchableOpacity, StyleSheet, SafeAreaView, ScrollView } fr
 import { useTTS } from '../../../components/TTSContext';
 
 const steps = [
-  { name: '튜토리얼', screen: 'ReadTutorial' },
+  { name: '튜토리얼', screen: 'ReadTutorialMenu' },
   { name: '자음', screen: 'ReadInitialConsonant' },
   { name: '모음', screen: 'ReadVowel' },
   { name: '받침', screen: 'ReadFinalConsonant' },

@@ -11,7 +11,7 @@ import ReadMenu from "../screens/menu/read/ReadMenu";
 import WriteMenu from "../screens/menu/write/WriteMenu";
 
 // Read
-import ReadTutorial from "../screens/menu/read/ReadTutorial";
+import ReadTutorialMenu from "../screens/menu/read/ReadTutorialMenu";
 import ReadInitialConsonant from "../screens/menu/read/ReadInitialConsonant";
 import ReadVowel from "../screens/menu/read/ReadVowel";
 import ReadFinalConsonant from "../screens/menu/read/ReadFinalConsonant";
@@ -40,7 +40,7 @@ import NumberRTester from "../screens/read/tester/NumberRTester";
 import AlphabetRTester from "../screens/read/tester/AlphabetRTester";
 
 // Write
-import WriteTutorial from "../screens/menu/write/WriteTutorial";
+import WriteTutorialMenu from "../screens/menu/write/WriteTutorialMenu";
 import WriteInitialConsonant from "../screens/menu/write/WriteInitialConsonant";
 import WriteVowel from "../screens/menu/write/WriteVowel";
 import WriteFinalConsonant from "../screens/menu/write/WriteFinalConsonant";
@@ -80,6 +80,9 @@ import SelectMode from "../components/SelectMode";
 import WordReader from "../components/WordReader";
 import WordWritter from "../components/WordWritter";
 
+// Tutorial
+
+
 // Voca
 
 const Stack = createStackNavigator();
@@ -96,7 +99,7 @@ const AppNavigator = () => {
         <Stack.Screen name="WriteMenu" component={WriteMenu} />
 
         {/* Read */}
-        <Stack.Screen name="ReadTutorial" component={ReadTutorial} />
+        <Stack.Screen name="ReadTutorialMenu" component={ReadTutorialMenu} />
         <Stack.Screen name="ReadInitialConsonant" component={ReadInitialConsonant} />
         <Stack.Screen name="ReadVowel" component={ReadVowel} />
         <Stack.Screen name="ReadFinalConsonant" component={ReadFinalConsonant} />
@@ -125,7 +128,7 @@ const AppNavigator = () => {
         <Stack.Screen name="AlphabetRTester" component={AlphabetRTester} />
 
         {/* Write */}
-        <Stack.Screen name="WriteTutorial" component={WriteTutorial} />
+        <Stack.Screen name="WriteTutorialMenu" component={WriteTutorialMenu} />
         <Stack.Screen name="WriteInitialConsonant" component={WriteInitialConsonant} />
         <Stack.Screen name="WriteVowel" component={WriteVowel} />
         <Stack.Screen name="WriteFinalConsonant" component={WriteFinalConsonant} />
