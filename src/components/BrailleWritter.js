@@ -204,6 +204,12 @@ const BrailleWritter = ({ category, brailleSymbols, brailleList }) => {
     });
   };
 
+  const brailleCheck = (currentIndex) => {
+    const select = whatDot(brailleList[currentIndex.current]);
+    const message = ` 현재 쓰고 있는 점자는 ${category} ${brailleSymbols[currentIndex.current]} 입니다. ${select} 입니다.`;
+    speech(message);
+  };
+
   const panResponder = useRef(
     PanResponder.create({
       onStartShouldSetPanResponder: () => true,
@@ -253,6 +259,16 @@ const BrailleWritter = ({ category, brailleSymbols, brailleList }) => {
                 const message = "이전";
                 speech(message);
               }
+            }
+          }
+          else if (touch.pageX <= nextButton.x && touch.pageX >= prevButton.x && touch.pageY <= prevButton.y) {
+            console.log("정답확인");
+            if (now - lastTapRef.current < 300) {
+              brailleCheck(brailleIndexRef);
+            }
+            else {
+              const message = "정답확인";
+              speech(message);
             }
           } 
           else if (lastTapRef.current && now - lastTapRef.current < 300) {
