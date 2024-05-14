@@ -197,8 +197,8 @@ const BrailleReader = ({ category, brailleSymbols, brailleList}) => {
         if (touch <= threshold) {
             // 이전 점자로 이동
             if (currentSpace.current === 0) {
-                if (currentBrailleRef.current + 1 < brailleList.length) currentBrailleRef.current += 1;
-                else currentBrailleRef.current = 0;
+                if (currentBrailleRef.current - 1 >= 0) currentBrailleRef.current -= 1;
+                else currentBrailleRef.current = brailleList.length - 1;
             }
             // 이전 점자 칸으로 이동
             else {

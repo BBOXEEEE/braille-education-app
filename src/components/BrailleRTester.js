@@ -125,7 +125,7 @@ const BrailleRTester = ({ category, brailleSymbols, brailleList }) => {
         tts_dot(touchIndex);
 
         // 해당 영역의 brailleList 값이 1일 경우 햅틱 피드백
-        if (brailleList[currentBrailleRef.current][touchIndexRef.current + (6 * currentSpace.current)] === 1) {
+        if (brailleList[randomIndex[currentBrailleRef.current]][touchIndexRef.current + (6 * currentSpace.current)] === 1) {
             Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Heavy);
         }
     }, [touchIndex]);
@@ -184,7 +184,7 @@ const BrailleRTester = ({ category, brailleSymbols, brailleList }) => {
         // 화면 상단 우측 : 다음 버튼 TTS
         else {
             let message;
-            if (currentSpace.current === brailleList[currentBrailleRef.current].length / 6 - 1) {
+            if (currentSpace.current === brailleList[randomIndex[currentBrailleRef.current]].length / 6 - 1) {
                 message = "다음";
             }
             else {
@@ -202,8 +202,8 @@ const BrailleRTester = ({ category, brailleSymbols, brailleList }) => {
         if (touch <= threshold) {
             // 이전 점자로 이동
             if (currentSpace.current === 0) {
-                if (currentBrailleRef.current + 1 < brailleList.length) currentBrailleRef.current += 1;
-                else currentBrailleRef.current = 0;
+                if (currentBrailleRef.current - 1 >= 0) currentBrailleRef.current -= 1;
+                else currentBrailleRef.current = randomIndex.length - 1;
             }
             // 이전 점자 칸으로 이동
             else {
@@ -221,8 +221,8 @@ const BrailleRTester = ({ category, brailleSymbols, brailleList }) => {
         // 화면 상단 우측 : 다음 버튼
         else {
             // 다음 점자로 이동
-            if (currentSpace.current === brailleList[currentBrailleRef.current].length / 6 - 1) {
-                currentBrailleRef.current = (currentBrailleRef.current + 1) % brailleList.length;
+            if (currentSpace.current === brailleList[randomIndex[currentBrailleRef.current]].length / 6 - 1) {
+                currentBrailleRef.current = (currentBrailleRef.current + 1) % randomIndex.length;
             }
             // 다음 점자 칸으로 이동
             else {
