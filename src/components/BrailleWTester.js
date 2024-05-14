@@ -1,8 +1,8 @@
 import React, { useRef, useState, useEffect } from "react";
 import { useNavigation } from '@react-navigation/native';
-import { StyleSheet, View, PanResponder, Text, SafeAreaView, TouchableOpacity } from "react-native";
+import { StyleSheet, View, PanResponder, Dimensions, Text, SafeAreaView, TouchableOpacity } from "react-native";
 import { useTTS } from "./TTSContext";
-import { Dimensions } from "react-native";
+import { getPronunciation } from "./Pronunciation";
 import getRandomBrailleIndex from './RandomBrailleGenerator';
 
 const window = Dimensions.get("window");
@@ -81,8 +81,9 @@ const BrailleWTester = ({ category, brailleSymbols, brailleList }) => {
   useEffect(() => {
     randomIndex = getRandomBrailleIndex(brailleList);
     inputBraille = new Array(brailleList[randomIndex[brailleIndex]].length).fill(0);
+    const pronunciation = getPronunciation(category, brailleSymbols);
     const message = `점자 쓰기 시험입니다. 1점부터 6점까지 터치하여 점자를 입력하세요.
-                    ${category}, ${brailleSymbols[randomIndex[brailleIndex]]} 입니다.`;
+                    ${category}, ${pronunciation} 입니다.`;
     speech(message);
   }, []);
 
@@ -194,7 +195,8 @@ const BrailleWTester = ({ category, brailleSymbols, brailleList }) => {
   const goToNextBraille = () => {
     setBrailleIndex((prevIndex) => {
       const newIndex = (prevIndex + 1) % randomIndex.length;
-      const message = `다음 ${category} 은 ${brailleSymbols[randomIndex[newIndex]]} 입니다.`;
+      const pronunciation = getPronunciation(category, brailleSymbols[randomIndex[newIndex]]);
+      const message = `다음 ${category} 은 ${pronunciation} 입니다.`;
       speech(message);
       inputBraille = new Array(brailleList[randomIndex[newIndex]].length).fill(0);
       return newIndex;
@@ -205,7 +207,8 @@ const BrailleWTester = ({ category, brailleSymbols, brailleList }) => {
     setBrailleIndex((prevIndex) => {
       let newIndex = prevIndex - 1;
       if (newIndex < 0) newIndex = randomIndex.length - 1;
-      const message = `이전 ${category} 은 ${brailleSymbols[randomIndex[newIndex]]} 입니다.`;
+      const pronunciation = getPronunciation(category, brailleSymbols[randomIndex[newIndex]]);
+      const message = `이전 ${category} 은 ${pronunciation} 입니다.`;
       speech(message);
       inputBraille = new Array(brailleList[randomIndex[newIndex]].length).fill(0);
       return newIndex;

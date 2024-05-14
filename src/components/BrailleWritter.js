@@ -1,8 +1,8 @@
 import React, { useRef, useState, useEffect } from "react";
 import { useNavigation } from '@react-navigation/native';
-import { StyleSheet, View, PanResponder, Text, SafeAreaView, TouchableOpacity } from "react-native";
+import { StyleSheet, View, PanResponder, Dimensions, Text, SafeAreaView, TouchableOpacity } from "react-native";
 import { useTTS } from "./TTSContext";
-import { Dimensions } from "react-native";
+import { getPronunciation } from "./Pronunciation";
 
 const window = Dimensions.get("window");
 const points = [
@@ -81,8 +81,9 @@ const BrailleWritter = ({ category, brailleSymbols, brailleList }) => {
     const select = whatDot(brailleList[brailleIndex]);
     inputBraille = new Array(brailleList[brailleIndex].length).fill(0);
 
+    const pronunciation = getPronunciation(category, brailleSymbols[brailleIndex]);
     const message = `점자 쓰기입니다. 1점부터 6점까지 터치하여 점자를 입력하세요.
-                    ${category}, ${brailleSymbols[brailleIndex]} 입니다. ${select} 입니다.`;
+                    ${category}, ${pronunciation} 입니다. ${select} 입니다.`;
     speech(message);
   }, []);
 
@@ -188,7 +189,8 @@ const BrailleWritter = ({ category, brailleSymbols, brailleList }) => {
     setBrailleIndex((prevIndex) => {
       const newIndex = (prevIndex + 1) % brailleSymbols.length;
       const select = whatDot(brailleList[newIndex]);
-      const message = `다음 ${category} 은 ${brailleSymbols[newIndex]} 입니다. ${select} 입니다.`;
+      const pronunciation = getPronunciation(category, brailleSymbols[newIndex]);
+      const message = `다음 ${category} 은 ${pronunciation} 입니다. ${select} 입니다.`;
       speech(message);
       
       inputBraille = new Array(brailleList[newIndex].length).fill(0);
@@ -201,7 +203,8 @@ const BrailleWritter = ({ category, brailleSymbols, brailleList }) => {
       let newIndex = prevIndex - 1;
       if (newIndex < 0) newIndex = brailleSymbols.length - 1;
       const select = whatDot(brailleList[newIndex]);
-      const message = `이전 ${category} 은 ${brailleSymbols[newIndex]} 입니다. ${select} 입니다.`;
+      const pronunciation = getPronunciation(category, brailleSymbols[newIndex]);
+      const message = `이전 ${category} 은 ${pronunciation} 입니다. ${select} 입니다.`;
       speech(message);
 
       inputBraille = new Array(brailleList[newIndex].length).fill(0);
@@ -211,7 +214,8 @@ const BrailleWritter = ({ category, brailleSymbols, brailleList }) => {
 
   const brailleCheck = (currentIndex) => {
     const select = whatDot(brailleList[currentIndex.current]);
-    const message = ` 현재 쓰고 있는 점자는 ${category} ${brailleSymbols[currentIndex.current]} 입니다. ${select} 입니다.`;
+    const pronunciation = getPronunciation(category, brailleSymbols[currentIndex.current]);
+    const message = ` 현재 쓰고 있는 점자는 ${category} ${pronunciation} 입니다. ${select} 입니다.`;
     speech(message);
   };
 
@@ -265,12 +269,9 @@ const BrailleWritter = ({ category, brailleSymbols, brailleList }) => {
             }
           }
           else if (touch.pageX <= nextButton.x && touch.pageX >= prevButton.x && touch.pageY <= prevButton.y) {
-            if (now - lastTapRef.current < 300) {
-              brailleCheck(brailleIndexRef);
-            }
+            if (now - lastTapRef.current < 300) {}
             else {
-              const message = "정답확인";
-              speech(message);
+              brailleCheck(brailleIndexRef);
             }
           } 
           else if (lastTapRef.current && now - lastTapRef.current < 300) {

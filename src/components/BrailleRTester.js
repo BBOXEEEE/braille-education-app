@@ -3,6 +3,7 @@ import { useNavigation } from '@react-navigation/native';
 import { View, PanResponder, Dimensions, StyleSheet, Text, SafeAreaView, TouchableOpacity } from 'react-native';
 import * as Haptics from 'expo-haptics';
 import { useTTS } from './TTSContext';
+import { getPronunciation } from './Pronunciation';
 import getRandomBrailleIndex from './RandomBrailleGenerator';
 
 // 화면 영역 분할
@@ -214,8 +215,8 @@ const BrailleRTester = ({ category, brailleSymbols, brailleList }) => {
         // 화면 상단 중앙 : 정답확인
         else if (touch > threshold && touch < 2 * threshold) {
             const component = getComponentBraille(brailleList[randomIndex[currentBrailleRef.current]]);
-            const message = `정답은 ${category} ${brailleSymbols[randomIndex[currentBrailleRef.current]]} 입니다. 
-                        ${brailleSymbols[randomIndex[currentBrailleRef.current]]} 은 ${component} 입니다.`;
+            const pronunciation = getPronunciation(category, brailleSymbols[randomIndex[currentBrailleRef.current]]);
+            const message = `정답은 ${category} ${pronunciation} 입니다. ${pronunciation} 은 ${component} 입니다.`;
             speech(message);
         }
         // 화면 상단 우측 : 다음 버튼

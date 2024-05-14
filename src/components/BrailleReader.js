@@ -3,6 +3,7 @@ import { useNavigation } from '@react-navigation/native';
 import { View, PanResponder, Dimensions, StyleSheet, Text, SafeAreaView, TouchableOpacity } from 'react-native';
 import * as Haptics from 'expo-haptics';
 import { useTTS } from './TTSContext';
+import { getPronunciation } from './Pronunciation';
 
 // 화면 영역 분할
 const window = Dimensions.get('window');
@@ -98,7 +99,8 @@ const BrailleReader = ({ category, brailleSymbols, brailleList}) => {
 
     useEffect(() => {
         const component = getComponentBraille(brailleList[currentBrailleRef.current]);
-        const message = `${category} ${brailleSymbols[currentBrailleRef.current]} 입니다. ${component} 입니다.`;
+        const pronunciation = getPronunciation(category, brailleSymbols[currentBrailleRef.current]);
+        const message = `${category} ${pronunciation} 입니다. ${component} 입니다.`;
         // console.log(getComponentBraille(brailleList[currentBrailleRef.current]));
         speech(message);
         currentSpace.current = 0;
@@ -172,7 +174,8 @@ const BrailleReader = ({ category, brailleSymbols, brailleList}) => {
         // 화면 상단 중앙 : 묵자 TTS
         else if (touch > threshold && touch < 2 * threshold) {
             const component = getComponentBraille(brailleList[currentBrailleRef.current]);
-            const message = `${category} ${brailleSymbols[currentBrailleRef.current]} 입니다. ${component} 입니다.`;
+            const pronunciation = getPronunciation(category, brailleSymbols[currentBrailleRef.current]);
+            const message = `${category} ${pronunciation} 입니다. ${component} 입니다.`;
             // console.log(getComponentBraille(brailleList[currentBrailleRef.current]));
             speech(message);
         }
