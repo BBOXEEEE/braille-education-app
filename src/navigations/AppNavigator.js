@@ -18,6 +18,8 @@ import ReadPractice from "../screens/tutorial/ReadPractice";
 import ReadTestPractice from "../screens/tutorial/ReadTestPractice";
 import WriteTutorial from "../screens/tutorial/WriteTutorial";
 import WriteTestTutorial from "../screens/tutorial/WriteTestTutorial";
+import WritePractice from "../screens/tutorial/WritePractice";
+import WriteTestPractice from "../screens/tutorial/WriteTestPractice";
 
 // Read
 import ReadTutorialMenu from "../screens/tutorial/ReadTutorialMenu";
@@ -110,6 +112,8 @@ const AppNavigator = () => {
         <Stack.Screen name="ReadTestPractice" component={ReadTestPractice} />
         <Stack.Screen name="WriteTutorial" component={WriteTutorial} />
         <Stack.Screen name="WriteTestTutorial" component={WriteTestTutorial} />
+        <Stack.Screen name="WritePractice" component={WritePractice} />
+        <Stack.Screen name="WriteTestPractice" component={WriteTestPractice} />
         
         {/* Read */}
         <Stack.Screen name="ReadTutorialMenu" component={ReadTutorialMenu} />

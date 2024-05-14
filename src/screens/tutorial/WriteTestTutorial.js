@@ -57,7 +57,7 @@ const WriteTestTutorial = ({ navigation }) => {
                 speech(explanation);
             }
             else {
-                navigation.navigate('이동할페이지', { category: category, brailleSymbols: symbols, brailleList: brailleList });
+                navigation.navigate('WriteTestPractice', { category: category, brailleSymbols: symbols, brailleList: brailleList });
             }
         }
         else {
