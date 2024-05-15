@@ -3,7 +3,6 @@ import { View, Text, TouchableOpacity, StyleSheet, SafeAreaView } from 'react-na
 import { CameraView, useCameraPermissions} from 'expo-camera';
 import axios from 'axios';
 import { useTTS } from '../../components/TTSContext';
-import ObjectList from '../../components/ObjectList';
 
 const CameraModule = ({ navigation }) => {
 	const { speech } = useTTS();
