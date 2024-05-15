@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { View, Text, TouchableOpacity, Modal, StyleSheet, SafeAreaView } from 'react-native';
 import { useTTS } from '../components/TTSContext';
+import { useCameraPermissions } from 'expo-camera';
 
 // 말하기 속도 조절
 const ttsOptions = [
@@ -13,18 +14,32 @@ const ttsOptions = [
 const Home = ({ navigation }) => {
   // TTS 말하기 속도 조절 Modal
   const { updateRate, speech } = useTTS();
-
   const [previousTouchTime, setPreviousTouchTime] = useState(null);
   const previousTouchTimeRef = useRef(null);
+  const [modalVisible, setModalVisible] = useState(false);
+  const [permission, requestPermission]  = useCameraPermissions();
+
   useEffect(() => {
     previousTouchTimeRef.current = previousTouchTime;
   }, [previousTouchTime]);
-  const [modalVisible, setModalVisible] = useState(false);
 
   // 앱 최초 실행 시 안내 TTS
   useEffect(() => {
-    const message = "원활한 사용을 위해 Voice Over 혹은 TalkBack을 비활성화 해주세요. 버튼을 두번 터치하면 해당 화면으로 이동합니다.";
-    speech(message, 1.3);
+    const checkPermissions = async () => {
+      const grantMessage = "이 앱은 카메라와 마이크 권한이 필요합니다. Allow 버튼을 눌러 권한을 허용해주세요.";
+      speech(grantMessage, 1.3);
+      const { status } = await requestPermission();
+      if (status === 'granted') {
+        const message = '원활한 사용을 위해 Voice Over 혹은 TalkBack을 비활성화 해주세요. 버튼을 두번 터치하면 해당 화면으로 이동합니다.';
+        speech(message, 1.3);
+      }
+      else {
+        const message = '카메라와 마이크 권한 설정을 위해 설정에서 권한을 허용해주세요.';
+        speech(message, 1.3);
+      }
+    };
+
+    checkPermissions();
   }, []);
 
   const steps = [
