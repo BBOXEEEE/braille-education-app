@@ -125,11 +125,13 @@ const BrailleWTester = ({ category, brailleSymbols, brailleList }) => {
       if (!isCorrect(inputBraille, brailleList[randomIndex[currentBrailleIndex]])) {
         const message = "잘못된 입력 입니다. 다시 입력하세요.";
         speech(message);
-        inputBraille = new Array(brailleList[randomIndex[currentBrailleIndex]].length).fill(
-          0
-        );
+        inputBraille = new Array(brailleList[randomIndex[currentBrailleIndex]].length).fill(0);
         touchNum = 0;
-      } else {
+        setCurrentPage(() => { // 페이지 초기화
+          return 0;
+        });
+      } 
+      else {
         const message = "정답 입니다! ";
         speech(message);
         touchNum = 0;
