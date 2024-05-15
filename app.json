@@ -1,7 +1,7 @@
 {
   "expo": {
-    "name": "braille-education",
-    "slug": "braille-education",
+    "name": "점자랑 - 시각장애인을 위한 점자 학습 도우미",
+    "slug": "jumjarang",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./src/assets/icon.png",
@@ -23,14 +23,24 @@
       }
     },
     "android": {
-      "permissions": ["CAMERA", "RECORD_AUDIO", "WRITE_EXTERNAL_STORAGE"],
+      "permissions": [
+        "CAMERA",
+        "RECORD_AUDIO",
+        "WRITE_EXTERNAL_STORAGE"
+      ],
       "adaptiveIcon": {
         "foregroundImage": "./src/assets/adaptive-icon.png",
         "backgroundColor": "#ffffff"
-      }
+      },
+      "package": "com.bboxeeee.jumjarang"
     },
     "web": {
       "favicon": "./src/assets/favicon.png"
+    },
+    "extra": {
+      "eas": {
+        "projectId": "6e83dae8-f997-4cf3-9c2d-114adce9c689"
+      }
     }
   }
 }
