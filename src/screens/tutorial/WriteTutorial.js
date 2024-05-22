@@ -14,7 +14,7 @@ const explanation = `점자는 좌우로 3개의 점을 세로로 배열한 것�
 연습하기 버튼을 눌러 점자를 직접 써보세요.`;
 
 // 튜토리얼에 사용될 점자 리스트
-const category = '';
+const category = '점자';
 const symbols = ['자음 ㅁ', '약어 그래서'];
 const brailleList = [
     [1, 0, 0, 0, 1, 0],

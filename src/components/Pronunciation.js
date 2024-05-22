@@ -76,7 +76,8 @@ const pronunciation = {
 	'약어 3단계': {},
 	'숫자': {},
 	'영어': {},
-    '단어': {}
+    '단어': {},
+	'점자': {}
 };
 
 export const getPronunciation = (category, symbol) => {

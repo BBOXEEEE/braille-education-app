@@ -10,7 +10,7 @@ const explanation = `시험보기는 무작위로 선택된 점자를 읽고 맞
 연습하기 버튼을 눌러 학습하기에서 읽은 점자가 무엇인지 맞춰보세요.`;
 
 // 튜토리얼에 사용될 점자 리스트
-const category = '';
+const category = '점자';
 const symbols = ['자음 ㅁ', '약어 그래서'];
 const brailleList = [
     [1, 0, 0, 0, 1, 0],
