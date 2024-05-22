@@ -96,7 +96,7 @@ const styles = StyleSheet.create({
         fontSize: 26,
         fontWeight: 'bold',
     },
-    menuPlaceholder: {
+    menuPlaceHolder: {
         width: 38,
     },
     content: {
