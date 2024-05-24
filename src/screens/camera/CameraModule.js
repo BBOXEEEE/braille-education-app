@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { View, Text, TouchableOpacity, StyleSheet, SafeAreaView } from 'react-native';
+import GestureRecognizer from 'react-native-swipe-gestures';
 import { CameraView, useCameraPermissions} from 'expo-camera';
 import axios from 'axios';
 import { useTTS } from '../../components/TTSContext';
@@ -12,6 +13,7 @@ const CameraModule = ({ navigation }) => {
 	const [imageSize, setImageSize] = useState([]);
 	const [previousTouchTime, setPreviousTouchTime] = useState(null);
 	const previousTouchTimeRef = useRef(null);
+	const index = useRef(1);
 
 	useEffect(() => {
 		previousTouchTimeRef.current = previousTouchTime;
@@ -26,24 +28,10 @@ const CameraModule = ({ navigation }) => {
 		})();
 	}, [permission, cameraRef]);
 
-	const handleBackButton = () => {
-		const currentTouchTime = Date.now();
-		const isDoubleTouched = (previousTouchTimeRef.current) && (currentTouchTime - previousTouchTimeRef.current) < 300;
-
-		if (isDoubleTouched) {
-			navigation.goBack();
-		}
-		else {
-			const message = "뒤로가기";
-			speech(message);
-		}
-		previousTouchTimeRef.current = currentTouchTime;
-		setPreviousTouchTime(previousTouchTimeRef.current);
-	}
-
+	// 권한이 없는 경우 실행
 	if (!permission) {
 		return <View />;
-	}
+	};
 	if (!permission.granted) {
 		return (
 			<SafeAreaView style={styles.container}>
@@ -59,8 +47,48 @@ const CameraModule = ({ navigation }) => {
 				</View>
 			</SafeAreaView>
 		);
-	}
+	};
 
+	// Swipe Gesture 로 탐색할 목록
+	const menuList = [
+		{ name: '뒤로가기', speech: () => speech('뒤로가기'), action: () => navigation.goBack() },
+		{ name: '점자랑', speech: () => speech('점자랑'), action: () => speech('점자랑') },
+		{ name: '촬영하기', speech: () => speech('촬영하기'), action: () => takePicture() },
+	];
+
+	// 터치 이벤트 처리
+	const handlePressButton = (name) => {
+		const touchedIndex = menuList.findIndex((menu) => menu.name === name);
+		index.current = touchedIndex;
+		menuList[touchedIndex].speech();
+	};
+
+	// 더블 터치 이벤트 처리
+	const handleDoubleTouch = () => {
+		const currentTouchTime = Date.now();
+		const isDoubleTouched = (previousTouchTimeRef.current) && (currentTouchTime - previousTouchTimeRef.current) < 500;
+
+		if (isDoubleTouched) {
+			menuList[index.current].action();
+		}
+
+		previousTouchTimeRef.current = currentTouchTime;
+		setPreviousTouchTime(previousTouchTimeRef.current);
+	};
+
+	// Left Swipe 이벤트 처리
+	const onSwipeLeft = () => {
+		index.current = (index.current - 1 + menuList.length) % menuList.length;
+		menuList[index.current].speech();
+	};
+
+	// Right Swipe 이벤트 처리
+	const onSwipeRight = () => {
+		index.current = (index.current + 1) % menuList.length;
+		menuList[index.current].speech();
+	};
+
+	// 촬영
 	const takePicture = async () => {
 		const currentTouchTime = Date.now();
 		const isDoubleTouched = (previousTouchTimeRef.current) && (currentTouchTime - previousTouchTimeRef.current) < 300;
@@ -75,8 +103,9 @@ const CameraModule = ({ navigation }) => {
 		}
 		previousTouchTimeRef.current = currentTouchTime;
 		setPreviousTouchTime(previousTouchTimeRef.current);
-	}
+	};
 
+	// 서버로 전송
 	const requestToServer = async (image) => {
 		try {
 			const url = 'http://218.150.182.161:15555/';
@@ -102,24 +131,37 @@ const CameraModule = ({ navigation }) => {
             speech(message);
             navigation.navigate('Home');
 		}
-	}
+	};
 
 	return (
-		<SafeAreaView style={styles.container}>
-			<View style={styles.header}>
-				<TouchableOpacity onPress={handleBackButton}>
-					<Text style={styles.headerButton}>Back</Text>
+		<GestureRecognizer
+			onSwipeLeft={onSwipeLeft}
+			onSwipeRight={onSwipeRight}
+			config={{
+				velocityThreshold: 0.1,
+				directionalOffsetThreshold: 80,
+			}}
+			style={{ flex: 1 }}>
+			<SafeAreaView style={styles.container}>
+				<View style={styles.header}>
+					<TouchableOpacity onPress={() => handlePressButton('뒤로가기')}>
+						<Text style={styles.headerButton}>Back</Text>
+					</TouchableOpacity>
+					<TouchableOpacity onPress={() => handlePressButton('점자랑')}>
+						<Text style={styles.headerTitle}>점자랑</Text>
+					</TouchableOpacity>
+					<View style={styles.menuPlaceHolder}></View>
+				</View>
+				<TouchableOpacity onPress={handleDoubleTouch} activeOpacity={1} style={{ flex: 1 }}>
+					<CameraView style={styles.camera} ref={cameraRef} facing={cameraType}>
+					</CameraView>
+					<View style={styles.buttonContainer}>
+						<TouchableOpacity style={styles.button} activeOpacity={0.7} onPress={() => handlePressButton('촬영하기')}>
+						</TouchableOpacity>
+					</View>
 				</TouchableOpacity>
-				<Text style={styles.headerTitle}>점자랑</Text>
-				<View style={styles.menuPlaceHolder}></View>
-			</View>
-			<CameraView style={styles.camera} ref={cameraRef} facing={cameraType}>
-			</CameraView>
-			<View style={styles.buttonContainer}>
-				<TouchableOpacity style={styles.button} activeOpacity={0.7} onPress={takePicture}>
-				</TouchableOpacity>
-			</View>
-		</SafeAreaView>
+			</SafeAreaView>
+		</GestureRecognizer>
 	);
 };
 

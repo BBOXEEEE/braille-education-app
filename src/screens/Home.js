@@ -1,7 +1,11 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { View, Text, TouchableOpacity, Modal, StyleSheet, SafeAreaView } from 'react-native';
+import GestureRecognizer from 'react-native-swipe-gestures';
 import { useTTS } from '../components/TTSContext';
 import { useCameraPermissions } from 'expo-camera';
+
+// 메뉴 버튼
+const buttons = ['튜토리얼', '읽기', '쓰기', '촬영하기', '단어장', '말하기 속도 조절'];
 
 // 말하기 속도 조절
 const ttsOptions = [
@@ -12,12 +16,13 @@ const ttsOptions = [
 ];
 
 const Home = ({ navigation }) => {
-  // TTS 말하기 속도 조절 Modal
   const { updateRate, speech } = useTTS();
   const [previousTouchTime, setPreviousTouchTime] = useState(null);
   const previousTouchTimeRef = useRef(null);
   const [modalVisible, setModalVisible] = useState(false);
   const [permission, requestPermission]  = useCameraPermissions();
+  const index = useRef(0);
+  const modalIndex = useRef(0);
 
   useEffect(() => {
     previousTouchTimeRef.current = previousTouchTime;
@@ -42,90 +47,131 @@ const Home = ({ navigation }) => {
     checkPermissions();
   }, []);
 
-  const steps = [
-    { name: '튜토리얼', navigateTo: () => navigation.navigate('TutorialMenu') },
-    { name: '읽기', navigateTo: () => navigation.navigate('ReadMenu') },
-    { name: '쓰기', navigateTo: () => navigation.navigate('WriteMenu') },
-    { name: '촬영하기', navigateTo: () => navigation.navigate('CameraModule') },
-    { name: '단어장', navigateTo: () => navigation.navigate('VocabularyModule') },
-    { name: '말하기 속도 조절', navigateTo: () => setModalVisible(true) },
+  // Swipe Gesture 로 탐색할 목록
+  const menuList = [
+    { name: '점자랑', speech: () => speech('점자랑'), action : () => speech('점자랑') },
+    { name: '튜토리얼', speech: () => speech('튜토리얼'), action: () => navigation.navigate('TutorialMenu') },
+    { name: '읽기', speech: () => speech('읽기'), action: () => navigation.navigate('ReadMenu') },
+    { name: '쓰기', speech: () => speech('쓰기'), action: () => navigation.navigate('WriteMenu') },
+    { name: '촬영하기', speech: () => speech('촬영하기'), action: () => navigation.navigate('CameraModule') },
+    { name: '단어장', speech: () => speech('단어장'), action: () => navigation.navigate('VocabularyModule') },
+    { name: '말하기 속도 조절', speech: () => speech('말하기 속도 조절'), action: () => setModalVisible(true) },    
   ];
 
   // 터치 이벤트 처리
-  const handlePressButton = (name, screen) => {
-    const currentTouchTime = Date.now();
-    const isDoubleTouched = (previousTouchTimeRef.current) && (currentTouchTime - previousTouchTimeRef.current) < 300;
-
-    if (isDoubleTouched) {
-      screen();
+  const handlePressButton = (name) => {
+    if (!modalVisible) {
+      const touchedIndex = menuList.findIndex((menu) => menu.name === name);
+      index.current = touchedIndex;
+      menuList[touchedIndex].speech();
     }
     else {
-      const message = `${name}`;
-      speech(message);
+      const touchedIndex = ttsOptions.findIndex((option) => option.label === name);
+      modalIndex.current = touchedIndex;
+      const message = `${ttsOptions[modalIndex.current].label}`;
+      const rate = ttsOptions[modalIndex.current].rate;
+      speech(message, rate);
     }
+  };
+
+  // 더블 터치 이벤트 처리
+  const handleDoubleTouch = () => {
+    const currentTouchTime = Date.now();
+    const isDoubleTouched = (previousTouchTimeRef.current) && (currentTouchTime - previousTouchTimeRef.current) < 500;
+
+    if (isDoubleTouched) {
+      if (!modalVisible) {
+        menuList[index.current].action();
+      }
+      else {
+        updateRate({ value: ttsOptions[modalIndex.current].rate });
+        setModalVisible(false);
+      }
+    }
+
     previousTouchTimeRef.current = currentTouchTime;
     setPreviousTouchTime(previousTouchTimeRef.current);
   };
 
-  // 말하기 속도 조절 터치 이벤트 처리
-  const handlePressTTSButton = (label, rate) => {
-    const currentTouchTime = Date.now();
-    const isDoubleTouched = (previousTouchTimeRef.current) && (currentTouchTime - previousTouchTimeRef.current) < 300;
-
-    if (isDoubleTouched) {
-      updateRate({ value: rate });
-      setModalVisible(false);
+  // Left Swipe 이벤트 처리
+  const onSwipeLeft = () => {
+    if (!modalVisible) {
+      index.current = (index.current - 1 + menuList.length) % menuList.length;
+      menuList[index.current].speech();
     }
     else {
-      const message = `${label}`;
+      modalIndex.current = (modalIndex.current - 1 + ttsOptions.length) % ttsOptions.length;
+      const message = `${ttsOptions[modalIndex.current].label}`;
+      speech(message);
+    }
+  };
+
+  // Right Swipe 이벤트 처리
+  const onSwipeRight = () => {
+    if (!modalVisible) {
+      index.current = (index.current + 1) % menuList.length;
+      menuList[index.current].speech();
+    }
+    else {
+      modalIndex.current = (modalIndex.current + 1) % ttsOptions.length;
+      const message = `${ttsOptions[modalIndex.current].label}`;
+      const rate = ttsOptions[modalIndex.current].rate;
       speech(message, rate);
     }
-    previousTouchTimeRef.current = currentTouchTime;
-    setPreviousTouchTime(previousTouchTimeRef.current);
   };
 
   return (
-    <SafeAreaView style={styles.container}>
-      <View style={styles.header}>
-        <Text style={styles.headerTitle}>점자랑</Text>
-      </View>
-      <View style={styles.content}>
-        {steps.map((step, index) => (
-          <TouchableOpacity
-            key={index}
-            style={styles.button}
-            onPress={() => handlePressButton(step.name, step.navigateTo)}>
-            <Text style={[styles.buttonText, styles.boldText]}>{step.name}</Text>
+    <GestureRecognizer
+      onSwipeLeft={onSwipeLeft}
+      onSwipeRight={onSwipeRight}
+      config={{
+        velocityThreshold: 0.1,
+        directionalOffsetThreshold: 80
+      }}
+      style={{ flex: 1 }}>
+      <SafeAreaView style={styles.container}>
+        <View style={styles.header}>
+          <TouchableOpacity onPress={() => handlePressButton('점자랑')}>
+            <Text style={styles.headerTitle}>점자랑</Text>
           </TouchableOpacity>
-        ))}
-      </View>
-      <TTSModal
-        visible={modalVisible}
-        onClose={() => setModalVisible(false)}
-        onOptionSelected={handlePressTTSButton}
-      />
-    </SafeAreaView>
+        </View>
+        <TouchableOpacity style={styles.content} onPress={handleDoubleTouch} activeOpacity={1}>
+          {buttons.map((button, index) => (
+            <View key={index} style={styles.button}>
+                <TouchableOpacity onPress={() => handlePressButton(button)}>
+                  <Text style={[styles.buttonText, styles.boldText]}>{button}</Text>
+                </TouchableOpacity>
+            </View>
+          ))}
+        </TouchableOpacity>
+        <TTSModal
+          visible={modalVisible}
+          onClose={() => setModalVisible(false)}
+          onOptionTouched={handlePressButton}
+          onDoubleTap={handleDoubleTouch}
+        />
+      </SafeAreaView>
+    </GestureRecognizer>
   );
 };
 
-const TTSModal = ({ visible, onClose, onOptionSelected }) => (
+const TTSModal = ({ visible, onClose, onOptionTouched, onDoubleTap }) => (
   <Modal
     animationType="slide"
     transparent={true}
     visible={visible}
     onRequestClose={onClose}>
-    <View style={styles.centeredView}>
-      <View style={styles.modalView}>
+    <TouchableOpacity style={styles.centeredView} onPress={onDoubleTap} activeOpacity={1}>
+      <TouchableOpacity style={styles.modalView} activeOpacity={1}>
         {ttsOptions.map((option) => (
-          <TouchableOpacity
-            key={option.rate}
-            style={styles.squareButton}
-            onPress={() => onOptionSelected(option.label, option.rate)}>
-            <Text style={styles.buttonText}>{option.label}</Text>
-          </TouchableOpacity>
+          <View key={option.rate} style={styles.squareButton}>
+            <TouchableOpacity onPress={() => onOptionTouched(option.label)}>
+              <Text style={styles.buttonText}>{option.label}</Text>
+            </TouchableOpacity>
+          </View>
         ))}
-      </View>
-    </View>
+      </TouchableOpacity>
+    </TouchableOpacity>
   </Modal>
 );
 

@@ -1,82 +1,98 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { View, Text, TouchableOpacity, StyleSheet, SafeAreaView, ScrollView } from 'react-native';
-import { useNavigation } from '@react-navigation/native';
+import { View, Text, TouchableOpacity, StyleSheet, SafeAreaView } from 'react-native';
+import GestureRecognizer from 'react-native-swipe-gestures';
 import { useTTS } from '../../../components/TTSContext';
 
-const steps = [
-  { name: '튜토리얼', screen: 'WriteTutorialMenu' },
-  { name: '자음', screen: 'WriteInitialConsonant' },
-  { name: '모음', screen: 'WriteVowel' },
-  { name: '받침', screen: 'WriteFinalConsonant' },
-  { name: '약어 1단계', screen: 'WriteAbbreviation1' },
-  { name: '약어 2단계', screen: 'WriteAbbreviation2' },
-  { name: '약어 3단계', screen: 'WriteAbbreviation3' },
-  { name: '숫자', screen: 'WriteNumber' },
-  { name: '영어(알파벳)', screen: 'WriteAlphabet' }
-];
+// 메뉴 버튼
+const buttons = ['튜토리얼', '자음', '모음', '받침', '약어 1단계', '약어 2단계', '약어 3단계', '숫자', '영어(알파벳)'];
 
-const WriteMenu = () => {
+const WriteMenu = ({ navigation }) => {
   const { speech } = useTTS();
   const [previousTouchTime, setPreviousTouchTime] = useState(null);
   const previousTouchTimeRef = useRef(null);
+  const index = useRef(1);
+
   useEffect(() => {
     previousTouchTimeRef.current = previousTouchTime;
   }, [previousTouchTime]);
 
-  const navigation = useNavigation();
+  // Swipe Gesture 로 탐색할 목록
+  const menuList = [
+    { name: '뒤로가기', speech: () => speech('뒤로가기'), action: () => navigation.goBack() },
+    { name: '점자랑', speech: () => speech('점자랑'), action : () => speech('점자랑') },
+    { name: '튜토리얼', speech: () => speech('튜토리얼'), action: () => navigation.navigate('WriteTutorialMenu') },
+    { name: '자음', speech: () => speech('자음'), action: () => navigation.navigate('WriteInitialConsonant') },
+    { name: '모음', speech: () => speech('모음'), action: () => navigation.navigate('WriteVowel') },
+    { name: '받침', speech: () => speech('받침'), action: () => navigation.navigate('WriteFinalConsonant') },
+    { name: '약어 1단계', speech: () => speech('약어 1단계'), action: () => navigation.navigate('WriteAbbreviation1') },
+    { name: '약어 2단계', speech: () => speech('약어 2단계'), action: () => navigation.navigate('WriteAbbreviation2') },
+    { name: '약어 3단계', speech: () => speech('약어 3단계'), action: () => navigation.navigate('WriteAbbreviation3') },
+    { name: '숫자', speech: () => speech('숫자'), action: () => navigation.navigate('WriteNumber') },
+    { name: '영어(알파벳)', speech: () => speech('영어(알파벳)'), action: () => navigation.navigate('WriteAlphabet') },
+  ];
 
   // 터치 이벤트 처리
-  const handlePressButton = (name, screen) => {
+  const handlePressButton = (name) => {
+    const touchedIndex = menuList.findIndex((menu) => menu.name === name);
+    index.current = touchedIndex;
+    menuList[touchedIndex].speech();
+  };
+
+  // 더블 터치 이벤트 처리
+  const handleDoubleTouch = () => {
     const currentTouchTime = Date.now();
-    const isDoubleTouched = (previousTouchTimeRef.current) && (currentTouchTime - previousTouchTimeRef.current) < 300;
+    const isDoubleTouched = (previousTouchTimeRef.current) && (currentTouchTime - previousTouchTimeRef.current) < 500;
 
     if (isDoubleTouched) {
-      navigation.navigate(screen);
+      menuList[index.current].action();
     }
-    else {
-      const message = `${name}`;
-      speech(message);
-    }
+
     previousTouchTimeRef.current = currentTouchTime;
     setPreviousTouchTime(previousTouchTimeRef.current);
   };
 
-  // 뒤로가기 버튼 이벤트 처리
-  const handleBackButton = () => {
-    const currentTouchTime = Date.now();
-    const isDoubleTouched = (previousTouchTimeRef.current) && (currentTouchTime - previousTouchTimeRef.current) < 300;
+  // Left Swipe 이벤트 처리
+  const onSwipeLeft = () => {
+    index.current = (index.current - 1 + menuList.length) % menuList.length;
+    menuList[index.current].speech();
+  };
 
-    if (isDoubleTouched) {
-      navigation.goBack();
-    }
-    else {
-      const message = "뒤로가기";
-      speech(message);
-    }
-    previousTouchTimeRef.current = currentTouchTime;
-    setPreviousTouchTime(previousTouchTimeRef.current);
-  }
+  // Right Swipe 이벤트 처리
+  const onSwipeRight = () => {
+    index.current = (index.current + 1) % menuList.length;
+    menuList[index.current].speech();
+  };
 
   return (
-    <SafeAreaView style={styles.container}>
-      <View style={styles.header}>
-        <TouchableOpacity onPress={handleBackButton}>
-          <Text style={styles.headerButton}>Back</Text>
-        </TouchableOpacity>
-        <Text style={styles.headerTitle}>점자랑</Text>
-        <View style={styles.menuPlaceholder} />
-      </View>
-      <View style={styles.content}>
-        {steps.map((step, index) => (
-          <TouchableOpacity
-            key={index}
-            style={styles.button}
-            onPress={() => handlePressButton(step.name, step.screen)}>
-            <Text style={styles.buttonText}>{step.name}</Text>
+    <GestureRecognizer
+      onSwipeLeft={onSwipeLeft}
+      onSwipeRight={onSwipeRight}
+      config={{
+        velocityThreshold: 0.1,
+        directionalOffsetThreshold: 80,
+      }}
+      style={{ flex: 1 }}>
+      <SafeAreaView style={styles.container}>
+        <View style={styles.header}>
+          <TouchableOpacity onPress={() => handlePressButton('뒤로가기')}>
+            <Text style={styles.headerButton}>Back</Text>
           </TouchableOpacity>
-        ))}
-      </View>
-    </SafeAreaView>
+          <TouchableOpacity onPress={() => handlePressButton('점자랑')}>
+            <Text style={styles.headerTitle}>점자랑</Text>
+          </TouchableOpacity>
+          <View style={styles.menuPlaceholder} />
+        </View>
+        <TouchableOpacity style={styles.content} onPress={handleDoubleTouch} activeOpacity={1}>
+          {buttons.map((button, index) => (
+            <View key={index} style={styles.button}>
+              <TouchableOpacity onPress={() => handlePressButton(button)}>
+                <Text style={styles.buttonText}>{button}</Text>
+              </TouchableOpacity>
+            </View>
+          ))}
+        </TouchableOpacity>
+      </SafeAreaView>
+    </GestureRecognizer>
   );
 };
 

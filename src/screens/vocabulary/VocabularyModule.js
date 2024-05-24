@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { View, Text, TouchableOpacity, StyleSheet, SafeAreaView } from 'react-native';
+import GestureRecognizer from 'react-native-swipe-gestures';
 import { useTTS } from '../../components/TTSContext';
 import { loadData } from '../../components/BrailleStorage';
 
@@ -10,6 +11,7 @@ const VocabularyModule = ({ navigation }) => {
     const previousTouchTimeRef = useRef(null);
     const [currentPage, setCurrentPage] = useState(0); // 현재 페이지 인덱스
     const itemsPerPage = 5; // 페이지당 항목 수
+    const index = useRef(1);
 
     // 단어 불러오기
     useEffect(() => {
@@ -26,89 +28,120 @@ const VocabularyModule = ({ navigation }) => {
         load();
     }, []);
 
-    // 현재 페이지의 항목
-    const currentItems = data.slice(currentPage * itemsPerPage, (currentPage + 1) * itemsPerPage);
-
     useEffect(() => {
         previousTouchTimeRef.current = previousTouchTime;
     }, [previousTouchTime]);
 
+    // 현재 페이지의 항목
+    const currentItems = data.slice(currentPage * itemsPerPage, (currentPage + 1) * itemsPerPage);
+
+    // 다음 페이지 이동
     const nextPage = () => {
         if ((currentPage + 1) * itemsPerPage < data.length) {
             setCurrentPage(currentPage + 1);
         }
+        index.current = 1;
     };
   
+    // 이전 페이지 이동
     const prevPage = () => {
         if (currentPage > 0) {
             setCurrentPage(currentPage - 1);
         }
+        index.current = 1;
     };
+
+    // Swipe Gesture 로 탐색할 목록
+    const menuList = [
+        { name: '뒤로가기', speech: () => speech('뒤로가기'), action: () => navigation.goBack() },
+        { name: '점자랑', speech: () => speech('점자랑'), action: () => speech('점자랑') },
+        ...currentItems.map((item) => ({
+            name: item.word,
+            speech: () => speech(item.word),
+            action: () => navigation.navigate('SelectMode', { item: item })
+        })),
+        ...(currentPage > 0 ? [{ name: '이전', speech: () => speech('이전 페이지'), action: () => prevPage() }] : []),
+        ...((currentPage + 1) * itemsPerPage < data.length ? [{ name: '다음', speech: () => speech('다음 페이지'), action: () => nextPage() }] : [])
+    ];
 
     // 터치 이벤트 처리
     const handlePressButton = (item) => {
+        const touchedIndex = menuList.findIndex((menu) => menu.name === item);
+        index.current = touchedIndex;
+        menuList[index.current].speech();
+    };
+
+    // 더블 터치 이벤트 처리
+    const handleDoubleTouch = () => {
         const currentTouchTime = Date.now();
-        const isDoubleTouched = (previousTouchTimeRef.current) && (currentTouchTime - previousTouchTimeRef.current) < 300;
+        const isDoubleTouched = (previousTouchTimeRef.current) && (currentTouchTime - previousTouchTimeRef.current) < 500;
 
         if (isDoubleTouched) {
-            navigation.navigate('SelectMode', { item: item });
+            menuList[index.current].action();
         }
-        else {
-            const message = `${item.word}`;
-            speech(message);
-        }
+
         previousTouchTimeRef.current = currentTouchTime;
         setPreviousTouchTime(previousTouchTimeRef.current);
     };
 
-    // 버튼 이벤트 처리
-    const handleDoubleClick = (action, message) => {
-        const currentTouchTime = Date.now();
-        const isDoubleTouched = (previousTouchTimeRef.current) && (currentTouchTime - previousTouchTimeRef.current) < 300;
-
-        if (isDoubleTouched) {
-            action();
-        } else {
-            speech(message);
-        }
-        previousTouchTimeRef.current = currentTouchTime;
-        setPreviousTouchTime(previousTouchTimeRef.current);
+    // Left Swipe 이벤트 처리
+    const onSwipeLeft = () => {
+        index.current = (index.current - 1 + menuList.length) % menuList.length;
+        menuList[index.current].speech();
     };
 
+    // Right Swipe 이벤트 처리
+    const onSwipeRight = () => {
+        index.current = (index.current + 1) % menuList.length;
+        menuList[index.current].speech();
+    };
 
     return (
-        <SafeAreaView style={styles.container}>
-            <View style={styles.header}>
-                <TouchableOpacity onPress={() => handleDoubleClick(() => navigation.popToTop(), '뒤로 가기')}>
-                    <Text style={styles.headerButton}>Back</Text>
+        <GestureRecognizer
+            onSwipeLeft={onSwipeLeft}
+            onSwipeRight={onSwipeRight}
+            config={{
+                velocityThreshold: 0.1,
+                directionalOffsetThreshold: 80
+            }}
+            style={{ flex: 1 }}>
+            <SafeAreaView style={styles.container}>
+                <View style={styles.header}>
+                    <TouchableOpacity onPress={() => handlePressButton('뒤로가기')}>
+                        <Text style={styles.headerButton}>Back</Text>
+                    </TouchableOpacity>
+                    <TouchableOpacity onPress={() => handlePressButton('점자랑')}>
+                        <Text style={styles.headerTitle}>점자랑</Text>
+                    </TouchableOpacity>
+                    <View style={styles.menuPlaceHolder}></View>
+                </View>
+                <TouchableOpacity style={styles.content} onPress={handleDoubleTouch} activeOpacity={1}>
+                    {data.length === 0 ? (
+                        <Text style={{ textAlign: 'center' }}>No saved word list.</Text>
+                    ) : (
+                        currentItems.map((item, index) => (
+                            <View key={index} style={styles.button}>
+                                <TouchableOpacity onPress={() => handlePressButton(item.word)}>
+                                    <Text style={styles.buttonText}>{item.word}</Text>
+                                </TouchableOpacity>
+                            </View>
+                        ))
+                    )}
                 </TouchableOpacity>
-                <Text style={styles.headerTitle}>점자랑</Text>
-                <View style={styles.menuPlaceHolder}></View>
-            </View>
-            <View style={styles.content}>
-                {data.length === 0 ? (
-                    <Text style={{ textAlign: 'center' }}>No saved word list.</Text>
-                ) : (
-                    currentItems.map((item, index) => (
-                        <TouchableOpacity key={index} style={styles.button} onPress={() => handlePressButton(item)}>
-                            <Text style={styles.buttonText}>{item.word}</Text>
+                <TouchableOpacity style={styles.footer} onPress={handleDoubleTouch} activeOpacity={1}>
+                    {currentPage > 0 && (
+                        <TouchableOpacity onPress={() => handlePressButton('이전')} style={styles.navButton}>
+                            <Text style={styles.navText}>이전</Text>
                         </TouchableOpacity>
-                    ))
-                )}
-            </View>
-            <View style={styles.footer}>
-            {currentPage > 0 && (
-                <TouchableOpacity onPress={() => handleDoubleClick(prevPage, '이전 페이지')} style={styles.navButton}>
-                    <Text style={styles.navText}>이전</Text>
+                    )}
+                    {(currentPage + 1) * itemsPerPage < data.length && (
+                        <TouchableOpacity onPress={() => handlePressButton('다음')} style={styles.navButton}>
+                            <Text style={styles.navText}>다음</Text>
+                        </TouchableOpacity>
+                    )}
                 </TouchableOpacity>
-            )}
-            {(currentPage + 1) * itemsPerPage < data.length && (
-                <TouchableOpacity onPress={() => handleDoubleClick(nextPage, '다음 페이지')} style={styles.navButton}>
-                    <Text style={styles.navText}>다음</Text>
-                </TouchableOpacity>
-            )}
-          </View>
-        </SafeAreaView>
+            </SafeAreaView>
+        </GestureRecognizer>
     );
 };
 

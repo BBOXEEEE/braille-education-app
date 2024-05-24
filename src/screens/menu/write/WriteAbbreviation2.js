@@ -1,13 +1,22 @@
 import React from "react";
 import BrailleScreen from '../../../components/BrailleScreen'; 
+import { useTTS } from '../../../components/TTSContext';
 
-const steps = [
-  { name: "학습하기", screen: "AbbreviationWritter2" },
-  { name: "시험보기", screen: "AbbreviationWTester2" },
-];
+const WriteAbbreviation2 = ({ navigation }) => {
+  const { speech } = useTTS();
 
-const WriteAbbreviation2 = () => {
-  return <BrailleScreen steps={steps} />;
+  // 메뉴 버튼
+  const buttons = ["학습하기", "시험보기"];
+
+  // Swipe Gesture 로 탐색할 목록
+  const menuList = [
+    { name: "뒤로가기", speech: () => speech("뒤로가기"), action: () => navigation.goBack() },
+    { name: "점자랑", speech: () => speech("점자랑"), action: () => speech("점자랑") },
+    { name: "학습하기", speech: () => speech("학습하기"), action: () => navigation.navigate("AbbreviationWritter2") },
+    { name: "시험보기", speech: () => speech("시험보기"), action: () => navigation.navigate("AbbreviationWTester2") },
+  ];
+
+  return <BrailleScreen buttons={buttons} menuList={menuList} />;
 };
 
 export default WriteAbbreviation2;

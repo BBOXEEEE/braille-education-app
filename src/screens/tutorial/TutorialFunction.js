@@ -1,13 +1,26 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { View, Text, TouchableOpacity, Modal, StyleSheet, SafeAreaView } from 'react-native';
+import GestureRecognizer from 'react-native-swipe-gestures';
 import { useTTS } from '../../components/TTSContext';
 
-const TutorialFunction = ({ navigation }) => {
-  // TTS 말하기 속도 조절 Modal
-  const { speech } = useTTS();
+// 메뉴 버튼
+const buttons = ['읽기', '쓰기', '촬영하기', '단어장', '말하기 속도 조절'];
 
+// 기능 설명
+const explanations = [
+  "점자를 단계별로 읽는 것을 학습하고, 시험 볼 수 있습니다. 더 자세한 내용은 읽기 메뉴에 튜토리얼을 참고해주세요.",
+  "점자를 단계별로 써보고 쓰는것을 학습하고, 시험볼 수  있습니다. 더 자세한 내용은 쓰기 메뉴에 튜토리얼을 참고해주세요.",
+  "촬영한 주변 사물의 이름를 점자로 읽고 써 볼 수 있습니다.",
+  "촬영하고 인지된 사물의 이름들을 저장해놓고 다시 학습할 수 있습니다.",
+  "TTS 속도를 조절할 수 있습니다.",
+]
+
+const TutorialFunction = ({ navigation }) => {
+  const { speech } = useTTS();
   const [previousTouchTime, setPreviousTouchTime] = useState(null);
   const previousTouchTimeRef = useRef(null);
+  const index = useRef(1);
+
   useEffect(() => {
     previousTouchTimeRef.current = previousTouchTime;
   }, [previousTouchTime]);
@@ -18,60 +31,79 @@ const TutorialFunction = ({ navigation }) => {
     speech(explanation);
   }, []);
 
-  const steps = [
-    { name: '읽기', message:'점자를 단계별로 읽는 것을 학습하고, 시험 볼 수 있습니다. 더 자세한 내용은 읽기 메뉴에 튜토리얼을 참고해주세요.'},
-    { name: '쓰기', message:'점자를 단계별로 써보고 쓰는것을 학습하고, 시험볼 수  있습니다. 더 자세한 내용은 쓰기 메뉴에 튜토리얼을 참고해주세요.'},
-    { name: '촬영하기',  message:'촬영한 주변 사물의 이름를 점자로 읽고 써 볼 수 있습니다.'},
-    { name: '단어장',message:'촬영하고 인지된 사물의 이름들을 저장해놓고 다시 학습할 수 있습니다.' },
-    { name: '말하기 속도 조절', message:'TTS 속도를 조절할 수 있습니다.' },
+  // Swipe Gesture 로 탐색할 목록
+  const menuList = [
+    { 'name' : '뒤로가기', speech: () => speech('뒤로가기'), action: () => navigation.goBack() },
+    { 'name' : '점자랑', speech: () => speech('점자랑'), action : () => speech('점자랑') },
+    { 'name' : '읽기', speech: () => speech('읽기'), action: () => speech(explanations[0]) },
+    { 'name' : '쓰기', speech: () => speech('쓰기'), action: () => speech(explanations[1]) },
+    { 'name' : '촬영하기', speech: () => speech('촬영하기'), action: () => speech(explanations[2]) },
+    { 'name' : '단어장', speech: () => speech('단어장'), action: () => speech(explanations[3]) },
+    { 'name' : '말하기 속도 조절', speech: () => speech('말하기 속도 조절'), action: () => speech(explanations[4]) },
   ];
 
   // 터치 이벤트 처리
-  const handlePressButton = (name, message) => {
+  const handlePressButton = (name) => {
+    const touchedIndex = menuList.findIndex((menu) => menu.name === name);
+    index.current = touchedIndex;
+    menuList[touchedIndex].speech();
+  };
+
+  // 더블 터치 이벤트 처리
+  const handleDoubleTouch = () => {
     const currentTouchTime = Date.now();
-    const isDoubleTouched = (previousTouchTimeRef.current) && (currentTouchTime - previousTouchTimeRef.current) < 300;
+    const isDoubleTouched = (previousTouchTimeRef.current) && (currentTouchTime - previousTouchTimeRef.current) < 500;
 
     if (isDoubleTouched) {
-      speech(message);
+      menuList[index.current].action();
     }
-    else {
-      speech(name);
-    }
+
     previousTouchTimeRef.current = currentTouchTime;
     setPreviousTouchTime(previousTouchTimeRef.current);
   };
 
-  const handleBackButton = () => {
-    const currentTouchTime = Date.now();
-    if (previousTouchTimeRef.current && (currentTouchTime - previousTouchTimeRef.current) < 300) {
-      navigation.goBack();
-    } else {
-      speech("뒤로가기");
-    }
-    previousTouchTimeRef.current = currentTouchTime;
-    setPreviousTouchTime(previousTouchTimeRef.current);
+  // Left Swipe 이벤트 처리
+  const onSwipeLeft = () => {
+    index.current = (index.current - 1 + menuList.length) % menuList.length;
+    menuList[index.current].speech();
+  };
+
+  // Right Swipe 이벤트 처리
+  const onSwipeRight = () => {
+    index.current = (index.current + 1) % menuList.length;
+    menuList[index.current].speech();
   };
 
   return (
-    <SafeAreaView style={styles.container}>
-      <View style={styles.header}>
-        <TouchableOpacity onPress={handleBackButton}>
-          <Text style={styles.headerButton}>Back</Text>
-        </TouchableOpacity>
-        <Text style={styles.headerTitle}>점자랑</Text>
-        <View style={styles.menuPlaceholder} />
-      </View>
-      <View style={styles.content}>
-        {steps.map((step, index) => (
-          <TouchableOpacity
-            key={index}
-            style={styles.button}
-            onPress={() => handlePressButton(step.name, step.message)}>
-            <Text style={[styles.buttonText, styles.boldText]}>{step.name}</Text>
+    <GestureRecognizer
+      onSwipeLeft={onSwipeLeft}
+      onSwipeRight={onSwipeRight}
+      config={{
+        velocityThreshold: 0.1,
+        directionalOffsetThreshold: 80,
+      }}
+      style={{ flex: 1 }}>
+      <SafeAreaView style={styles.container}>
+        <View style={styles.header}>
+          <TouchableOpacity onPress={() => handlePressButton('뒤로가기')}>
+            <Text style={styles.headerButton}>Back</Text>
           </TouchableOpacity>
-        ))}
-      </View>
-    </SafeAreaView>
+          <TouchableOpacity onPress={() => handlePressButton('점자랑')}>
+            <Text style={styles.headerTitle}>점자랑</Text>
+          </TouchableOpacity>
+          <View style={styles.menuPlaceholder} />
+        </View>
+        <TouchableOpacity style={styles.content} onPress={handleDoubleTouch} activeOpacity={1}>
+          {buttons.map((button, index) => (
+            <View key={index} style={styles.button}>
+              <TouchableOpacity onPress={() => handlePressButton(button)}>
+                <Text style={[styles.buttonText, styles.boldText]}>{button}</Text>
+              </TouchableOpacity>
+            </View>
+          ))}
+        </TouchableOpacity>
+      </SafeAreaView>
+    </GestureRecognizer>
   );
 };
 

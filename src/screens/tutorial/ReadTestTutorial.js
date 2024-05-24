@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { View, Text, TouchableOpacity, StyleSheet, SafeAreaView } from 'react-native';
+import GestureRecognizer from 'react-native-swipe-gestures';
 import { useTTS } from '../../components/TTSContext';
 
 // 튜토리얼 안내 텍스트
@@ -15,73 +16,90 @@ const symbols = ['자음 ㅁ', '약어 그래서'];
 const brailleList = [
     [1, 0, 0, 0, 1, 0],
     [1, 0, 0, 0, 0, 0, 0, 1, 1, 1, 0, 0],
-]
-
-// 버튼 목록
-const buttons = [
-    { name: '다시듣기' },
-    { name: '연습하기' },
 ];
+
+// 메뉴 버튼
+const buttons = ['다시듣기', '시험보기'];
 
 const ReadTestTutorial = ({ navigation }) => {
     const { speech } = useTTS();
     const previousTouchTimeRef = useRef(null);
+    const index = useRef(1);
 
     // 최초 1회 TTS 안내
     useEffect(() => {
         speech(explanation);
     }, []);
-    
-    const handleBackButton = () => {
+
+    // Swipe Gesture 로 탐색할 목록
+    const menuList = [
+        { 'name': '뒤로가기', speech: () => speech('뒤로가기'), action: () => navigation.goBack() },
+        { 'name': '점자랑', speech: () => speech('점자랑'), action: () => speech('점자랑') },
+        { 'name': '다시듣기', speech: () => speech('다시듣기'), action: () => speech(explanation) },
+        { 'name': '시험보기', speech: () => speech('시험보기'), action: () => navigation.navigate('ReadTestPractice', { category: category, brailleSymbols: symbols, brailleList: brailleList }) },
+    ];
+
+    // 터치 이벤트 처리
+    const handlePressButton = (name) => {
+        const touchedIndex = menuList.findIndex((menu) => menu.name === name);
+        index.current = touchedIndex;
+        menuList[touchedIndex].speech();
+    };
+
+    // 더블 터치 이벤트 처리
+    const handleDoubleTouch = () => {
         const currentTouchTime = Date.now();
-        const isDoubleTouched = (previousTouchTimeRef.current) && (currentTouchTime - previousTouchTimeRef.current) < 300;
+        const isDoubleTouched = (previousTouchTimeRef.current) && (currentTouchTime - previousTouchTimeRef.current) < 500;
 
         if (isDoubleTouched) {
-            navigation.goBack();
+            menuList[index.current].action();
         }
-        else {
-            const message = "뒤로가기";
-            speech(message);
-        }
+
         previousTouchTimeRef.current = currentTouchTime;
     };
 
-    const handlePressButton = (name) => {
-        const currentTouchTime = Date.now();
-        const isDoubleTouched = (previousTouchTimeRef.current) && (currentTouchTime - previousTouchTimeRef.current) < 300;
+    // Left Swipe 이벤트 처리
+    const onSwipeLeft = () => {
+        index.current = (index.current - 1 + menuList.length) % menuList.length;
+        menuList[index.current].speech();
+    };
 
-        if (isDoubleTouched) {
-            if (name === '다시듣기') {
-                speech(explanation);
-            }
-            else {
-                navigation.navigate('ReadTestPractice', { category: category, brailleSymbols: symbols, brailleList: brailleList });
-            }
-        }
-        else {
-            const message = `${name}`;
-            speech(message);
-        }
-        previousTouchTimeRef.current = currentTouchTime;
+    // Right Swipe 이벤트 처리
+    const onSwipeRight = () => {
+        index.current = (index.current + 1) % menuList.length;
+        menuList[index.current].speech();
     };
 
     return (
-        <SafeAreaView style={styles.container}>
-            <View style={styles.header}>
-                <TouchableOpacity onPress={handleBackButton}>
-                    <Text style={styles.headerButton}>Back</Text>
-                </TouchableOpacity>
-                <Text style={styles.headerTitle}>점자랑</Text>
-                <View style={styles.menuPlaceholder} />
-            </View>
-            <View style={styles.content}>
-                {buttons.map((button, index) => (
-                    <TouchableOpacity key={index} style={styles.button} onPress={() => handlePressButton(button.name)}>
-                        <Text style={styles.buttonText}>{button.name}</Text>
+        <GestureRecognizer
+            onSwipeLeft={onSwipeLeft}
+            onSwipeRight={onSwipeRight}
+            config={{
+                velocityThreshold: 0.1,
+                directionalOffsetThreshold: 80,
+            }}
+            style={{ flex: 1 }}>
+            <SafeAreaView style={styles.container}>
+                <View style={styles.header}>
+                    <TouchableOpacity onPress={() => handlePressButton('뒤로가기')}>
+                        <Text style={styles.headerButton}>Back</Text>
                     </TouchableOpacity>
-                ))}
-            </View>
-        </SafeAreaView>
+                    <TouchableOpacity onPress={() => handlePressButton('점자랑')}>
+                        <Text style={styles.headerTitle}>점자랑</Text>
+                    </TouchableOpacity>
+                    <View style={styles.menuPlaceholder} />
+                </View>
+                <TouchableOpacity style={styles.content} onPress={handleDoubleTouch} activeOpacity={1}>
+                    {buttons.map((button, index) => (
+                        <View key={index} style={styles.button}>
+                            <TouchableOpacity onPress={() => handlePressButton(button)}>
+                                <Text style={styles.buttonText}>{button}</Text>
+                            </TouchableOpacity>
+                        </View>
+                    ))}
+                </TouchableOpacity>
+            </SafeAreaView>
+        </GestureRecognizer>
     );
 };
 

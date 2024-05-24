@@ -1,70 +1,78 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { View, Text, TouchableOpacity, StyleSheet, SafeAreaView } from 'react-native';
-import { useNavigation } from '@react-navigation/native';
-import { useTTS } from '../components/TTSContext';
+import GestureRecognizer from 'react-native-swipe-gestures';
 
-const BrailleScreen = ({ steps }) => {
-  const { speech } = useTTS();
+const BrailleScreen = ({ buttons, menuList }) => {
   const [previousTouchTime, setPreviousTouchTime] = useState(null);
   const previousTouchTimeRef = useRef(null);
+  const index = useRef(1);
+
   useEffect(() => {
     previousTouchTimeRef.current = previousTouchTime;
   }, [previousTouchTime]);
 
-  const navigation = useNavigation();
-
   // 터치 이벤트 처리
-  const handlePressButton = (name, screen) => {
+  const handlePressButton = (name) => {
+    const touchedIndex = menuList.findIndex((menu) => menu.name === name);
+    index.current = touchedIndex;
+    menuList[touchedIndex].speech();
+  };
+
+  // 더블 터치 이벤트 처리
+  const handleDoubleTouch = () => {
     const currentTouchTime = Date.now();
-    const isDoubleTouched = (previousTouchTimeRef.current) && (currentTouchTime - previousTouchTimeRef.current) < 300;
+    const isDoubleTouched = (previousTouchTimeRef.current) && (currentTouchTime - previousTouchTimeRef.current) < 500;
 
     if (isDoubleTouched) {
-      navigation.navigate(screen);
+      menuList[index.current].action();
     }
-    else {
-      const message = `${name}`;
-      speech(message);
-    }
+
     previousTouchTimeRef.current = currentTouchTime;
     setPreviousTouchTime(previousTouchTimeRef.current);
-  }
+  };
 
-  // 뒤로가기 버튼 이벤트 처리
-  const handleBackButton = () => {
-    const currentTouchTime = Date.now();
-    const isDoubleTouched = (previousTouchTimeRef.current) && (currentTouchTime - previousTouchTimeRef.current) < 300;
+  // Left Swipe 이벤트 처리
+  const onSwipeLeft = () => {
+    index.current = (index.current - 1 + menuList.length) % menuList.length;
+    menuList[index.current].speech();
+  };
 
-    if (isDoubleTouched) {
-      navigation.goBack();
-    }
-    else {
-      const message = "뒤로가기";
-      speech(message);
-    }
-    previousTouchTimeRef.current = currentTouchTime;
-    setPreviousTouchTime(previousTouchTimeRef.current);
-  }
+  // Right Swipe 이벤트 처리
+  const onSwipeRight = () => {
+    index.current = (index.current + 1) % menuList.length;
+    menuList[index.current].speech();
+  };
 
   return (
-    <SafeAreaView style={styles.container}>
-      <View style={styles.header}>
-        <TouchableOpacity onPress={handleBackButton}>
-          <Text style={styles.headerButton}>Back</Text>
-        </TouchableOpacity>
-        <Text style={styles.headerTitle}>점자랑</Text>
-        <View style={styles.menuPlaceholder} />
-      </View>
-      <View style={styles.content}>
-        {steps.map((step, index) => (
-          <TouchableOpacity
-            key={index}
-            style={styles.button}
-            onPress={() => handlePressButton(step.name, step.screen)}>
-            <Text style={styles.buttonText}>{step.name}</Text>
+    <GestureRecognizer
+      onSwipeLeft={onSwipeLeft}
+      onSwipeRight={onSwipeRight}
+      config={{
+        velocityThreshold: 0.1,
+        directionalOffsetThreshold: 80
+      }}
+      style={{ flex: 1 }}>
+      <SafeAreaView style={styles.container}>
+        <View style={styles.header}>
+          <TouchableOpacity onPress={() => handlePressButton('뒤로가기')}>
+            <Text style={styles.headerButton}>Back</Text>
           </TouchableOpacity>
-        ))}
-      </View>
-    </SafeAreaView>
+          <TouchableOpacity onPress={() => handlePressButton('점자랑')}>
+            <Text style={styles.headerTitle}>점자랑</Text>
+          </TouchableOpacity>
+          <View style={styles.menuPlaceholder} />
+        </View>
+        <TouchableOpacity style={styles.content} onPress={handleDoubleTouch} activeOpacity={1}>
+          {buttons.map((button, index) => (
+            <View key={index} style={styles.button}>
+              <TouchableOpacity onPress={() => handlePressButton(button)}>
+                <Text style={styles.buttonText}>{button}</Text>
+              </TouchableOpacity>
+            </View>
+          ))}
+        </TouchableOpacity>
+      </SafeAreaView>
+    </GestureRecognizer>
   );
 };
 
