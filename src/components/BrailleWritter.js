@@ -3,6 +3,8 @@ import { useNavigation } from '@react-navigation/native';
 import { StyleSheet, View, PanResponder, Dimensions, Text, SafeAreaView, TouchableOpacity } from "react-native";
 import { useTTS } from "./TTSContext";
 import { getPronunciation } from "./Pronunciation";
+import GestureRecognizer from 'react-native-swipe-gestures';
+import { Audio } from 'expo-av';
 
 const window = Dimensions.get("window");
 const points = [
@@ -58,6 +60,15 @@ const getTouchedAreaIndex = (touchX, touchY) => {
 const nextButton = { x: window.width / 2 + window.width / 8, y: window.height / 3 };
 const prevButton = { x: window.width / 2 - window.width / 8, y: window.height / 3 };
 
+async function playSound() {
+  const soundObject = new Audio.Sound();
+  try {
+      await soundObject.loadAsync(require('../assets/sounds/ping.mp3'));
+      await soundObject.playAsync();
+  } catch (error) {
+      console.error(error);
+  }
+}
 const speakMessages = ["4점", "5점", "6점", "1점", "2점", "3점"];
 var speakIndex = [false, false, false, false, false, false];
 
@@ -76,6 +87,7 @@ const BrailleWritter = ({ category, brailleSymbols, brailleList }) => {
   const [previousTouchTime, setPreviousTouchTime] = useState(null);
   const previousTouchTimeRef = useRef(null);
   const navigation = useNavigation();
+  const index = useRef(3);
 
   useEffect(() => {
     const select = whatDot(brailleList[brailleIndex]);
@@ -91,6 +103,8 @@ const BrailleWritter = ({ category, brailleSymbols, brailleList }) => {
     brailleIndexRef.current = brailleIndex;
     const currentBrailleLength = brailleList[brailleIndex].length;
     const calculatedMaxPage = Math.ceil(currentBrailleLength / 6) - 1;
+    inputBraille = new Array(brailleList[brailleIndex].length).fill(0);
+    console.log(inputBraille);
     setMaxPage(calculatedMaxPage);
     setCurrentPage(0);
   }, [brailleIndex]);
@@ -107,6 +121,14 @@ const BrailleWritter = ({ category, brailleSymbols, brailleList }) => {
     previousTouchTimeRef.current = previousTouchTime;
   }, [previousTouchTimeRef])
 
+  const menuList = [
+    { name: '뒤로가기', speech: () => speech('뒤로가기'), action: () => navigation.goBack() },
+    { name: '점자랑', speech: () => speech('점자랑'), action: () => speech('점자랑') },
+    { name: '이전', speech: () => currentPageRef.current === 0 ? speech('이전'): speech('이전 칸'), action: () => handlePrevButton() },
+    { name: '묵자', speech: () => speech(getCurrentSymbol()), action: () => speech(getCurrentSymbol()) },
+    { name: '다음', speech: () => currentPageRef.current === brailleList[brailleIndexRef.current].length / 6 - 1 ? speech('다음'): speech('다음 칸'), action: () => handleNextButton() },        
+  ];
+
   const handleDoubleTap = (index) => {
     const currentBrailleIndex = brailleIndexRef.current;
     var pageIndex = index + currentPageRef.current * 6;
@@ -117,9 +139,11 @@ const BrailleWritter = ({ category, brailleSymbols, brailleList }) => {
     }
     inputBraille[pageIndex] = 1;
 
+    playSound();
+
     const brailleOne = brailleOneNum(currentBrailleIndex);
     touchNum++;
-
+    //Sound
     if (brailleOne == touchNum) {
       if (!isCorrect(inputBraille, brailleList[currentBrailleIndex])) {
         const message = "잘못된 입력 입니다. 다시 입력하세요.";
@@ -133,6 +157,7 @@ const BrailleWritter = ({ category, brailleSymbols, brailleList }) => {
       else {
         const message = "올바른 입력 입니다.";
         speech(message);
+        inputBraille = new Array(brailleList[currentBrailleIndex].length).fill(0);
         touchNum = 0;
       }
     }
@@ -208,7 +233,7 @@ const BrailleWritter = ({ category, brailleSymbols, brailleList }) => {
       const pronunciation = getPronunciation(category, brailleSymbols[newIndex]);
       const message = `이전 ${category} 은 ${pronunciation} 입니다. ${select} 입니다.`;
       speech(message);
-
+      
       inputBraille = new Array(brailleList[newIndex].length).fill(0);
       return newIndex;
     });
@@ -219,6 +244,86 @@ const BrailleWritter = ({ category, brailleSymbols, brailleList }) => {
     const pronunciation = getPronunciation(category, brailleSymbols[currentIndex.current]);
     const message = ` 현재 쓰고 있는 점자는 ${category} ${pronunciation} 입니다. ${select} 입니다.`;
     speech(message);
+  };
+
+  const getCurrentSymbol = () => {
+    const component = whatDot(brailleList[brailleIndexRef.current]);
+    const pronunciation = getPronunciation(category, brailleSymbols[brailleIndexRef.current]);
+    const message = `${category} ${pronunciation} 입니다. ${component} 입니다.`;
+    return message;
+  };
+
+  const handleNextButton = () => {
+    if (currentPageRef.current === Math.ceil(brailleList[brailleIndexRef.current].length / 6) - 1) {
+      setBrailleIndex((prevIndex) => {
+        const newIndex = (prevIndex + 1) % brailleSymbols.length;
+        brailleIndexRef.current = newIndex;
+        const select = whatDot(brailleList[newIndex]);
+        const pronunciation = getPronunciation(category, brailleSymbols[newIndex]);
+        const message = `다음 ${category}은 ${pronunciation} 입니다. ${select} 입니다.`;
+        speech(message);
+        console.log(inputBraille);
+        inputBraille = new Array(brailleList[newIndex].length).fill(0);
+        setCurrentPage(0); // 페이지 초기화
+        return newIndex;
+      });
+    } else {
+      handleNextPage();
+    }
+    index.current = 3;
+  };
+  
+  const handlePrevButton = () => {
+    if (currentPageRef.current === 0) {
+      setBrailleIndex((prevIndex) => {
+        let newIndex = prevIndex - 1;
+        if (newIndex < 0) newIndex = brailleSymbols.length - 1;
+        brailleIndexRef.current = newIndex;
+        const select = whatDot(brailleList[newIndex]);
+        const pronunciation = getPronunciation(category, brailleSymbols[newIndex]);
+        const message = `이전 ${category}은 ${pronunciation} 입니다. ${select} 입니다.`;
+        speech(message);
+        
+        inputBraille = new Array(brailleList[newIndex].length).fill(0);
+        setCurrentPage(0); // 페이지 초기화
+        return newIndex;
+      });
+    } else {
+      handlePrevPage();
+    }
+    index.current = 3;
+  };
+  
+
+  const onSwipeLeft = () => {
+    index.current = (index.current - 1 + menuList.length) % menuList.length;
+    menuList[index.current].speech();
+  };
+
+  // Right Swipe 이벤트 처리  
+  const onSwipeRight = () => {
+    index.current = (index.current + 1) % menuList.length;
+    menuList[index.current].speech();
+  };
+
+   // 터치 이벤트 처리
+   const handlePressButton = (name) => {
+    const touchedIndex = menuList.findIndex((menu) => menu.name === name);
+    index.current = touchedIndex;
+    menuList[touchedIndex].speech();
+  };
+
+   // 더블 터치 이벤트 처리
+   const handleDoubleTouch = () => {
+    const currentTouchTime = Date.now();
+    const isDoubleTouched = (previousTouchTimeRef.current) && (currentTouchTime - previousTouchTimeRef.current) < 500;
+
+    if (isDoubleTouched) {
+        menuList[index.current].action();
+    }
+
+    previousTouchTimeRef.current = currentTouchTime;
+    setPreviousTouchTime(previousTouchTimeRef.current);
   };
 
   const panResponder = useRef(
@@ -303,49 +408,51 @@ const BrailleWritter = ({ category, brailleSymbols, brailleList }) => {
     })
   ).current;
 
-  const handleBackButton = () => {
-    const currentTouchTime = Date.now();
-    const isDoubleTouched = (previousTouchTimeRef.current) && (currentTouchTime - previousTouchTimeRef.current) < 300;
-
-    if (isDoubleTouched) {
-        navigation.goBack();
-    }
-    else {
-        const message = "뒤로가기";
-        speech(message);
-    }
-    previousTouchTimeRef.current = currentTouchTime;
-    setPreviousTouchTime(previousTouchTimeRef.current);
-};
-
-  return (
-    <SafeAreaView style={styles.container}>
+return (
+  <SafeAreaView style={styles.container}>
       <View style={styles.header}>
-        <TouchableOpacity onPress={handleBackButton}>
-          <Text style={styles.headerButton}>Back</Text>
-        </TouchableOpacity>
-        <Text style={styles.headerTitle}>점자랑</Text>
-        <View style={styles.menuPlaceholder} />
+          <TouchableOpacity onPress={() => handlePressButton('뒤로가기')}>
+              <Text style={styles.headerButton}>Back</Text>
+          </TouchableOpacity>
+          <TouchableOpacity onPress={() => handlePressButton('점자랑')}>
+              <Text style={styles.headerTitle}>점자랑</Text>
+          </TouchableOpacity>
+          <View style={styles.menuPlaceholder} />
       </View>
-      <View {...panResponder.panHandlers} style={styles.content}>
-        { /* Top 1/3 */}
-        <View style={styles.top}>
-          <Text style={styles.text}>이전</Text>
-          <Text style={styles.symbol}>{brailleSymbols[brailleIndex]}</Text>
-          <Text style={styles.text}>다음</Text>
-        </View>
-        
-        { /* Bottom 2/3 */}
-        <View  style={styles.bottom} >
-          {points.map((_, index) => (
-             <View key={index} style={styles.dotContainer}>
-              <View style={styles.dot} />
-                    </View>
+      <View style={styles.content}>
+          { /* Top 1/3 */}
+          <GestureRecognizer 
+              onSwipeLeft={onSwipeLeft}
+              onSwipeRight={onSwipeRight}
+              config={{
+                  velocityThreshold: 0.1,
+                  directionalOffsetThreshold: 80
+              }}
+              style={{ flex: 1 }}>
+              <TouchableOpacity style={styles.top} onPress={handleDoubleTouch} activeOpacity={1}>
+                  <TouchableOpacity onPress={() => handlePressButton('이전')}>
+                      <Text style={styles.text}>이전</Text>
+                  </TouchableOpacity>
+                  <TouchableOpacity onPress={() => handlePressButton('묵자')}>
+                      <Text style={styles.symbol}>{brailleSymbols[brailleIndexRef.current]}</Text>
+                  </TouchableOpacity>
+                  <TouchableOpacity onPress={() => handlePressButton('다음')}>
+                      <Text style={styles.text}>다음</Text>
+                  </TouchableOpacity>
+              </TouchableOpacity>
+          </GestureRecognizer>
+
+          { /* Bottom 2/3 */}
+          <View {...panResponder.panHandlers} style={styles.bottom} >
+              {points.map((_, index) => (
+                  <View key={index} style={styles.dotContainer}>
+                      <View style={styles.dot} />
+                  </View>
               ))}
-            </View>
-        </View>
-    </SafeAreaView>
-  );
+          </View>
+      </View>
+  </SafeAreaView>
+);
 };
 
 const styles = StyleSheet.create({
@@ -378,7 +485,7 @@ const styles = StyleSheet.create({
   top: {
       flex: 1,
       flexDirection: 'row',
-      flexWrap: 'wrap',
+      alignItems: 'center',
       justifyContent: 'space-around',
   },
   text: {
