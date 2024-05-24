@@ -82,6 +82,9 @@ import NumberWTester from "../screens/write/tester/NumberWTester";
 // Camera
 import CameraModule from "../screens/camera/CameraModule";
 
+// Record
+import RecordModule from "../screens/record/RecordModule";
+
 // Voca
 import VocabularyModule from "../screens/vocabulary/VocabularyModule";
 
@@ -175,6 +178,9 @@ const AppNavigator = () => {
 
         {/* Camera */}
         <Stack.Screen name="CameraModule" component={CameraModule} />
+
+        {/* Record */}
+        <Stack.Screen name="RecordModule" component={RecordModule} />
 
         {/* Voca */}
         <Stack.Screen name="VocabularyModule" component={VocabularyModule} />

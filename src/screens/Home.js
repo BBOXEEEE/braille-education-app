@@ -5,7 +5,7 @@ import { useTTS } from '../components/TTSContext';
 import { useCameraPermissions } from 'expo-camera';
 
 // 메뉴 버튼
-const buttons = ['튜토리얼', '읽기', '쓰기', '촬영하기', '단어장', '말하기 속도 조절'];
+const buttons = ['튜토리얼', '읽기', '쓰기', '촬영하기', '녹음하기', '단어장', '말하기 속도 조절'];
 
 // 말하기 속도 조절
 const ttsOptions = [
@@ -54,6 +54,7 @@ const Home = ({ navigation }) => {
     { name: '읽기', speech: () => speech('읽기'), action: () => navigation.navigate('ReadMenu') },
     { name: '쓰기', speech: () => speech('쓰기'), action: () => navigation.navigate('WriteMenu') },
     { name: '촬영하기', speech: () => speech('촬영하기'), action: () => navigation.navigate('CameraModule') },
+    { name: '녹음하기', speech: () => speech('녹음하기'), action: () => navigation.navigate('RecordModule')},
     { name: '단어장', speech: () => speech('단어장'), action: () => navigation.navigate('VocabularyModule') },
     { name: '말하기 속도 조절', speech: () => speech('말하기 속도 조절'), action: () => setModalVisible(true) },    
   ];
@@ -199,7 +200,7 @@ const styles = StyleSheet.create({
   },
   button: {
     width: '100%',
-    height: '13%',
+    height: '10%',
     justifyContent: 'center',
     alignItems: 'center',
     backgroundColor: '#fff',
