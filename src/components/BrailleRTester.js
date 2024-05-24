@@ -1,8 +1,9 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { useNavigation } from '@react-navigation/native';
 import { View, PanResponder, Dimensions, StyleSheet, Text, SafeAreaView, TouchableOpacity } from 'react-native';
+import GestureRecognizer from 'react-native-swipe-gestures';
 import * as Haptics from 'expo-haptics';
 import { useTTS } from './TTSContext';
+import { useNavigation } from '@react-navigation/native';
 import { getPronunciation } from './Pronunciation';
 import getRandomBrailleIndex from './RandomBrailleGenerator';
 
@@ -89,6 +90,7 @@ const BrailleRTester = ({ category, brailleSymbols, brailleList }) => {
     const touchIndexRef = useRef(touchIndex);
     const previousTouchTimeRef = useRef(null);
     const navigation = useNavigation();
+    index = useRef(3);
 
     // 랜덤 점자 인덱스 초기화
     useEffect(() => {
@@ -131,25 +133,94 @@ const BrailleRTester = ({ category, brailleSymbols, brailleList }) => {
         }
     }, [touchIndex]);
 
+    // Swipe Gesture 로 탐색할 목록
+    const menuList = [
+        { name: '뒤로가기', speech: () => speech('뒤로가기'), action: () => navigation.goBack() },
+        { name: '점자랑', speech: () => speech('점자랑'), action: () => speech('점자랑') },
+        { name: '이전', speech: () => currentSpace.current === 0 ? speech('이전') : speech('이전 칸'), action: () => handlePrevButton() },
+        { name: '정답확인', speech: () => speech('정답확인'), action: () => handleCheckButton() },
+        { name: '다음', speech: () => currentSpace.current === brailleList[randomIndex[currentBrailleRef.current]].length / 6 - 1 ? speech('다음') : speech('다음 칸'), action: () => handleNextButton() },
+    ];
+
+    // 터치 이벤트 처리
+    const handlePressButton = (name) => {
+        const touchedIndex = menuList.findIndex((menu) => menu.name === name);
+        index.current = touchedIndex;
+        menuList[touchedIndex].speech();
+    };
+
+    // 더블 터치 이벤트 처리
+    const handleDoubleTouch = () => {
+        const currentTouchTime = Date.now();
+        const isDoubleTouched = (previousTouchTimeRef.current) && (currentTouchTime - previousTouchTimeRef.current) < 500;
+
+        if (isDoubleTouched) {
+            menuList[index.current].action();
+        }
+
+        previousTouchTimeRef.current = currentTouchTime;
+        setPreviousTouchTime(previousTouchTimeRef.current);
+    };
+
+    // 정답 확인 버튼 이벤트 처리
+    const handleCheckButton = () => {
+        const component = getComponentBraille(brailleList[randomIndex[currentBrailleRef.current]]);
+        const pronunciation = getPronunciation(category, brailleSymbols[randomIndex[currentBrailleRef.current]]);
+        const message = `정답은 ${category} ${pronunciation} 입니다. ${pronunciation} 은 ${component} 입니다.`;
+        speech(message);
+    };
+
+    // 이전 버튼 이벤트 처리
+    const handlePrevButton = () => {
+        if (currentSpace.current === 0) {
+            if (currentBrailleRef.current - 1 >= 0) currentBrailleRef.current -= 1;
+            else currentBrailleRef.current = randomIndex.length - 1;
+        }
+        else {
+            const prev = currentSpace.current - 1;
+            currentSpace.current = prev;
+        }
+        index.current = 3;
+        setCurrentBraille(currentBrailleRef.current);
+    };
+
+    // 다음 버튼 이벤트 처리
+    const handleNextButton = () => {
+        if (currentSpace.current === brailleList[randomIndex[currentBrailleRef.current]].length / 6 - 1) {
+            currentBrailleRef.current = (currentBrailleRef.current + 1) % randomIndex.length;
+        }
+        else {
+            const next = currentSpace.current + 1;
+            currentSpace.current = next;
+        }
+        index.current = 3;
+        setCurrentBraille(currentBrailleRef.current);
+    };
+
+    // Left Swipe 이벤트 처리
+    const onSwipeLeft = () => {
+        index.current = (index.current - 1 + menuList.length) % menuList.length;
+        menuList[index.current].speech();
+    };
+
+    // Right Swipe 이벤트 처리
+    const onSwipeRight = () => {
+        index.current = (index.current + 1) % menuList.length;
+        menuList[index.current].speech();
+    };
+
     // PanResponder 초기화
     const panResponder = useRef(
         PanResponder.create({
             onStartShouldSetPanResponder: () => true,
             onMoveShouldSetPanResponder: () => true,
             onPanResponderGrant: (evt) => {
-                const currentTouchTime = Date.now();
                 const touch = evt.nativeEvent.touches;
-                if (touch[0].pageY < top) {
-                    const isDoubleTouched = (previousTouchTimeRef.current) && (currentTouchTime - previousTouchTimeRef.current) < 300;
-                    if (isDoubleTouched) {
-                        handleDoubleTouch(touch[0].pageX);
-                    }
-                    else {
-                        handleTouch(touch[0].pageX);
-                    }
-                    previousTouchTimeRef.current = currentTouchTime;
-                    setPreviousTouchTime(previousTouchTimeRef.current);
-                }
+
+                touch.forEach((touch) => {
+                    touchIndexRef.current = getTouchedAreaIndex(touch.pageX, touch.pageY);
+                    setTouchIndex(touchIndexRef.current);
+                });
             },
             onPanResponderMove: (evt) => {
                 const touches = evt.nativeEvent.touches;
@@ -161,114 +232,43 @@ const BrailleRTester = ({ category, brailleSymbols, brailleList }) => {
             },
         })
     ).current;
-    
-    // 화면 상단 터치 이벤트 처리
-    const handleTouch = (touch) => {
-        const threshold = width / 3;
-
-        // 화면 상단 좌측 : 이전 버튼 TTS
-        if (touch <= threshold) {
-            let message;
-            if (currentSpace.current === 0) {
-                message = "이전";
-            }
-            else {
-                message = "이전 칸";
-            }
-            speech(message);
-        }
-        // 화면 상단 중앙 : 정답확인 TTS
-        else if (touch > threshold && touch < 2 * threshold) {
-            const message = `정답확인`;
-            speech(message);
-        }
-        // 화면 상단 우측 : 다음 버튼 TTS
-        else {
-            let message;
-            if (currentSpace.current === brailleList[randomIndex[currentBrailleRef.current]].length / 6 - 1) {
-                message = "다음";
-            }
-            else {
-                message = "다음 칸";
-            }
-            speech(message);
-        }
-    };
-
-    // 화면 상단 더블 터치 이벤트 처리
-    const handleDoubleTouch = (touch) => {
-        const threshold = width / 3;
-
-        // 화면 상단 좌측 : 이전 버튼
-        if (touch <= threshold) {
-            // 이전 점자로 이동
-            if (currentSpace.current === 0) {
-                if (currentBrailleRef.current - 1 >= 0) currentBrailleRef.current -= 1;
-                else currentBrailleRef.current = randomIndex.length - 1;
-            }
-            // 이전 점자 칸으로 이동
-            else {
-                const prev = currentSpace.current - 1;
-                currentSpace.current = prev;
-            }
-        }
-        // 화면 상단 중앙 : 정답확인
-        else if (touch > threshold && touch < 2 * threshold) {
-            const component = getComponentBraille(brailleList[randomIndex[currentBrailleRef.current]]);
-            const pronunciation = getPronunciation(category, brailleSymbols[randomIndex[currentBrailleRef.current]]);
-            const message = `정답은 ${category} ${pronunciation} 입니다. ${pronunciation} 은 ${component} 입니다.`;
-            speech(message);
-        }
-        // 화면 상단 우측 : 다음 버튼
-        else {
-            // 다음 점자로 이동
-            if (currentSpace.current === brailleList[randomIndex[currentBrailleRef.current]].length / 6 - 1) {
-                currentBrailleRef.current = (currentBrailleRef.current + 1) % randomIndex.length;
-            }
-            // 다음 점자 칸으로 이동
-            else {
-                const next = currentSpace.current + 1;
-                currentSpace.current = next;
-            }
-        }
-        setCurrentBraille(currentBrailleRef.current);
-    };
-
-    // 뒤로가기 버튼 이벤트 처리
-    const handleBackButton = () => {
-        const currentTouchTime = Date.now();
-        const isDoubleTouched = (previousTouchTimeRef.current) && (currentTouchTime - previousTouchTimeRef.current) < 300;
-
-        if (isDoubleTouched) {
-            navigation.goBack();
-        }
-        else {
-            const message = "뒤로가기";
-            speech(message);
-        }
-        previousTouchTimeRef.current = currentTouchTime;
-        setPreviousTouchTime(previousTouchTimeRef.current);
-    };
 
     return (
         <SafeAreaView style={styles.container}>
             <View style={styles.header}>
-                <TouchableOpacity onPress={handleBackButton}>
+                <TouchableOpacity onPress={() => handlePressButton('뒤로가기')}>
                     <Text style={styles.headerButton}>Back</Text>
                 </TouchableOpacity>
-                <Text style={styles.headerTitle}>점자랑</Text>
+                <TouchableOpacity onPress={() => handlePressButton('점자랑')}>
+                    <Text style={styles.headerTitle}>점자랑</Text>
+                </TouchableOpacity>
                 <View style={styles.menuPlaceholder} />
             </View>
-            <View {...panResponder.panHandlers} style={styles.content}>
+            <View style={styles.content}>
                 { /* Top 1/3 */}
-                <View style={styles.top}>
-                    <Text style={styles.text}>이전</Text>
-                    <Text style={styles.text}>정답확인</Text>
-                    <Text style={styles.text}>다음</Text>
-                </View>
+                <GestureRecognizer
+                    onSwipeLeft={onSwipeLeft}
+                    onSwipeRight={onSwipeRight}
+                    config={{
+                        velocityThreshold: 0.1,
+                        directionalOffsetThreshold: 80
+                    }}
+                    style={{ flex: 1 }}>
+                    <TouchableOpacity style={styles.top} onPress={handleDoubleTouch} activeOpacity={1}>
+                        <TouchableOpacity onPress={() => handlePressButton('이전')}>
+                            <Text style={styles.text}>이전</Text>
+                        </TouchableOpacity>
+                        <TouchableOpacity onPress={() => handlePressButton('정답확인')}>
+                            <Text style={styles.text}>정답확인</Text>
+                        </TouchableOpacity>
+                        <TouchableOpacity onPress={() => handlePressButton('다음')}>
+                            <Text style={styles.text}>다음</Text>
+                        </TouchableOpacity>
+                    </TouchableOpacity>
+                </GestureRecognizer>
 
                 { /* Bottom 2/3 */}
-                <View  style={styles.bottom} >
+                <View {...panResponder.panHandlers} style={styles.bottom} >
                     {points.map((_, index) => (
                         <View key={index} style={styles.dotContainer}>
                             <View style={styles.dot} />
@@ -310,7 +310,7 @@ const styles = StyleSheet.create({
     top: {
         flex: 1,
         flexDirection: 'row',
-        flexWrap: 'wrap',
+        alignItems: 'center',
         justifyContent: 'space-around',
     },
     text: {
