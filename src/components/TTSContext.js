@@ -31,7 +31,7 @@ export const TTSProvider = ({ children }) => {
         Speech.stop();
         const options = {
             rate: customRate || rate.value,
-            pitch: pitch,
+            pitch: pitch || 1.0,
         };
 
         if (Platform.OS === 'ios') {
