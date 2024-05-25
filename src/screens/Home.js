@@ -34,8 +34,6 @@ const Home = ({ navigation }) => {
     const checkPermissions = async () => {
       const camera = await requestPermission();
       const mic = await Audio.requestPermissionsAsync();
-      console.log(camera.status);
-      console.log(mic.status);
 
       if (camera.status === 'granted' && mic.status === 'granted') {
         const message = '원활한 사용을 위해 Voice Over 혹은 TalkBack을 비활성화 해주세요. 버튼을 두번 터치하면 해당 화면으로 이동합니다.';
