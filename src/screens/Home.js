@@ -3,6 +3,7 @@ import { View, Text, TouchableOpacity, Modal, StyleSheet, SafeAreaView } from 'r
 import GestureRecognizer from 'react-native-swipe-gestures';
 import { useTTS } from '../components/TTSContext';
 import { useCameraPermissions } from 'expo-camera';
+import { Audio } from 'expo-av';
 
 // 메뉴 버튼
 const buttons = ['튜토리얼', '읽기', '쓰기', '촬영하기', '녹음하기', '단어장', '말하기 속도 조절'];
@@ -31,10 +32,12 @@ const Home = ({ navigation }) => {
   // 앱 최초 실행 시 안내 TTS
   useEffect(() => {
     const checkPermissions = async () => {
-      const grantMessage = "이 앱은 카메라와 마이크 권한이 필요합니다. Allow 버튼을 눌러 권한을 허용해주세요.";
-      speech(grantMessage, 1.3);
-      const { status } = await requestPermission();
-      if (status === 'granted') {
+      const camera = await requestPermission();
+      const mic = await Audio.requestPermissionsAsync();
+      console.log(camera.status);
+      console.log(mic.status);
+
+      if (camera.status === 'granted' && mic.status === 'granted') {
         const message = '원활한 사용을 위해 Voice Over 혹은 TalkBack을 비활성화 해주세요. 버튼을 두번 터치하면 해당 화면으로 이동합니다.';
         speech(message, 1.3);
       }
