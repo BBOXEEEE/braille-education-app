@@ -79,7 +79,8 @@ const BrailleWritter = ({ category, brailleSymbols, brailleList }) => {
   const brailleIndexRef = useRef(brailleIndex);
   const lastTapRef = useRef(null);
   var inputBraille;
-  var touchNum = 0;
+  const [touchNum, setTouchNum] = useState(0);
+  const touchNumRef = useRef(touchNum);
   const [currentPage, setCurrentPage] = useState(0);
   const [maxPage, setMaxPage] = useState(0);
   const maxPageRef = useRef(maxPage);
@@ -92,7 +93,6 @@ const BrailleWritter = ({ category, brailleSymbols, brailleList }) => {
   useEffect(() => {
     const select = whatDot(brailleList[brailleIndex]);
     inputBraille = new Array(brailleList[brailleIndex].length).fill(0);
-
     const pronunciation = getPronunciation(category, brailleSymbols[brailleIndex]);
     const message = `점자 쓰기입니다. 1점부터 6점까지 터치하여 점자를 입력하세요.
                     ${category}, ${pronunciation} 입니다. ${select} 입니다.`;
@@ -104,10 +104,14 @@ const BrailleWritter = ({ category, brailleSymbols, brailleList }) => {
     const currentBrailleLength = brailleList[brailleIndex].length;
     const calculatedMaxPage = Math.ceil(currentBrailleLength / 6) - 1;
     inputBraille = new Array(brailleList[brailleIndex].length).fill(0);
-    console.log(inputBraille);
+    setTouchNum(0);
     setMaxPage(calculatedMaxPage);
     setCurrentPage(0);
   }, [brailleIndex]);
+
+  useEffect(() => {
+    touchNumRef.current = touchNum;
+  }, [touchNum]);
 
   useEffect(() => {
     maxPageRef.current = maxPage;
@@ -138,18 +142,18 @@ const BrailleWritter = ({ category, brailleSymbols, brailleList }) => {
       pageIndex += 3;
     }
     inputBraille[pageIndex] = 1;
-
+    setTouchNum(prevTouchNum => {
+      return prevTouchNum + 1;
+    });
     playSound();
 
     const brailleOne = brailleOneNum(currentBrailleIndex);
-    touchNum++;
-    //Sound
-    if (brailleOne == touchNum) {
+    if (brailleOne <= touchNumRef.current + 1) {
       if (!isCorrect(inputBraille, brailleList[currentBrailleIndex])) {
         const message = "잘못된 입력 입니다. 다시 입력하세요.";
         speech(message);
         inputBraille = new Array(brailleList[currentBrailleIndex].length).fill(0);
-        touchNum = 0;
+        setTouchNum(0); 
         setCurrentPage(() => { // 페이지 초기화
           return 0;
         });
@@ -158,7 +162,7 @@ const BrailleWritter = ({ category, brailleSymbols, brailleList }) => {
         const message = "올바른 입력 입니다.";
         speech(message);
         inputBraille = new Array(brailleList[currentBrailleIndex].length).fill(0);
-        touchNum = 0;
+        setTouchNum(0);
       }
     }
   };
@@ -219,7 +223,7 @@ const BrailleWritter = ({ category, brailleSymbols, brailleList }) => {
       const pronunciation = getPronunciation(category, brailleSymbols[newIndex]);
       const message = `다음 ${category} 은 ${pronunciation} 입니다. ${select} 입니다.`;
       speech(message);
-      
+      setTouchNum(0);
       inputBraille = new Array(brailleList[newIndex].length).fill(0);
       return newIndex;
     });
@@ -233,7 +237,7 @@ const BrailleWritter = ({ category, brailleSymbols, brailleList }) => {
       const pronunciation = getPronunciation(category, brailleSymbols[newIndex]);
       const message = `이전 ${category} 은 ${pronunciation} 입니다. ${select} 입니다.`;
       speech(message);
-      
+      setTouchNum(0);
       inputBraille = new Array(brailleList[newIndex].length).fill(0);
       return newIndex;
     });
@@ -262,8 +266,8 @@ const BrailleWritter = ({ category, brailleSymbols, brailleList }) => {
         const pronunciation = getPronunciation(category, brailleSymbols[newIndex]);
         const message = `다음 ${category}은 ${pronunciation} 입니다. ${select} 입니다.`;
         speech(message);
-        console.log(inputBraille);
         inputBraille = new Array(brailleList[newIndex].length).fill(0);
+        setTouchNum(0);
         setCurrentPage(0); // 페이지 초기화
         return newIndex;
       });
@@ -283,7 +287,7 @@ const BrailleWritter = ({ category, brailleSymbols, brailleList }) => {
         const pronunciation = getPronunciation(category, brailleSymbols[newIndex]);
         const message = `이전 ${category}은 ${pronunciation} 입니다. ${select} 입니다.`;
         speech(message);
-        
+        setTouchNum(0);
         inputBraille = new Array(brailleList[newIndex].length).fill(0);
         setCurrentPage(0); // 페이지 초기화
         return newIndex;
