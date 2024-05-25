@@ -1,4 +1,5 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
+import { Platform } from 'react-native';
 import * as Speech from 'expo-speech';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
@@ -29,12 +30,20 @@ export const TTSProvider = ({ children }) => {
     const speech = (message, customRate, pitch) => {
         Speech.stop();
         const options = {
-            voice: "com.apple.voice.compact.ko-KR.Yuna",
             rate: customRate || rate.value,
             pitch: pitch,
         };
+
+        if (Platform.OS === 'ios') {
+            options.voice = "com.apple.voice.compact.ko-KR.Yuna";
+        }
+        if (Platform.OS === 'android') {
+            options.language = 'ko-KR';
+            options.voice = "ko_kr_standart_b";
+        }
+
         Speech.speak(message, options);
-    }
+    };
 
     return (
         <TTSContext.Provider value={{ rate, updateRate, speech }}>
