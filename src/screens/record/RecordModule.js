@@ -1,9 +1,11 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { View, Text, TouchableOpacity, StyleSheet, SafeAreaView } from 'react-native';
 import GestureRecognizer from 'react-native-swipe-gestures';
+import axios from 'axios';
 import { useTTS } from '../../components/TTSContext';
 import { Audio } from 'expo-av';
 import { Ionicons } from '@expo/vector-icons';
+import * as FileSystem from 'expo-file-system';
 
 const RecordModule = ({ navigation }) => {
     const { speech } = useTTS();
@@ -14,12 +16,7 @@ const RecordModule = ({ navigation }) => {
 
     useEffect(() => {
         return () => {
-            Audio.setAudioModeAsync({
-                allowsRecordingIOS: false,
-                playsInSilentModeIOS: false,
-                shouldDuckAndroid: false,
-                playThroughEarpieceAndroid: false,
-            });
+            resetAudioMode();
         };
     }, []);
 
@@ -52,30 +49,61 @@ const RecordModule = ({ navigation }) => {
         try {
             await recording.stopAndUnloadAsync();
             const uri = recording.getURI();
-            console.log('Recording URI: ', uri);
             setRecording(null);
             setIsListening(false);
+            await resetAudioMode();
+            await requestToServer(uri);
+            await FileSystem.deleteAsync(uri);
+        } 
+        catch (error) {
+            console.log('Error: ', error);
+            if (recording) {
+                const uri = recording.getURI();
+                await FileSystem.deleteAsync(uri);
+            }
+            await resetAudioMode();
+        }
+    };
+
+    // 오디오 설정 초기화
+    const resetAudioMode = async () => {
+        try {
             await Audio.setAudioModeAsync({
                 allowsRecordingIOS: false,
                 playsInSilentModeIOS: false,
                 shouldDuckAndroid: false,
                 playThroughEarpieceAndroid: false,
             });
-
-            playAudio(uri);
         } catch (error) {
-            console.log('Error: ', error);
+            console.error(error);
         }
     };
 
-    // uri를 통해 재생을 하고싶다면 사용
-    const playAudio = async (uri) => {
+    // 서버로 전송
+    const requestToServer = async (uri) => {
         try {
-            const { sound } = await Audio.Sound.createAsync({ uri });
-            await sound.playAsync();
-            console.log('Playing Sound');
-        } catch (error) {
-            console.log('Error: ', error);
+            const url = 'http://218.150.182.161:15555/stt/';
+            let body = new FormData();
+            const data = {
+                uri: uri,
+                type: 'audio/m4a',
+                name: 'audio.m4a',
+            };
+            body.append('file', data);
+
+            const response = await axios.post(url, body, {
+                headers: { 'Content-Type': 'multipart/form-data', },
+            });
+
+            if (response.status === 200) {
+                navigation.navigate('ObjectList', { data: response.data });
+            }
+        }
+        catch (error) {
+            console.error(error);
+            const message = '인식에 실패했습니다.';
+            speech(message);
+            navigation.navigate('Home');
         }
     };
 
