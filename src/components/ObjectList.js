@@ -12,9 +12,9 @@ const ObjectList = ({ route, navigation }) => {
     const index = useRef(1);
 
     useEffect(() => {
-        const message = `인식된 사물은 ${data.map(item => item.word).join(', ')} 입니다.`;
+        const message = `인식된 단어는 ${data.map(item => item.word).join(', ')} 입니다.`;
         speech(message);
-    });
+    }, []);
 
     // 단어 저장
     saveData(data);
@@ -25,7 +25,7 @@ const ObjectList = ({ route, navigation }) => {
 
     // Swipe Gesture 로 탐색할 목록
     const menuList = [
-        { name: '뒤로가기', speech: () => speech('뒤로가기'), action: () => navigation.goBack() },
+        { name: '뒤로가기', speech: () => speech('뒤로가기'), action: () => navigation.navigate('Home') },
         { name: '점자랑', speech: () => speech('점자랑'), action: () => speech('점자랑') },
         ...data.map((item) => ({
             name: item.word,
