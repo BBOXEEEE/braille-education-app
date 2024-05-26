@@ -32,7 +32,8 @@
         "foregroundImage": "./src/assets/adaptive-icon.png",
         "backgroundColor": "#ffffff"
       },
-      "package": "com.bboxeeee.jumjarang"
+      "package": "com.bboxeeee.jumjarang",
+      "versionCode": 2
     },
     "web": {
       "favicon": "./src/assets/favicon.png"
