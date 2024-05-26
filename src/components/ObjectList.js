@@ -11,6 +11,11 @@ const ObjectList = ({ route, navigation }) => {
     const previousTouchTimeRef = useRef(null);
     const index = useRef(1);
 
+    useEffect(() => {
+        const message = `인식된 사물은 ${data.map(item => item.word).join(', ')} 입니다.`;
+        speech(message);
+    });
+
     // 단어 저장
     saveData(data);
 
