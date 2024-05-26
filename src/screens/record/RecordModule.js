@@ -1,11 +1,12 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { View, Text, TouchableOpacity, StyleSheet, SafeAreaView } from 'react-native';
+import { View, Text, TouchableOpacity, StyleSheet, SafeAreaView, ActivityIndicator } from 'react-native';
 import GestureRecognizer from 'react-native-swipe-gestures';
 import axios from 'axios';
 import { useTTS } from '../../components/TTSContext';
 import { Audio } from 'expo-av';
 import { Ionicons } from '@expo/vector-icons';
 import * as FileSystem from 'expo-file-system';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const RecordModule = ({ navigation }) => {
     const { speech } = useTTS();
@@ -13,31 +14,65 @@ const RecordModule = ({ navigation }) => {
     const [isListening, setIsListening] = useState(false);
     const previousTouchTimeRef = useRef(null);
     const index = useRef(1);
+    const useCount = useRef(0);
+    const [loading, setLoading] = useState(true);
 
     useEffect(() => {
+        loadUsage();
         return () => {
             resetAudioMode();
         };
     }, []);
 
+    // 사용량 불러오기
+    const loadUsage = async () => {
+        try {
+            const usage = await AsyncStorage.getItem('usage');
+            if (usage) {
+                useCount.current = parseInt(usage);
+            }
+        } catch (error) {
+            console.error(error);
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    // 사용량 저장
+    const saveUsage = async () => {
+        try {
+            await AsyncStorage.setItem('usage', useCount.current.toString());
+        } catch (error) {
+            console.error(error);
+        }
+    };
+
     // 녹음 시작
     const startRecording = async () => {
         try {
-            const permission = await Audio.requestPermissionsAsync();
-            if (permission.status === 'granted') {
-                await Audio.setAudioModeAsync({
-                    allowsRecordingIOS: true,
-                    playsInSilentModeIOS: true,
-                    shouldDuckAndroid: true,
-                    playThroughEarpieceAndroid: false,
-                });
-                const recording = new Audio.Recording();
-                await recording.prepareToRecordAsync(Audio.RECORDING_OPTIONS_PRESET_HIGH_QUALITY);
-                await recording.startAsync();
-                setRecording(recording);
-                setIsListening(true);
-            } else {
-                console.log('Permission Denied');
+            if (useCount.current < 10) {
+                const permission = await Audio.requestPermissionsAsync();
+                if (permission.status === 'granted') {
+                    await Audio.setAudioModeAsync({
+                        allowsRecordingIOS: true,
+                        playsInSilentModeIOS: true,
+                        shouldDuckAndroid: true,
+                        playThroughEarpieceAndroid: false,
+                    });
+                    const recording = new Audio.Recording();
+                    await recording.prepareToRecordAsync(Audio.RECORDING_OPTIONS_PRESET_HIGH_QUALITY);
+                    await recording.startAsync();
+                    setRecording(recording);
+                    setIsListening(true);
+                    useCount.current += 1;
+                    await saveUsage();
+                } else {
+                    console.log('Permission Denied');
+                }
+            }
+            else {
+                const message = '무료사용가능 횟수를 초과했습니다. 다음 달에 초기화됩니다.';
+                speech(message);
             }
         } catch (error) {
             console.log('Error: ', error);
@@ -112,6 +147,7 @@ const RecordModule = ({ navigation }) => {
         { name: '뒤로가기', speech: () => speech('뒤로가기'), action: () => navigation.goBack() },
         { name: '점자랑', speech: () => speech('점자랑'), action: () => speech('점자랑') },
         { name: '녹음하기', speech: () => speech('녹음하기'), action: () => recording? stopRecording() : startRecording()},
+        { name: '사용량', speech: () => speech(`무료사용가능 횟수는 ${10-useCount.current}회입니다.`), action: () => speech(`무료사용가능 횟수는 ${10-useCount.current}회입니다.`) }
     ];
 
     // 터치 이벤트 처리
@@ -168,6 +204,13 @@ const RecordModule = ({ navigation }) => {
                     <TouchableOpacity onPress={() => handlePressButton('녹음하기')}>
                         <Ionicons name="mic" size={250} color={isListening ? 'red' : 'black'} />
                     </TouchableOpacity>
+                    {loading ? (
+                        <ActivityIndicator size="large" color="#0000ff" />
+                    ) : (
+                        <TouchableOpacity onPress={() => handlePressButton('사용량')}>
+                            <Text style={styles.usage}>무료 사용 가능 횟수: {10-useCount.current}회</Text>
+                        </TouchableOpacity>
+                    )}
                 </TouchableOpacity>
             </SafeAreaView>
         </GestureRecognizer>
@@ -204,6 +247,12 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
         alignItems: 'center',
     },
+    usage: {
+        fontSize: 16,
+        color: 'gray',
+        marginTop: 40,
+        textDecorationLine: 'underline',
+    }
 });
 
 export default RecordModule;
