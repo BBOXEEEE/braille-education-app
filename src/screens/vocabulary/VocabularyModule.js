@@ -24,11 +24,13 @@ const VocabularyModule = ({ navigation }) => {
                 const message = "저장된 단어 목록이 없습니다.";
                 speech(message);
             }
+
+            // 저장된 단어의 개수 TTS 출력
+            const wordCount = loadedData.length;
+            const message = `${wordCount}개의 단어가 저장되어 있습니다.`;
+            speech(message);
         };
         load();
-        const wordCount = data.length;
-        const message = `${wordCount}개의 단어가 저장되어 있습니다.`;
-        speech(message);
     }, []);
 
     useEffect(() => {
