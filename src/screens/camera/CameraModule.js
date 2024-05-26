@@ -18,7 +18,7 @@ const CameraModule = ({ navigation }) => {
 	useEffect(() => {
 		const message = '촬영하기 버튼을 두번 터치하면 사진을 촬영합니다.';
 		speech(message);
-	});
+	}, []);
 
 	useEffect(() => {
 		previousTouchTimeRef.current = previousTouchTime;
