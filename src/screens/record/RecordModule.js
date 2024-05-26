@@ -3,7 +3,7 @@ import { View, Text, TouchableOpacity, StyleSheet, SafeAreaView, ActivityIndicat
 import GestureRecognizer from 'react-native-swipe-gestures';
 import axios from 'axios';
 import { useTTS } from '../../components/TTSContext';
-import { Audio } from 'expo-av';
+import { Audio, InterruptionModeIOS } from 'expo-av';
 import { Ionicons } from '@expo/vector-icons';
 import * as FileSystem from 'expo-file-system';
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -19,8 +19,15 @@ const RecordModule = ({ navigation }) => {
 
     useEffect(() => {
         loadUsage();
+        const message = '녹음하기 버튼을 두번 터치하면 녹음을 시작합니다. 원하는 단어를 점자로 변환해보세요.';
+        speech(message);
         return () => {
-            resetAudioMode();
+            Audio.setAudioModeAsync({
+                allowsRecordingIOS: false,
+                playsInSilentModeIOS: false,
+                shouldDuckAndroid: false,
+                playThroughEarpieceAndroid: false,
+            });
         };
     }, []);
 
@@ -41,6 +48,7 @@ const RecordModule = ({ navigation }) => {
     // 사용량 저장
     const saveUsage = async () => {
         try {
+            useCount.current += 1;
             await AsyncStorage.setItem('usage', useCount.current.toString());
         } catch (error) {
             console.error(error);
@@ -64,7 +72,6 @@ const RecordModule = ({ navigation }) => {
                     await recording.startAsync();
                     setRecording(recording);
                     setIsListening(true);
-                    useCount.current += 1;
                     await saveUsage();
                 } else {
                     console.log('Permission Denied');
@@ -86,37 +93,32 @@ const RecordModule = ({ navigation }) => {
             const uri = recording.getURI();
             setRecording(null);
             setIsListening(false);
-            await resetAudioMode();
-            await requestToServer(uri);
-            await FileSystem.deleteAsync(uri);
-        } 
-        catch (error) {
-            console.log('Error: ', error);
-            if (recording) {
-                const uri = recording.getURI();
-                await FileSystem.deleteAsync(uri);
-            }
-            await resetAudioMode();
-        }
-    };
-
-    // 오디오 설정 초기화
-    const resetAudioMode = async () => {
-        try {
             await Audio.setAudioModeAsync({
                 allowsRecordingIOS: false,
                 playsInSilentModeIOS: false,
                 shouldDuckAndroid: false,
                 playThroughEarpieceAndroid: false,
             });
-        } catch (error) {
-            console.error(error);
+
+            requestToServer(uri);
+        } 
+        catch (error) {
+            console.log('Error: ', error);
         }
     };
 
     // 서버로 전송
     const requestToServer = async (uri) => {
         try {
+            // 오디오 초기화를 위한 의미없는 소리 재생
+            const soundObject = new Audio.Sound();
+            await soundObject.loadAsync(require('../../assets/sounds/ping.mp3'));
+            await soundObject.setVolumeAsync(0);
+            await soundObject.playAsync();
+            
+            const message = '인식 중입니다. 잠시만 기다려주세요.';
+            speech(message);
+
             const url = 'http://218.150.182.161:15555/stt/';
             let body = new FormData();
             const data = {
@@ -139,6 +141,10 @@ const RecordModule = ({ navigation }) => {
             const message = '인식에 실패했습니다.';
             speech(message);
             navigation.navigate('Home');
+        }
+        finally {
+            console.log('delete!');
+            await FileSystem.deleteAsync(uri);
         }
     };
 
