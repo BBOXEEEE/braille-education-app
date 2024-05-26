@@ -13,6 +13,11 @@ const WriteMenu = ({ navigation }) => {
   const index = useRef(1);
 
   useEffect(() => {
+    const message = '쓰기 메뉴입니다. 9개의 메뉴가 있습니다.';
+    speech(message);
+  }, []);
+
+  useEffect(() => {
     previousTouchTimeRef.current = previousTouchTime;
   }, [previousTouchTime]);
 

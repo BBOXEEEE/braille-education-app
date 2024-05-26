@@ -157,25 +157,36 @@ const Home = ({ navigation }) => {
   );
 };
 
-const TTSModal = ({ visible, onClose, onOptionTouched, onDoubleTap }) => (
-  <Modal
-    animationType="slide"
-    transparent={true}
-    visible={visible}
-    onRequestClose={onClose}>
-    <TouchableOpacity style={styles.centeredView} onPress={onDoubleTap} activeOpacity={1}>
-      <TouchableOpacity style={styles.modalView} activeOpacity={1}>
-        {ttsOptions.map((option) => (
-          <View key={option.rate} style={styles.squareButton}>
-            <TouchableOpacity onPress={() => onOptionTouched(option.label)}>
-              <Text style={styles.buttonText}>{option.label}</Text>
-            </TouchableOpacity>
-          </View>
-        ))}
+const TTSModal = ({ visible, onClose, onOptionTouched, onDoubleTap }) => {
+  const { speech } = useTTS();
+
+  useEffect(() => {
+    if (visible) {
+      const message = '4개의 단계로 말하기 속도를 조절할 수 있습니다.';
+      speech(message);
+    }
+  }, [visible]);
+
+  return (
+    <Modal
+      animationType="slide"
+      transparent={true}
+      visible={visible}
+      onRequestClose={onClose}>
+      <TouchableOpacity style={styles.centeredView} onPress={onDoubleTap} activeOpacity={1}>
+        <TouchableOpacity style={styles.modalView} activeOpacity={1}>
+          {ttsOptions.map((option) => (
+            <View key={option.rate} style={styles.squareButton}>
+              <TouchableOpacity onPress={() => onOptionTouched(option.label)}>
+                <Text style={styles.buttonText}>{option.label}</Text>
+              </TouchableOpacity>
+            </View>
+          ))}
+        </TouchableOpacity>
       </TouchableOpacity>
-    </TouchableOpacity>
-  </Modal>
-);
+    </Modal>
+  );
+};
 
 const styles = StyleSheet.create({
   container: {

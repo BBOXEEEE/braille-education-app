@@ -1,11 +1,18 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { View, Text, TouchableOpacity, StyleSheet, SafeAreaView } from 'react-native';
 import GestureRecognizer from 'react-native-swipe-gestures';
+import { useTTS } from './TTSContext';
 
 const BrailleScreen = ({ buttons, menuList }) => {
+  const { speech } = useTTS();
   const [previousTouchTime, setPreviousTouchTime] = useState(null);
   const previousTouchTimeRef = useRef(null);
   const index = useRef(1);
+
+  useEffect(() => {
+    const message = '학습하기와 시험보기를 통해 점자를 학습해보세요';
+    speech(message);
+  }, []);
 
   useEffect(() => {
     previousTouchTimeRef.current = previousTouchTime;

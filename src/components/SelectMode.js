@@ -14,6 +14,11 @@ const SelectMode = ({ route, navigation }) => {
     const index = useRef(1);
 
     useEffect(() => {
+        const message = `단어 ${item.word}에 대해 읽기와 쓰기를 선택할 수 있습니다.`;
+        speech(message);
+    }, []);
+
+    useEffect(() => {
         previousTouchTimeRef.current = previousTouchTime;
     }, [previousTouchTime]);
 

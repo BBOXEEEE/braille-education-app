@@ -26,6 +26,9 @@ const VocabularyModule = ({ navigation }) => {
             }
         };
         load();
+        const wordCount = data.length;
+        const message = `${wordCount}개의 단어가 저장되어 있습니다.`;
+        speech(message);
     }, []);
 
     useEffect(() => {
