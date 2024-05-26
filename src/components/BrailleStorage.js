@@ -21,7 +21,7 @@ export const loadData = async () => {
 
         let data = [];
         for (let i = 0; i < keys.length; i++) {
-            if (keys[i] === "rate") continue;
+            if (keys[i] === "rate" || keys[i] === "usage") continue;
             const word = keys[i];
             const brailleList = JSON.parse(values[i][1]);
             data.push({ word: word, braille: brailleList });
