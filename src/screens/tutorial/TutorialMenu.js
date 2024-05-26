@@ -16,9 +16,8 @@ const TutorialMenu = ({ navigation }) => {
     previousTouchTimeRef.current = previousTouchTime;
   }, [previousTouchTime]);
 
-  const explanation = `버튼을 클릭하는 방법에 대해 먼저 알려드리겠습니다.
-  버튼을 한번 누르게 되면 해당 버튼의 기능을 음성으로 안내하고 두번 누르게 되면 기능이 실행됩니다.
-  아래 '넘어가기' 버튼을 눌러주세요. '다시듣기' 버튼은 이 음성을 다시 들을 수 있습니다. 전 화면으로 돌아가고 싶다면 왼쪽 상단에 '뒤로가기' 버튼을 눌러주세요.`;
+  const explanation = `버튼은 편리함을 위해 VoiceOver, TalkBack과 같은 동작을 하고 있습니다.
+  아래 '넘어가기' 버튼을 눌러주세요. '다시듣기' 버튼은 이 음성을 다시 들을 수 있습니다.`;
 
   useEffect(() => {
     speech(explanation);

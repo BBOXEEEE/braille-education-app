@@ -4,13 +4,14 @@ import GestureRecognizer from 'react-native-swipe-gestures';
 import { useTTS } from '../../components/TTSContext';
 
 // 메뉴 버튼
-const buttons = ['읽기', '쓰기', '촬영하기', '단어장', '말하기 속도 조절'];
+const buttons = ['읽기', '쓰기', '촬영하기', '녹음하기', '단어장', '말하기 속도 조절'];
 
 // 기능 설명
 const explanations = [
   "점자를 단계별로 읽는 것을 학습하고, 시험 볼 수 있습니다. 더 자세한 내용은 읽기 메뉴에 튜토리얼을 참고해주세요.",
   "점자를 단계별로 써보고 쓰는것을 학습하고, 시험볼 수  있습니다. 더 자세한 내용은 쓰기 메뉴에 튜토리얼을 참고해주세요.",
   "촬영한 주변 사물의 이름를 점자로 읽고 써 볼 수 있습니다.",
+  "원하는 단어를 녹음하면 점자로 읽고 써볼 수 있습니다.",
   "촬영하고 인지된 사물의 이름들을 저장해놓고 다시 학습할 수 있습니다.",
   "TTS 속도를 조절할 수 있습니다.",
 ]
@@ -38,8 +39,9 @@ const TutorialFunction = ({ navigation }) => {
     { 'name' : '읽기', speech: () => speech('읽기'), action: () => speech(explanations[0]) },
     { 'name' : '쓰기', speech: () => speech('쓰기'), action: () => speech(explanations[1]) },
     { 'name' : '촬영하기', speech: () => speech('촬영하기'), action: () => speech(explanations[2]) },
-    { 'name' : '단어장', speech: () => speech('단어장'), action: () => speech(explanations[3]) },
-    { 'name' : '말하기 속도 조절', speech: () => speech('말하기 속도 조절'), action: () => speech(explanations[4]) },
+    { 'name' : '녹음하기', speech: () => speech('녹음하기'), action: () => speech(explanations[3]) },
+    { 'name' : '단어장', speech: () => speech('단어장'), action: () => speech(explanations[4]) },
+    { 'name' : '말하기 속도 조절', speech: () => speech('말하기 속도 조절'), action: () => speech(explanations[5]) },
   ];
 
   // 터치 이벤트 처리
