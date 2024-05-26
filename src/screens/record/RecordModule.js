@@ -72,7 +72,6 @@ const RecordModule = ({ navigation }) => {
                     await recording.startAsync();
                     setRecording(recording);
                     setIsListening(true);
-                    await saveUsage();
                 } else {
                     console.log('Permission Denied');
                 }
@@ -133,7 +132,16 @@ const RecordModule = ({ navigation }) => {
             });
 
             if (response.status === 200) {
+                await saveUsage();
                 navigation.navigate('ObjectList', { data: response.data });
+            }
+            if (response.status === 202 && response.data === "EMPTY") {
+                const message = '인식된 결과가 없습니다. 다시 시도해주세요.';
+                speech(message);
+            }
+            if (response.status === 202 && response.data === "EN") {
+                const message = '현재는 영어를 지원하지 않습니다. 다시 시도해주세요.';
+                speech(message);
             }
         }
         catch (error) {
@@ -143,7 +151,6 @@ const RecordModule = ({ navigation }) => {
             navigation.navigate('Home');
         }
         finally {
-            console.log('delete!');
             await FileSystem.deleteAsync(uri);
         }
     };
