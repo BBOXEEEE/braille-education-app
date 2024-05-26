@@ -33,7 +33,7 @@
         "backgroundColor": "#ffffff"
       },
       "package": "com.bboxeeee.jumjarang",
-      "versionCode": 2
+      "versionCode": 3
     },
     "web": {
       "favicon": "./src/assets/favicon.png"
