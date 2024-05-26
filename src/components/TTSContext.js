@@ -33,13 +33,13 @@ export const TTSProvider = ({ children }) => {
             rate: customRate || rate.value,
             pitch: pitch || 1.0,
         };
-
+        
         if (Platform.OS === 'ios') {
             options.voice = "com.apple.voice.compact.ko-KR.Yuna";
         }
         if (Platform.OS === 'android') {
-            options.language = 'ko-KR';
-            options.voice = "ko_kr_standart_b";
+            options.voice = "ko-KR-language";
+            options.rate += 0.5;
         }
 
         Speech.speak(message, options);
