@@ -129,6 +129,12 @@ const CameraModule = ({ navigation }) => {
 				headers: { 'Content-Type': 'multipart/form-data', },
 			});
 
+			if (response.data.length === 0) {
+				const message = "인식된 결과가 없습니다. 다시 시도해주세요.";
+				speech(message);
+				return;
+			}
+
 			if (response.status === 200) {
                 navigation.navigate('ObjectList', { data: response.data });
 			}
