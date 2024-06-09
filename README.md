@@ -5,6 +5,23 @@
 ## 📌 Introduction
 
 ### 서비스 개요
+
+<figure>
+  <img src="./src/assets/img/001.png" width="32%">
+  <img src="./src/assets/img/002.png" width="32%">
+  <img src="./src/assets/img/003.png" width="32%">
+</figure>
+<figure>
+  <img src="./src/assets/img/004.png" width="32%">
+  <img src="./src/assets/img/005.png" width="32%">
+  <img src="./src/assets/img/006.png" width="32%">
+</figure>
+<figure>
+  <img src="./src/assets/img/007.png" width="32%">
+  <img src="./src/assets/img/008.png" width="32%">
+  <img src="./src/assets/img/009.png" width="32%">
+</figure>
+
 - 점자를 읽고 쓰는 것을 단계별로 학습
   - 자음, 모음, 받침, 약자, 숫자, 약어, 문장부호, 영어 알파벳
 - 단어장 기능
