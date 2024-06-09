@@ -11,11 +11,13 @@
   <img src="./src/assets/img/002.png" width="32%">
   <img src="./src/assets/img/003.png" width="32%">
 </figure>
+
 <figure>
   <img src="./src/assets/img/004.png" width="32%">
   <img src="./src/assets/img/005.png" width="32%">
   <img src="./src/assets/img/006.png" width="32%">
 </figure>
+
 <figure>
   <img src="./src/assets/img/007.png" width="32%">
   <img src="./src/assets/img/008.png" width="32%">
