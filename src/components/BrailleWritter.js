@@ -8,41 +8,53 @@ import { Audio } from 'expo-av';
 
 const window = Dimensions.get("window");
 const points = [
+  // 4점
   {
     x: 0,
     y: window.height / 3,
     width: window.width / 2,
     height: (window.height * 2) / 9,
+    index: 3,
   },
+  // 1점
   {
     x: 0,
     y: (window.height * 5) / 9,
     width: window.width / 2,
     height: (window.height * 2) / 9,
+    index: 0,
   },
+  // 5점
   {
     x: 0,
     y: (window.height * 7) / 9,
     width: window.width / 2,
     height: (window.height * 2) / 9,
+    index: 4,
   },
+  // 2점
   {
     x: window.width / 2,
     y: window.height / 3,
     width: window.width / 2,
     height: (window.height * 2) / 9,
+    index: 1,
   },
+  // 6점
   {
     x: window.width / 2,
     y: (window.height * 5) / 9,
     width: window.width / 2,
     height: (window.height * 2) / 9,
+    index: 5,
   },
+  // 3점
   {
     x: window.width / 2,
     y: (window.height * 7) / 9,
     width: window.width / 2,
     height: (window.height * 2) / 9,
+    index: 2,
   },
 ];
 
@@ -106,7 +118,8 @@ const BrailleWritter = ({ category, brailleSymbols, brailleList }) => {
     inputBraille = new Array(brailleList[brailleIndex].length).fill(0);
     setTouchNum(0);
     setMaxPage(calculatedMaxPage);
-    setCurrentPage(0);
+    currentPageRef.current = 0;
+    setCurrentPage(currentPageRef.current);
   }, [brailleIndex]);
 
   useEffect(() => {
@@ -124,6 +137,10 @@ const BrailleWritter = ({ category, brailleSymbols, brailleList }) => {
   useEffect(() => {
     previousTouchTimeRef.current = previousTouchTime;
   }, [previousTouchTimeRef])
+
+  useEffect(() => {
+    currentPageRef.current = currentPage;
+  }, [currentPage]);
 
   const menuList = [
     { name: '뒤로가기', speech: () => speech('뒤로가기'), action: () => navigation.goBack() },
@@ -153,10 +170,9 @@ const BrailleWritter = ({ category, brailleSymbols, brailleList }) => {
         const message = "잘못된 입력 입니다. 다시 입력하세요.";
         speech(message);
         inputBraille = new Array(brailleList[currentBrailleIndex].length).fill(0);
-        setTouchNum(0); 
-        setCurrentPage(() => { // 페이지 초기화
-          return 0;
-        });
+        setTouchNum(0);
+        currentPageRef.current = 0;
+        setCurrentPage(currentPageRef.current);
       } 
       else {
         const message = "올바른 입력 입니다.";
@@ -202,7 +218,8 @@ const BrailleWritter = ({ category, brailleSymbols, brailleList }) => {
       const nextPage = Math.min(prevPage + 1, maxPageRef.current);
       const message = "다음 칸 입니다.";
       speech(message);
-      return nextPage;
+      currentPageRef.current = nextPage;
+      return currentPageRef.current;
     });
   };
 
@@ -211,7 +228,8 @@ const BrailleWritter = ({ category, brailleSymbols, brailleList }) => {
       const prevPageCalculated = Math.max(prevPage - 1, 0);
       const message = "이전 칸 입니다.";
       speech(message);
-      return prevPageCalculated;
+      currentPageRef.current = prevPageCalculated;
+      return currentPageRef.current;
     });
   };
 
@@ -268,7 +286,8 @@ const BrailleWritter = ({ category, brailleSymbols, brailleList }) => {
         speech(message);
         inputBraille = new Array(brailleList[newIndex].length).fill(0);
         setTouchNum(0);
-        setCurrentPage(0); // 페이지 초기화
+        currentPageRef.current = 0;
+        setCurrentPage(currentPageRef.current); // 페이지 초기화
         return newIndex;
       });
     } else {
@@ -289,7 +308,8 @@ const BrailleWritter = ({ category, brailleSymbols, brailleList }) => {
         speech(message);
         setTouchNum(0);
         inputBraille = new Array(brailleList[newIndex].length).fill(0);
-        setCurrentPage(0); // 페이지 초기화
+        currentPageRef.current = 0;
+        setCurrentPage(currentPageRef.current); // 페이지 초기화
         return newIndex;
       });
     } else {
@@ -448,9 +468,12 @@ return (
 
           { /* Bottom 2/3 */}
           <View {...panResponder.panHandlers} style={styles.bottom} >
-              {points.map((_, index) => (
-                  <View key={index} style={styles.dotContainer}>
-                      <View style={styles.dot} />
+              {points.map((point, _) => (
+                  <View key={point.index} style={styles.dotContainer}>
+                      <View style={[
+                        styles.dot,
+                        brailleList[brailleIndexRef.current][point.index + (6 * currentPageRef.current)] === 1 ? { backgroundColor: 'red' } : { backgroundColor: 'black' }
+                      ]} />
                   </View>
               ))}
           </View>

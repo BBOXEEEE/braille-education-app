@@ -14,41 +14,53 @@ const bottom = window.height * 2 / 3;
 
 // 점자 영역 설정
 const points = [
+    // 1점
     {
       x: 0,
       y: top,
       width: width / 2,
       height: bottom / 3,
+      index: 0,
     },
+    // 4점
     {
       x: 0,
       y: top + bottom / 3,
       width: width / 2,
       height: bottom / 3,
+      index: 3,
     },
+    // 2점
     {
       x: 0,
       y: top + bottom * 2 / 3,
       width: width / 2,
       height: bottom / 3,
+      index: 1,
     },
+    // 5점
     {
       x: width / 2,
       y: top,
       width: width / 2,
       height: bottom / 3,
+      index: 4,
     },
+    // 3점
     {
       x: width / 2,
       y: top + bottom / 3,
       width: width / 2,
       height: bottom / 3,
+      index: 2,
     },
+    // 6점
     {
       x: width / 2,
       y: top + bottom * 2 / 3,
       width: width / 2,
       height: bottom / 3,
+      index: 5,
     },
   ];
 
@@ -79,10 +91,11 @@ const getComponentBraille = (braille) => {
 const BrailleReader = ({ category, brailleSymbols, brailleList }) => {
     const { speech } = useTTS();
     const [currentBraille, setCurrentBraille] = useState(0);
+    const [currentSpace, setCurrentSpace] = useState(0);
     const [touchIndex, setTouchIndex] = useState(-1);
     const [previousTouchTime, setPreviousTouchTime] = useState(null);
     const currentBrailleRef = useRef(currentBraille);
-    const currentSpace = useRef(0);
+    const currentSpaceRef = useRef(0);
     const touchIndexRef = useRef(touchIndex);
     const previousTouchTimeRef = useRef();
     const navigation = useNavigation();
@@ -90,9 +103,10 @@ const BrailleReader = ({ category, brailleSymbols, brailleList }) => {
 
     useEffect(() => {
         currentBrailleRef.current = currentBraille;
+        currentSpaceRef.current = currentSpace;
         touchIndexRef.current = touchIndex;
         previousTouchTimeRef.current = previousTouchTime;
-    }, [currentBraille, touchIndex, previousTouchTime]);
+    }, [currentBraille, currentSpace, touchIndex, previousTouchTime]);
 
     useEffect(() => {
         const message = `점자 읽기입니다. 다음 점자를 읽어보세요!`;
@@ -105,14 +119,15 @@ const BrailleReader = ({ category, brailleSymbols, brailleList }) => {
         const message = `${category} ${pronunciation} 입니다. ${component} 입니다.`;
         // console.log(getComponentBraille(brailleList[currentBrailleRef.current]));
         speech(message);
-        currentSpace.current = 0;
+        currentSpaceRef.current = 0;
+        setCurrentSpace(currentSpaceRef.current);
     }, [currentBraille]);
 
     function tts_dot(index) {
         if (index === -1) return;
         const message = `${index+1}점`;
         let pitch = 1;
-        if (brailleList[currentBrailleRef.current][index + (6 * currentSpace.current)] === 1) {
+        if (brailleList[currentBrailleRef.current][index + (6 * currentSpaceRef.current)] === 1) {
             pitch = 1.5;
         }
         speech(message, null, pitch);
@@ -122,7 +137,7 @@ const BrailleReader = ({ category, brailleSymbols, brailleList }) => {
         tts_dot(touchIndex);
 
         // 해당 영역의 brailleList 값이 1일 경우 햅틱 피드백
-        if (brailleList[currentBrailleRef.current][touchIndexRef.current + (6 * currentSpace.current)] === 1) {
+        if (brailleList[currentBrailleRef.current][touchIndexRef.current + (6 * currentSpaceRef.current)] === 1) {
             Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Heavy);
         }
     }, [touchIndex]);
@@ -131,9 +146,9 @@ const BrailleReader = ({ category, brailleSymbols, brailleList }) => {
     const menuList = [
         { name: '뒤로가기', speech: () => speech('뒤로가기'), action: () => navigation.goBack() },
         { name: '점자랑', speech: () => speech('점자랑'), action: () => speech('점자랑') },
-        { name: '이전', speech: () => currentSpace.current === 0 ? speech('이전'): speech('이전 칸'), action: () => handlePrevButton() },
+        { name: '이전', speech: () => currentSpaceRef.current === 0 ? speech('이전'): speech('이전 칸'), action: () => handlePrevButton() },
         { name: '묵자', speech: () => speech(getCurrentSymbol()), action: () => speech(getCurrentSymbol()) },
-        { name: '다음', speech: () => currentSpace.current === brailleList[currentBrailleRef.current].length / 6 - 1 ? speech('다음'): speech('다음 칸'), action: () => handleNextButton() },        
+        { name: '다음', speech: () => currentSpaceRef.current === brailleList[currentBrailleRef.current].length / 6 - 1 ? speech('다음'): speech('다음 칸'), action: () => handleNextButton() },        
     ];
 
     // 터치 이벤트 처리
@@ -166,28 +181,30 @@ const BrailleReader = ({ category, brailleSymbols, brailleList }) => {
 
     // 이전 버튼 이벤트 처리
     const handlePrevButton = () => {
-        if (currentSpace.current === 0) {
+        if (currentSpaceRef.current === 0) {
             if (currentBrailleRef.current - 1 >= 0) currentBrailleRef.current -= 1;
             else currentBrailleRef.current = brailleList.length - 1;
         }
         else {
-            const prev = currentSpace.current - 1;
-            currentSpace.current = prev;
+            const prev = currentSpaceRef.current - 1;
+            currentSpaceRef.current = prev;
         }
         index.current = 3;
+        setCurrentSpace(currentSpaceRef.current);
         setCurrentBraille(currentBrailleRef.current);
     };
 
     // 다음 버튼 이벤트 처리
     const handleNextButton = () => {
-        if (currentSpace.current === brailleList[currentBrailleRef.current].length / 6 - 1) {
+        if (currentSpaceRef.current === brailleList[currentBrailleRef.current].length / 6 - 1) {
             currentBrailleRef.current = (currentBrailleRef.current + 1) % brailleList.length;
         }
         else {
-            const next = currentSpace.current + 1;
-            currentSpace.current = next;
+            const next = currentSpaceRef.current + 1;
+            currentSpaceRef.current = next;
         }
         index.current = 3;
+        setCurrentSpace(currentSpaceRef.current);
         setCurrentBraille(currentBrailleRef.current);
     };
 
@@ -263,9 +280,12 @@ const BrailleReader = ({ category, brailleSymbols, brailleList }) => {
 
                 { /* Bottom 2/3 */}
                 <View {...panResponder.panHandlers} style={styles.bottom} >
-                    {points.map((_, index) => (
-                        <View key={index} style={styles.dotContainer}>
-                            <View style={styles.dot} />
+                    {points.map((point, _) => (
+                        <View key={point.index} style={styles.dotContainer}>
+                            <View style={[
+                                styles.dot,
+                                brailleList[currentBrailleRef.current][point.index + (6 * currentSpaceRef.current)] === 1 && { backgroundColor: 'red'}
+                            ]} />
                         </View>
                     ))}
                 </View>
