@@ -328,13 +328,13 @@ const styles = StyleSheet.create({
         justifyContent: 'space-around',
     },
     text: {
-        fontSize: 24,
+        fontSize: 36,
         fontWeight: 'bold',
         marginTop: '20%',
 
     },
     symbol: {
-        fontSize: 36,
+        fontSize: 45,
         fontWeight: 'bold',
         marginTop: '20%',
     },

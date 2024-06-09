@@ -314,7 +314,7 @@ const styles = StyleSheet.create({
         justifyContent: 'space-around',
     },
     text: {
-        fontSize: 24,
+        fontSize: 32,
         fontWeight: 'bold',
         marginTop: '20%',
     },

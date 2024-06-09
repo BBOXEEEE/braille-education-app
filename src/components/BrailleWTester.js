@@ -94,7 +94,7 @@ const BrailleWTester = ({ category, brailleSymbols, brailleList }) => {
   useEffect(() => {
     randomIndex = getRandomBrailleIndex(brailleList);
     inputBraille = new Array(brailleList[randomIndex[brailleIndex]].length).fill(0);
-    const pronunciation = getPronunciation(category, brailleSymbols);
+    const pronunciation = getPronunciation(category, brailleSymbols[randomIndex[brailleIndex]]);
     const message = `점자 쓰기 시험입니다. 1점부터 6점까지 터치하여 점자를 입력하세요.
                     ${category}, ${pronunciation} 입니다.`;
     speech(message);
@@ -504,7 +504,7 @@ top: {
   justifyContent: 'space-around',
 },
 text: {
-  fontSize: 24,
+  fontSize: 32,
   fontWeight: 'bold',
   marginTop: '20%',
 },
